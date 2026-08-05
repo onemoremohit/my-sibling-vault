@@ -1,253 +1,227 @@
 import React, { useState } from 'react';
-import '../../assets/global.css';
-import '../../assets/css/creator-desktop.css';
-import '../../assets/css/creator-mobile.css';
+import { useNavigate } from 'react-router-dom';
+import Navbar from '../components/common/Navbar';
+import Modal from '../components/common/Modal';
+import Button from '../components/common/Button';
+import ModuleToggle from '../components/creator/ModuleToggle';
+import TimelineBuilder from '../components/creator/TimelineBuilder';
+import WishlistSetup from '../components/creator/WishlistSetup';
+import WheelCustomizer from '../components/creator/WheelCustomizer';
+import CouponEditor from '../components/creator/CouponEditor';
+import CertificateEditor from '../components/creator/CertificateEditor';
+import LivePreview from '../components/creator/LivePreview';
+import usePacket from '../hooks/usePacket';
+import useMediaQuery from '../hooks/useMediaQuery';
+import { createPacket } from '../services/api';
+import { showSuccess, showError } from '../components/common/Toast';
 
-// Sidebar nav items extracted from HTML prototype
-const sidebarItems = [
-  { icon: 'dashboard',            label: 'Layouts',  id: 'layouts'  },
-  { icon: 'auto_awesome',         label: 'Stickers', id: 'stickers' },
-  { icon: 'music_note',           label: 'Music',    id: 'music'    },
-  { icon: 'timeline',             label: 'Timeline', id: 'timeline' },
-  { icon: 'confirmation_number',  label: 'Coupons',  id: 'coupons'  },
+const STEPS = [
+  { id: 0, label: 'Setup & Modules', icon: 'settings' },
+  { id: 1, label: 'Memory Timeline', icon: 'photo_library' },
+  { id: 2, label: 'Wishlist',         icon: 'card_giftcard' },
+  { id: 3, label: 'Punishment Wheel',icon: 'casino' },
+  { id: 4, label: 'Coupons & Certs', icon: 'confirmation_number' },
 ];
 
-// Quick-start templates from HTML prototype
-const templates = [
-  { icon: 'child_care',  color: 'var(--color-primary)',   label: 'Nostalgic Childhood', desc: 'Warm tones and vintage filters.' },
-  { icon: 'explore',     color: 'var(--color-secondary)',  label: 'Recent Adventure',    desc: 'Vibrant colors for new memories.' },
-  { icon: 'mood_bad',    color: 'var(--color-tertiary)',   label: 'Funny/Prank Mode',    desc: 'Wacky layouts and hidden jokes.' },
-];
+const CreatorStudio = () => {
+  const navigate = useNavigate();
+  const { packet, updateMeta } = usePacket();
+  const [activeStep, setActiveStep] = useState(0);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [shareData, setShareData] = useState(null); // { packetId, shareUrl }
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
 
-// Default module toggles
-const defaultModules = [
-  { id: 'timeline',    label: 'Timeline',         checked: true  },
-  { id: 'wheel',       label: 'Punishment Wheel', checked: true  },
-  { id: 'coupons',     label: 'Coupons',          checked: false },
-];
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
 
-const CreatorStudio = ({ onViewSibling }) => {
-  const [activeNav,  setActiveNav]  = useState('layouts');
-  const [modules,    setModules]    = useState(defaultModules);
-  const [memoryTitle, setMemoryTitle] = useState('');
+  const handleGenerate = async () => {
+    if (!packet.senderName.trim() || !packet.recipientName.trim()) {
+      showError('Please enter both your name and your sibling\'s name in Step 0!');
+      setActiveStep(0);
+      return;
+    }
 
-  const toggleModule = (id) => {
-    setModules(prev => prev.map(m => m.id === id ? { ...m, checked: !m.checked } : m));
+    setIsGenerating(true);
+    try {
+      const { data } = await createPacket(packet);
+      setShareData(data);
+      showSuccess('🎉 Memory Vault created successfully!');
+    } catch (err) {
+      showError(err.response?.data?.error || 'Failed to save packet. Make sure backend is running.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const copyToClipboard = () => {
+    if (shareData?.shareUrl) {
+      navigator.clipboard.writeText(shareData.shareUrl);
+      showSuccess('Link copied to clipboard!');
+    }
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div className="min-h-screen bg-surface paper-texture flex flex-col">
+      <Navbar
+        mode="creator"
+        onShare={handleGenerate}
+        onPreview={() => setShowPreviewModal(true)}
+      />
 
-      {/* ── Top Navigation ── */}
-      <nav className="creator-topnav">
-        <div className="creator-topnav__inner">
-          <div className="creator-topnav__brand">Kinship &amp; Keepsake</div>
-
-          <div className="creator-topnav__links">
-            <a href="#" className="active">Studio</a>
-            <a href="#">Gallery</a>
-            <a href="#">Settings</a>
-          </div>
-
-          <div className="creator-topnav__actions">
-            <span className="material-symbols-outlined creator-topnav__icon">notifications</span>
-            <span className="material-symbols-outlined creator-topnav__icon">person</span>
-            <button className="btn-primary" onClick={onViewSibling}>
-              Share Memory
+      <main className="flex-1 max-w-container w-full mx-auto px-gutter py-8">
+        {/* Step Indicator Header */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-6 border-b border-outline-variant/30">
+          {STEPS.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => setActiveStep(s.id)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-full font-body font-bold text-label-bold whitespace-nowrap transition-all ${
+                activeStep === s.id
+                  ? 'bg-primary text-on-primary shadow-card'
+                  : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[18px]">{s.icon}</span>
+              {s.label}
             </button>
-          </div>
+          ))}
         </div>
-      </nav>
 
-      {/* ── Mobile Bottom Navigation ── */}
-      <nav className="creator-bottomnav">
-        {sidebarItems.map(item => (
-          <a
-            key={item.id}
-            href="#"
-            className={`creator-bottomnav__item${activeNav === item.id ? ' active' : ''}`}
-            onClick={e => { e.preventDefault(); setActiveNav(item.id); }}
-          >
-            <span className="material-symbols-outlined">{item.icon}</span>
-            <span>{item.label}</span>
-          </a>
-        ))}
-        <button className="creator-bottomnav__fab">
-          <span className="material-symbols-outlined">add</span>
-        </button>
-      </nav>
-
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-
-        {/* ── Desktop Sidebar ── */}
-        <aside className="creator-sidebar">
-          <div className="creator-sidebar__heading">
-            <h2>Creator Studio</h2>
-            <p>Editing: Childhood 1995</p>
-          </div>
-
-          <nav className="creator-sidebar__nav">
-            {sidebarItems.map(item => (
-              <a
-                key={item.id}
-                href="#"
-                className={`creator-sidebar__nav-link${activeNav === item.id ? ' active' : ''}`}
-                onClick={e => { e.preventDefault(); setActiveNav(item.id); }}
-              >
-                <span className="material-symbols-outlined">{item.icon}</span>
-                {item.label}
-              </a>
-            ))}
-          </nav>
-
-          <div className="creator-sidebar__footer">
-            <button className="creator-sidebar__add-btn">
-              <span className="material-symbols-outlined">add</span>
-              Add Memory
-            </button>
-          </div>
-        </aside>
-
-        {/* ── Main Content ── */}
-        <main className="creator-main">
-          <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto' }}>
-
-            {/* Page Header */}
-            <div className="creator-main__header">
-              <h1 className="creator-main__title">Preview</h1>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <div className="creator-main__preview-badge">
-                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>visibility</span>
-                  Preview Mode Active
-                </div>
-                <button className="btn-secondary" onClick={onViewSibling}>
-                  <span className="material-symbols-outlined">send</span>
-                  Ready to Send?
-                </button>
-              </div>
-            </div>
-
-            {/* Builder Grid */}
-            <div className="creator-main__grid">
-
-              {/* ── Left Controls Column ── */}
-              <div className="creator-main__controls" style={{ display: 'flex', flexDirection: 'column' }}>
-
-                {/* Templates Panel */}
-                <div className="creator-panel">
-                  <h3>Choose a Quick-Start Template</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    {templates.map(t => (
-                      <button key={t.label} className="template-btn">
-                        <span className="material-symbols-outlined" style={{ color: t.color }}>{t.icon}</span>
-                        <div>
-                          <p className="template-btn__title">{t.label}</p>
-                          <p className="template-btn__desc">{t.desc}</p>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Module Toggle Panel */}
-                <div className="creator-panel">
-                  <h3>Step 1: Choose your modules</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    {modules.map(mod => (
-                      <label key={mod.id} className="module-label">
-                        <span className="module-label__text">{mod.label}</span>
-                        <input
-                          type="checkbox"
-                          checked={mod.checked}
-                          onChange={() => toggleModule(mod.id)}
-                        />
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Add Memory Form Panel */}
-                <div className="creator-panel">
-                  <h3>Step 2: Add your first memory</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    <div className="upload-zone">
-                      <span className="material-symbols-outlined">add_a_photo</span>
-                      <p className="upload-zone__title">Upload Photo</p>
-                      <p className="upload-zone__hint">Drag &amp; drop or click to browse</p>
-                    </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Main Builder Form Area */}
+          <div className="lg:col-span-7 space-y-6">
+            {/* Step 0: Sender/Recipient info & Theme */}
+            {activeStep === 0 && (
+              <div className="space-y-6">
+                <div className="bg-surface rounded-2xl p-5 shadow-card border border-outline-variant/20 space-y-4">
+                  <h3 className="font-display text-headline-md text-on-surface">Step 0: Who is this for? 💌</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="creator-input-label">Title</label>
+                      <label className="font-body text-caption text-on-surface-variant block mb-1">Your Name (Sender) *</label>
                       <input
-                        className="creator-input"
                         type="text"
-                        placeholder="What happened?"
-                        value={memoryTitle}
-                        onChange={e => setMemoryTitle(e.target.value)}
+                        className="w-full border-2 border-primary-fixed-dim bg-surface-bright rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:border-secondary focus:outline-none"
+                        placeholder="e.g. Alex"
+                        value={packet.senderName}
+                        onChange={(e) => updateMeta({ senderName: e.target.value })}
                       />
                     </div>
-                    <button className="add-vault-btn">Add to My Vault</button>
-                  </div>
-                </div>
-
-                {/* Tip Banner */}
-                <div className="tip-banner">
-                  <span className="material-symbols-outlined">lightbulb</span>
-                  <p>Tip: Secret messages are only revealed when your sibling clicks them! Try adding a funny inside joke.</p>
-                </div>
-
-              </div>
-
-              {/* ── Right Live Preview Canvas ── */}
-              <div className="creator-main__canvas">
-                <div className="preview-canvas">
-                  <div className="phone-frame">
-                    <div className="phone-frame__header">
-                      <h4>Our Scrapbook</h4>
-                    </div>
-                    <div className="phone-frame__body">
-                      <div className="phone-timeline">
-                        <div className="phone-timeline__dot" />
-                        <div className="phone-timeline__card">
-                          <img
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqZdpWWSJbcQzvrvRNuImW-bKv1udyAhO0E2Dy58JzFg9fcPCpY1hNLsHrxfc1XGv5TW7qnYe1X7JPCfJi1ouPMm3_xMjwRMSYY_pRzz8qq4al4foVumtVKhYtdDF6G6IeLgE2RyKP3AxvdfpFZz64RVPkApZ7tQ7R1j-28UKqP83TPYUK71A1fa-xnXF62nnyEE5-sgSJ3zc33R9b0xAGCsG-qFw3ZypjnMtN6BD8Ih_fKWqBh4s3nw"
-                            alt="Nostalgic sibling memory"
-                          />
-                          <h5>The Great Cookie Heist</h5>
-                          <p className="date">July 1998</p>
-                        </div>
-                        <div className="phone-timeline__dot" style={{ top: '300px' }} />
-                        <div className="phone-timeline__card" style={{ transform: 'rotate(1deg)', marginTop: '3rem' }}>
-                          <div className="phone-timeline__secret">
-                            <span className="material-symbols-outlined">lock</span>
-                            <span className="text-label-bold">Secret Message Unlocked!</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="preview-chips">
-                        <span className="preview-chip preview-chip--secondary">#Siblings</span>
-                        <span className="preview-chip preview-chip--tertiary">#1990s</span>
-                      </div>
+                    <div>
+                      <label className="font-body text-caption text-on-surface-variant block mb-1">Sibling's Name (Recipient) *</label>
+                      <input
+                        type="text"
+                        className="w-full border-2 border-primary-fixed-dim bg-surface-bright rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:border-secondary focus:outline-none"
+                        placeholder="e.g. Sarah"
+                        value={packet.recipientName}
+                        onChange={(e) => updateMeta({ recipientName: e.target.value })}
+                      />
                     </div>
                   </div>
                 </div>
-              </div>
 
-            </div>{/* /builder grid */}
+                <ModuleToggle />
+              </div>
+            )}
+
+            {/* Step 1: Timeline */}
+            {activeStep === 1 && <TimelineBuilder />}
+
+            {/* Step 2: Wishlist */}
+            {activeStep === 2 && <WishlistSetup />}
+
+            {/* Step 3: Wheel */}
+            {activeStep === 3 && <WheelCustomizer />}
+
+            {/* Step 4: Coupons & Certs */}
+            {activeStep === 4 && (
+              <div className="space-y-6">
+                <CouponEditor />
+                <CertificateEditor />
+              </div>
+            )}
+
+            {/* Navigation buttons between steps */}
+            <div className="flex items-center justify-between pt-4">
+              <Button
+                variant="ghost"
+                disabled={activeStep === 0}
+                onClick={() => setActiveStep((prev) => Math.max(0, prev - 1))}
+              >
+                Previous Step
+              </Button>
+
+              {activeStep < STEPS.length - 1 ? (
+                <Button
+                  variant="primary"
+                  onClick={() => setActiveStep((prev) => Math.min(STEPS.length - 1, prev + 1))}
+                >
+                  Next Step
+                </Button>
+              ) : (
+                <Button
+                  variant="secondary"
+                  loading={isGenerating}
+                  onClick={handleGenerate}
+                  icon="send"
+                >
+                  Generate &amp; Share Vault
+                </Button>
+              )}
+            </div>
           </div>
-        </main>
-      </div>
 
-      {/* ── Footer ── */}
-      <footer className="app-footer">
-        <div className="app-footer__brand">Kinship &amp; Keepsake</div>
-        <div className="app-footer__copy">© 2024 Kinship &amp; Keepsake. Made with nostalgia.</div>
-        <div className="app-footer__links">
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-          <a href="#">Support</a>
+          {/* Right Column: Desktop Live Preview */}
+          {isDesktop && (
+            <div className="lg:col-span-5">
+              <LivePreview activeStep={activeStep} />
+            </div>
+          )}
         </div>
-      </footer>
+      </main>
 
+      {/* Share Modal */}
+      <Modal
+        isOpen={!!shareData}
+        onClose={() => setShareData(null)}
+        title="🎁 Your Memory Vault is Ready!"
+      >
+        <div className="text-center space-y-4">
+          <p className="font-body text-body-md text-on-surface-variant">
+            Share this unique link with <strong>{packet.recipientName}</strong>:
+          </p>
+          <div className="flex items-center gap-2 bg-surface-container-high p-3 rounded-xl border border-outline-variant">
+            <input
+              type="text"
+              readOnly
+              value={shareData?.shareUrl || ''}
+              className="flex-1 bg-transparent font-body text-body-md text-primary font-bold focus:outline-none"
+            />
+            <Button variant="primary" size="sm" onClick={copyToClipboard} icon="content_copy">
+              Copy
+            </Button>
+          </div>
+          <div className="pt-2 flex justify-center gap-3">
+            <Button
+              variant="secondary"
+              onClick={() => navigate(`/vault/${shareData?.packetId}`)}
+              icon="visibility"
+            >
+              Open Recipient View
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Mobile Live Preview Modal */}
+      {!isDesktop && (
+        <Modal
+          isOpen={showPreviewModal}
+          onClose={() => setShowPreviewModal(false)}
+          title="Mobile Live Preview"
+          size="sm"
+        >
+          <LivePreview activeStep={activeStep} />
+        </Modal>
+      )}
     </div>
   );
 };
