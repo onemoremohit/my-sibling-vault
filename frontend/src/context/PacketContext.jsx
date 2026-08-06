@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useReducer, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { translations, t as translate } from '../i18n/translations';
 
 // ── Initial State ────────────────────────────────────────────────────────────
 const initialPacket = {
   senderName:    '',
   recipientName: '',
+  language:      'en', // 'en' | 'hinglish'
   theme:         'nostalgic',
   modules:       ['timeline', 'wishlist', 'wheel', 'coupons'],
   timeline:      [],
@@ -19,6 +21,9 @@ const packetReducer = (state, action) => {
   switch (action.type) {
     case 'UPDATE_META':
       return { ...state, ...action.payload };
+
+    case 'SET_LANGUAGE':
+      return { ...state, language: action.payload };
 
     case 'TOGGLE_MODULE': {
       const { module } = action.payload;
@@ -80,6 +85,7 @@ export const PacketProvider = ({ children }) => {
   const [packet, dispatch] = useReducer(packetReducer, initialPacket);
 
   const updateMeta          = useCallback(payload => dispatch({ type: 'UPDATE_META', payload }), []);
+  const setLanguage         = useCallback(lang    => dispatch({ type: 'SET_LANGUAGE', payload: lang }), []);
   const toggleModule        = useCallback(module  => dispatch({ type: 'TOGGLE_MODULE', payload: { module } }), []);
 
   const addTimelineItem     = useCallback(item    => dispatch({ type: 'ADD_TIMELINE_ITEM', payload: item }), []);
@@ -100,10 +106,14 @@ export const PacketProvider = ({ children }) => {
 
   const resetPacket         = useCallback(()      => dispatch({ type: 'RESET' }), []);
 
+  /** Translation helper bound to current context packet.language */
+  const t = useCallback((key) => translate(key, packet.language), [packet.language]);
+
   return (
     <PacketContext.Provider value={{
       packet,
       updateMeta,
+      setLanguage,
       toggleModule,
       addTimelineItem, removeTimelineItem, updateTimelineItem,
       addWishlistItem, removeWishlistItem,
@@ -111,6 +121,7 @@ export const PacketProvider = ({ children }) => {
       addCoupon, removeCoupon,
       addCertificate, removeCertificate,
       resetPacket,
+      t,
     }}>
       {children}
     </PacketContext.Provider>

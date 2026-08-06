@@ -1,21 +1,23 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import usePacket from '../../hooks/usePacket';
-
-const ALL_MODULES = [
-  { id: 'timeline', icon: 'photo_library', label: 'Memory Timeline', desc: 'Photos, stories & secret notes' },
-  { id: 'wishlist', icon: 'card_giftcard',  label: 'Gift Wishlist',   desc: 'Let them pledge your gift' },
-  { id: 'wheel',    icon: 'casino',         label: 'Punishment Wheel',desc: 'Spin for hilarious dares' },
-  { id: 'coupons',  icon: 'confirmation_number', label: 'Coupon Book', desc: 'Redeemable favor cards' },
-];
+import { t as translate } from '../../i18n/translations';
 
 const ModuleToggle = () => {
-  const { packet, toggleModule } = usePacket();
+  const { packet, toggleModule, t: contextT } = usePacket();
+  const t = (key) => (contextT ? contextT(key) : translate(key, packet?.language || 'en'));
+
+  const ALL_MODULES = [
+    { id: 'timeline', icon: 'photo_library', label: t('modTimelineTitle'), desc: t('modTimelineDesc') },
+    { id: 'wishlist', icon: 'card_giftcard',  label: t('modWishlistTitle'), desc: t('modWishlistDesc') },
+    { id: 'wheel',    icon: 'casino',         label: t('modWheelTitle'),    desc: t('modWheelDesc') },
+    { id: 'coupons',  icon: 'confirmation_number', label: t('modCouponsTitle'), desc: t('modCouponsDesc') },
+  ];
 
   return (
     <div className="bg-surface rounded-2xl p-5 shadow-card border border-outline-variant/20">
-      <h3 className="font-display text-headline-md text-on-surface mb-1">Choose Modules</h3>
-      <p className="font-body text-caption text-on-surface-variant mb-4">Select what goes inside your vault</p>
+      <h3 className="font-display text-headline-md text-on-surface mb-1">{t('chooseModulesTitle')}</h3>
+      <p className="font-body text-caption text-on-surface-variant mb-4">{t('chooseModulesDesc')}</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {ALL_MODULES.map((mod) => {
           const active = packet.modules.includes(mod.id);

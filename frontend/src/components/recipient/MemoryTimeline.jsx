@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import SecretNoteReveal from './SecretNoteReveal';
 import Modal from '../common/Modal';
+import { t } from '../../i18n/translations';
 
-const MemoryTimeline = ({ items = [] }) => {
+const MemoryTimeline = ({ items = [], lang = 'en' }) => {
   const [selectedItem, setSelectedItem] = useState(null);
 
   if (items.length === 0) return null;
@@ -11,8 +12,8 @@ const MemoryTimeline = ({ items = [] }) => {
   return (
     <section className="space-y-6">
       <div className="text-center space-y-1">
-        <h2 className="font-display text-headline-md text-primary">Memory Timeline 📸</h2>
-        <p className="font-body text-body-md text-on-surface-variant">Our precious (and embarrassing) moments over the years.</p>
+        <h2 className="font-display text-headline-md text-primary">{t('timelineSectionHeader', lang)}</h2>
+        <p className="font-body text-body-md text-on-surface-variant">{t('timelineSectionSub', lang)}</p>
       </div>
 
       <div className="relative pl-6 sm:pl-8 border-l-2 border-dashed border-primary-fixed-dim space-y-8 ml-2 sm:ml-4">
@@ -63,7 +64,7 @@ const MemoryTimeline = ({ items = [] }) => {
                   </p>
                 )}
 
-                <SecretNoteReveal secretNote={item.secretNote} />
+                <SecretNoteReveal secretNote={item.secretNote} lang={lang} />
               </div>
             </motion.div>
           );
@@ -107,7 +108,7 @@ const MemoryTimeline = ({ items = [] }) => {
             </p>
           )}
 
-          <SecretNoteReveal secretNote={selectedItem?.secretNote} />
+          <SecretNoteReveal secretNote={selectedItem?.secretNote} lang={lang} />
         </div>
       </Modal>
     </section>

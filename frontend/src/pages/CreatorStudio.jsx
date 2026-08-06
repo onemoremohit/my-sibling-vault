@@ -14,24 +14,27 @@ import usePacket from '../hooks/usePacket';
 import useMediaQuery from '../hooks/useMediaQuery';
 import { createPacket } from '../services/api';
 import { showSuccess, showError } from '../components/common/Toast';
-
-const STEPS = [
-  { id: 0, label: 'Setup & Modules', icon: 'settings' },
-  { id: 1, label: 'Memory Timeline', icon: 'photo_library' },
-  { id: 2, label: 'Wishlist',         icon: 'card_giftcard' },
-  { id: 3, label: 'Punishment Wheel',icon: 'casino' },
-  { id: 4, label: 'Coupons & Certs', icon: 'confirmation_number' },
-];
+import { t as translate } from '../i18n/translations';
 
 const CreatorStudio = () => {
   const navigate = useNavigate();
-  const { packet, updateMeta } = usePacket();
+  const { packet, updateMeta, t: contextT } = usePacket();
   const [activeStep, setActiveStep] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [shareData, setShareData] = useState(null); // { packetId, shareUrl }
   const [showPreviewModal, setShowPreviewModal] = useState(false);
 
   const isDesktop = useMediaQuery('(min-width: 1024px)');
+
+  const t = (key) => (contextT ? contextT(key) : translate(key, packet?.language || 'en'));
+
+  const STEPS = [
+    { id: 0, label: t('step0Label'), icon: 'settings' },
+    { id: 1, label: t('step1Label'), icon: 'photo_library' },
+    { id: 2, label: t('step2Label'), icon: 'card_giftcard' },
+    { id: 3, label: t('step3Label'), icon: 'casino' },
+    { id: 4, label: t('step4Label'), icon: 'confirmation_number' },
+  ];
 
   const handleGenerate = async () => {
     if (!packet.senderName.trim() || !packet.recipientName.trim()) {
@@ -89,28 +92,64 @@ const CreatorStudio = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Main Builder Form Area */}
           <div className="lg:col-span-7 space-y-6">
-            {/* Step 0: Sender/Recipient info & Theme */}
+            {/* Step 0: Sender/Recipient info & Language Choice & Theme */}
             {activeStep === 0 && (
               <div className="space-y-6">
+                {/* Language Selector Card */}
+                <div className="bg-surface rounded-2xl p-5 shadow-card border-2 border-primary/30 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-display text-headline-md text-primary">{t('selectLanguageLabel')} 🌐</h3>
+                      <p className="font-body text-caption text-on-surface-variant">{t('selectLanguageDesc')}</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => updateMeta({ language: 'en' })}
+                      className={`p-4 rounded-xl border-2 font-body font-bold text-label-bold flex items-center justify-center gap-2 transition-all ${
+                        packet.language === 'en'
+                          ? 'border-primary bg-primary-fixed text-on-primary-fixed shadow-md scale-102'
+                          : 'border-outline-variant bg-surface-container-low text-on-surface hover:bg-surface-container-high'
+                      }`}
+                    >
+                      <span>{t('langEn')}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => updateMeta({ language: 'hinglish' })}
+                      className={`p-4 rounded-xl border-2 font-body font-bold text-label-bold flex items-center justify-center gap-2 transition-all ${
+                        packet.language === 'hinglish'
+                          ? 'border-primary bg-primary-fixed text-on-primary-fixed shadow-md scale-102'
+                          : 'border-outline-variant bg-surface-container-low text-on-surface hover:bg-surface-container-high'
+                      }`}
+                    >
+                      <span>{t('langHinglish')}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Names input card */}
                 <div className="bg-surface rounded-2xl p-5 shadow-card border border-outline-variant/20 space-y-4">
-                  <h3 className="font-display text-headline-md text-on-surface">Step 0: Who is this for? 💌</h3>
+                  <h3 className="font-display text-headline-md text-on-surface">{t('step0Title')}</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="font-body text-caption text-on-surface-variant block mb-1">Your Name (Sender) *</label>
+                      <label className="font-body text-caption text-on-surface-variant block mb-1">{t('senderNameLabel')}</label>
                       <input
                         type="text"
                         className="w-full border-2 border-primary-fixed-dim bg-surface-bright rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:border-secondary focus:outline-none"
-                        placeholder="e.g. Alex"
+                        placeholder={t('senderNamePlaceholder')}
                         value={packet.senderName}
                         onChange={(e) => updateMeta({ senderName: e.target.value })}
                       />
                     </div>
                     <div>
-                      <label className="font-body text-caption text-on-surface-variant block mb-1">Sibling's Name (Recipient) *</label>
+                      <label className="font-body text-caption text-on-surface-variant block mb-1">{t('recipientNameLabel')}</label>
                       <input
                         type="text"
                         className="w-full border-2 border-primary-fixed-dim bg-surface-bright rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:border-secondary focus:outline-none"
-                        placeholder="e.g. Sarah"
+                        placeholder={t('recipientNamePlaceholder')}
                         value={packet.recipientName}
                         onChange={(e) => updateMeta({ recipientName: e.target.value })}
                       />
@@ -146,7 +185,7 @@ const CreatorStudio = () => {
                 disabled={activeStep === 0}
                 onClick={() => setActiveStep((prev) => Math.max(0, prev - 1))}
               >
-                Previous Step
+                {t('prevStepBtn')}
               </Button>
 
               {activeStep < STEPS.length - 1 ? (
@@ -154,7 +193,7 @@ const CreatorStudio = () => {
                   variant="primary"
                   onClick={() => setActiveStep((prev) => Math.min(STEPS.length - 1, prev + 1))}
                 >
-                  Next Step
+                  {t('nextStepBtn')}
                 </Button>
               ) : (
                 <Button
@@ -163,7 +202,7 @@ const CreatorStudio = () => {
                   onClick={handleGenerate}
                   icon="send"
                 >
-                  Generate &amp; Share Vault
+                  {t('generateVaultBtn')}
                 </Button>
               )}
             </div>
@@ -182,11 +221,11 @@ const CreatorStudio = () => {
       <Modal
         isOpen={!!shareData}
         onClose={() => setShareData(null)}
-        title="🎁 Your Memory Vault is Ready!"
+        title={t('vaultReadyTitle')}
       >
         <div className="text-center space-y-4">
           <p className="font-body text-body-md text-on-surface-variant">
-            Share this unique link with <strong>{packet.recipientName}</strong>:
+            {t('shareLinkInstructions')} <strong>{packet.recipientName}</strong>:
           </p>
           <div className="flex items-center gap-2 bg-surface-container-high p-3 rounded-xl border border-outline-variant">
             <input
@@ -196,7 +235,7 @@ const CreatorStudio = () => {
               className="flex-1 bg-transparent font-body text-body-md text-primary font-bold focus:outline-none"
             />
             <Button variant="primary" size="sm" onClick={copyToClipboard} icon="content_copy">
-              Copy
+              {t('copyBtn')}
             </Button>
           </div>
           <div className="pt-2 flex justify-center gap-3">
@@ -205,7 +244,7 @@ const CreatorStudio = () => {
               onClick={() => navigate(`/vault/${shareData?.packetId}`)}
               icon="visibility"
             >
-              Open Recipient View
+              {t('openRecipientBtn')}
             </Button>
           </div>
         </div>
@@ -216,7 +255,7 @@ const CreatorStudio = () => {
         <Modal
           isOpen={showPreviewModal}
           onClose={() => setShowPreviewModal(false)}
-          title="Mobile Live Preview"
+          title={t('mobilePreviewTitle')}
           size="sm"
         >
           <LivePreview activeStep={activeStep} />

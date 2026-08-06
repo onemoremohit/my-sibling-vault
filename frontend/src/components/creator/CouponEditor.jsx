@@ -3,18 +3,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import usePacket from '../../hooks/usePacket';
 import { showSuccess, showError } from '../common/Toast';
 
-const PRESETS = [
-  { title: 'Free Hug',            terms: 'Valid 1x. No questions asked.',        icon: '🤗' },
-  { title: 'Zero Arguments Pass', terms: 'I will not argue with you for 24h.',   icon: '🕊️' },
-  { title: 'Pick the Movie',      terms: 'You choose the movie, no complaints.', icon: '🎬' },
-  { title: 'Maggi on Demand',     terms: 'I will make Maggi for you anytime.',   icon: '🍜' },
-  { title: 'Late Night Drive',    terms: 'One midnight drive, anywhere you want.',icon: '🚗' },
-  { title: 'Breakfast in Bed',    terms: 'One lazy Sunday breakfast served.',    icon: '🥞' },
-];
-
 const CouponEditor = () => {
-  const { packet, addCoupon, removeCoupon } = usePacket();
+  const { packet, addCoupon, removeCoupon, t } = usePacket();
   const [form, setForm] = useState({ title: '', terms: '' });
+
+  const PRESETS = [
+    { title: t('c1Title'), terms: t('c1Terms'), icon: '🤗' },
+    { title: t('c2Title'), terms: t('c2Terms'), icon: '🕊️' },
+    { title: t('c3Title'), terms: t('c3Terms'), icon: '🎬' },
+    { title: t('c4Title'), terms: t('c4Terms'), icon: '🍜' },
+    { title: t('c5Title'), terms: t('c5Terms'), icon: '🚗' },
+    { title: t('c6Title'), terms: t('c6Terms'), icon: '🥞' },
+  ];
 
   const handleAddPreset = (p) => {
     addCoupon({ title: p.title, terms: p.terms });
@@ -32,8 +32,8 @@ const CouponEditor = () => {
     <div className="space-y-5">
       {/* Preset coupons */}
       <div className="bg-surface rounded-2xl p-5 shadow-card border border-outline-variant/20">
-        <h3 className="font-display text-headline-md text-on-surface mb-1">Preset Coupons</h3>
-        <p className="font-body text-caption text-on-surface-variant mb-4">Tap to add a ready-made coupon</p>
+        <h3 className="font-display text-headline-md text-on-surface mb-1">{t('presetCouponsTitle')}</h3>
+        <p className="font-body text-caption text-on-surface-variant mb-4">{t('presetCouponsDesc')}</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {PRESETS.map(p => (
             <button
@@ -53,18 +53,18 @@ const CouponEditor = () => {
 
       {/* Custom coupon */}
       <div className="bg-surface rounded-2xl p-5 shadow-card border border-outline-variant/20">
-        <h3 className="font-display text-headline-md text-on-surface mb-4">Custom Coupon</h3>
+        <h3 className="font-display text-headline-md text-on-surface mb-4">{t('customCouponTitle')}</h3>
         <div className="space-y-3">
           <input
             className="w-full border-2 border-primary-fixed-dim bg-surface-bright rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:border-secondary focus:outline-none transition-colors"
-            placeholder="e.g. One Get Out of Trouble Free"
+            placeholder={t('couponTitlePlaceholder')}
             value={form.title}
             onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
           />
           <textarea
             rows={2}
             className="w-full border-2 border-primary-fixed-dim bg-surface-bright rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:border-secondary focus:outline-none resize-none transition-colors"
-            placeholder="Terms & conditions (e.g. Expires never, subject to my mood)"
+            placeholder={t('couponTermsPlaceholder')}
             value={form.terms}
             onChange={e => setForm(f => ({ ...f, terms: e.target.value }))}
           />
@@ -73,7 +73,7 @@ const CouponEditor = () => {
             className="w-full bg-secondary text-on-secondary py-3 rounded-xl font-body font-bold text-label-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
           >
             <span className="material-symbols-outlined text-[18px]">add</span>
-            Add Custom Coupon
+            {t('addCustomCouponBtn')}
           </button>
         </div>
       </div>
@@ -82,7 +82,7 @@ const CouponEditor = () => {
       {packet.coupons.length > 0 && (
         <div className="space-y-2">
           <p className="font-body text-caption text-on-surface-variant font-bold uppercase tracking-wider">
-            {packet.coupons.length} Coupon{packet.coupons.length !== 1 ? 's' : ''} in the book
+            {packet.coupons.length} {t('couponsInBookCount')}
           </p>
           <AnimatePresence>
             {packet.coupons.map(c => (

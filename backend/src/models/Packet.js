@@ -31,6 +31,7 @@ const packetSchema = new mongoose.Schema(
     packetId:      { type: String, required: true, unique: true, index: true },
     senderName:    { type: String, required: true },
     recipientName: { type: String, required: true },
+    language:      { type: String, enum: ['en', 'hinglish'], default: 'en' },
     theme:         { type: String, default: 'nostalgic' },
     modules:       { type: [String], default: ['timeline', 'wheel', 'coupons', 'wishlist'] },
     timeline:      [timelineItemSchema],

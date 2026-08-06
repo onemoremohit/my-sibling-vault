@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { redeemCoupon } from '../../services/api';
 import { showSuccess, showError } from '../common/Toast';
+import { t } from '../../i18n/translations';
 
-const CouponCard = ({ packetId, coupon }) => {
+const CouponCard = ({ packetId, coupon, lang = 'en' }) => {
   const [isRedeemed, setIsRedeemed] = useState(coupon.redeemed);
 
   const handleRedeem = async () => {
@@ -14,7 +15,7 @@ const CouponCard = ({ packetId, coupon }) => {
         await redeemCoupon(packetId, coupon.id || coupon._id);
       }
       setIsRedeemed(true);
-      showSuccess(`🎟️ Redeemed "${coupon.title}"!`);
+      showSuccess(`🎟️ Redeemed: "${coupon.title}"!`);
     } catch {
       showError('Failed to redeem coupon.');
     }
@@ -33,7 +34,7 @@ const CouponCard = ({ packetId, coupon }) => {
       <div className="flex items-center justify-between gap-2 mb-3">
         <span className="material-symbols-outlined text-secondary text-2xl">confirmation_number</span>
         <span className="font-body text-[10px] font-bold uppercase tracking-widest bg-secondary-fixed text-on-secondary-fixed px-2.5 py-0.5 rounded-full">
-          {isRedeemed ? 'Redeemed' : 'Official Favor'}
+          {isRedeemed ? t('redeemedBadge', lang) : t('officialFavorBadge', lang)}
         </span>
       </div>
 
@@ -58,12 +59,12 @@ const CouponCard = ({ packetId, coupon }) => {
         {isRedeemed ? (
           <>
             <span className="material-symbols-outlined text-[18px]">done_all</span>
-            Redeemed!
+            {t('redeemedBtnText', lang)}
           </>
         ) : (
           <>
             <span className="material-symbols-outlined text-[18px]">check_circle</span>
-            Redeem Coupon
+            {t('redeemBtnText', lang)}
           </>
         )}
       </button>
@@ -72,7 +73,7 @@ const CouponCard = ({ packetId, coupon }) => {
       {isRedeemed && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <span className="font-display font-black text-3xl text-error/40 border-4 border-error/40 px-4 py-1 rounded-xl rotate-[-15deg] uppercase tracking-widest">
-            REDEEMED
+            {t('redeemedStamp', lang)}
           </span>
         </div>
       )}

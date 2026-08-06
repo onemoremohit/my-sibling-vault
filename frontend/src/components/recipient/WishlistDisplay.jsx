@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { pledgeWishlistItem } from '../../services/api';
 import { showSuccess, showError } from '../common/Toast';
+import { t } from '../../i18n/translations';
 
 const CATEGORY_EMOJIS = {
   chocolates: '🍫',
@@ -13,7 +14,7 @@ const CATEGORY_EMOJIS = {
   Custom:     '🎁',
 };
 
-const WishlistDisplay = ({ packetId, items = [] }) => {
+const WishlistDisplay = ({ packetId, items = [], lang = 'en' }) => {
   const [wishlist, setWishlist] = useState(items);
 
   if (items.length === 0) return null;
@@ -28,7 +29,7 @@ const WishlistDisplay = ({ packetId, items = [] }) => {
       setWishlist(prev =>
         prev.map(i => (i.id === item.id || i._id === item._id) ? { ...i, status: 'pledged' } : i)
       );
-      showSuccess(`🎁 You pledged to get: ${item.item}!`);
+      showSuccess(`🎁 Promised: ${item.item}!`);
     } catch {
       showError('Failed to record pledge. Please try again.');
     }
@@ -37,8 +38,8 @@ const WishlistDisplay = ({ packetId, items = [] }) => {
   return (
     <section className="space-y-6">
       <div className="text-center space-y-1">
-        <h2 className="font-display text-headline-md text-primary">Secret Wishlist 🎁</h2>
-        <p className="font-body text-body-md text-on-surface-variant">Here are a few things your sibling would love to get!</p>
+        <h2 className="font-display text-headline-md text-primary">{t('wishlistSectionHeader', lang)}</h2>
+        <p className="font-body text-body-md text-on-surface-variant">{t('wishlistSectionSub', lang)}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -65,7 +66,7 @@ const WishlistDisplay = ({ packetId, items = [] }) => {
                   <span className={`text-[11px] font-body font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${
                     isPledged ? 'bg-tertiary text-on-tertiary' : 'bg-surface-container-high text-on-surface-variant'
                   }`}>
-                    {isPledged ? 'Pledged ✨' : item.category}
+                    {isPledged ? t('pledgedStatus', lang) : item.category}
                   </span>
                 </div>
                 <h3 className="font-display text-headline-md text-on-surface">{item.item}</h3>
@@ -83,12 +84,12 @@ const WishlistDisplay = ({ packetId, items = [] }) => {
                 {isPledged ? (
                   <>
                     <span className="material-symbols-outlined text-[18px]">check_circle</span>
-                    Promised / Pledged!
+                    {t('pledgedBtnText', lang)}
                   </>
                 ) : (
                   <>
                     <span className="material-symbols-outlined text-[18px]">volunteer_activism</span>
-                    Pledge This Gift
+                    {t('pledgeBtnText', lang)}
                   </>
                 )}
               </button>

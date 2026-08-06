@@ -1,7 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { t } from '../../i18n/translations';
 
-const CertificateCard = ({ recipientName, certificate }) => {
+const CertificateCard = ({ recipientName, certificate, lang = 'en' }) => {
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
@@ -15,11 +16,11 @@ const CertificateCard = ({ recipientName, certificate }) => {
 
       {/* Ribbon Header */}
       <div className="inline-block bg-primary-fixed text-on-primary-fixed text-[11px] font-body font-bold uppercase tracking-widest px-4 py-1 rounded-full">
-        Official Certificate of Excellence
+        {t('certHeader', lang)}
       </div>
 
       <div className="space-y-1">
-        <p className="font-body text-caption text-on-surface-variant">This honor is hereby conferred upon</p>
+        <p className="font-body text-caption text-on-surface-variant">{t('certConferredText', lang)}</p>
         <h3 className="font-display text-display-mobile text-primary font-bold">
           {recipientName || 'Dear Sibling'}
         </h3>
@@ -39,7 +40,7 @@ const CertificateCard = ({ recipientName, certificate }) => {
       {/* Gold Seal */}
       <div className="flex items-center justify-center gap-2 text-primary font-body font-bold text-caption">
         <span className="material-symbols-outlined text-3xl">workspace_premium</span>
-        <span>Certified Sibling Moments</span>
+        <span>{t('certifiedSiblingText', lang)}</span>
       </div>
     </motion.div>
   );

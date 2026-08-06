@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { t } from '../../i18n/translations';
 
-const SecretNoteReveal = ({ secretNote }) => {
+const SecretNoteReveal = ({ secretNote, lang = 'en' }) => {
   const [isRevealed, setIsRevealed] = useState(false);
 
   if (!secretNote) return null;
@@ -16,7 +17,7 @@ const SecretNoteReveal = ({ secretNote }) => {
           className="w-full bg-secondary-container/40 border border-secondary-fixed hover:bg-secondary-container/60 text-secondary p-3 rounded-xl flex items-center justify-center gap-2 font-body font-bold text-label-bold transition-all shadow-sm"
         >
           <span className="material-symbols-outlined text-[18px]">lock</span>
-          Tap to reveal secret message 🔒
+          {t('tapToRevealSecret', lang)}
         </motion.button>
       ) : (
         <AnimatePresence>
@@ -29,7 +30,7 @@ const SecretNoteReveal = ({ secretNote }) => {
           >
             <div className="flex items-center gap-2 text-secondary font-body font-bold text-caption uppercase tracking-wider">
               <span className="material-symbols-outlined text-[16px]">lock_open</span>
-              Secret Unlocked!
+              {t('secretUnlocked', lang)}
             </div>
             <p className="font-body text-body-md text-on-surface italic">
               "{secretNote}"

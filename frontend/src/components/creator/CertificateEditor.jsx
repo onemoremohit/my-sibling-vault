@@ -3,16 +3,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import usePacket from '../../hooks/usePacket';
 import { showSuccess, showError } from '../common/Toast';
 
-const PRESET_AWARDS = [
-  { awardTitle: 'Official Maggi Thief',       description: 'Awarded for repeatedly stealing Maggi at 2 AM without permission.' },
-  { awardTitle: 'World\'s Loudest Sibling',   description: 'For maintaining an impressive noise level of 11/10 at all times.' },
-  { awardTitle: 'Drama Queen/King Supreme',   description: 'In recognition of turning every minor inconvenience into a Netflix series.' },
-  { awardTitle: 'Remote Control Monopolist',  description: 'For exclusive and unauthorized control of the TV remote since birth.' },
-];
-
 const CertificateEditor = () => {
-  const { packet, addCertificate, removeCertificate } = usePacket();
+  const { packet, addCertificate, removeCertificate, t } = usePacket();
   const [form, setForm] = useState({ awardTitle: '', description: '' });
+
+  const PRESET_AWARDS = [
+    { awardTitle: t('cert1Title'), description: t('cert1Desc') },
+    { awardTitle: t('cert2Title'), description: t('cert2Desc') },
+    { awardTitle: t('cert3Title'), description: t('cert3Desc') },
+    { awardTitle: t('cert4Title'), description: t('cert4Desc') },
+  ];
 
   const handleAddPreset = (p) => {
     addCertificate({ awardTitle: p.awardTitle, description: p.description });
@@ -30,8 +30,8 @@ const CertificateEditor = () => {
     <div className="space-y-5">
       {/* Presets */}
       <div className="bg-surface rounded-2xl p-5 shadow-card border border-outline-variant/20">
-        <h3 className="font-display text-headline-md text-on-surface mb-1">Funny Certificates 🏆</h3>
-        <p className="font-body text-caption text-on-surface-variant mb-4">Tap to award a certificate to your sibling</p>
+        <h3 className="font-display text-headline-md text-on-surface mb-1">{t('funnyCertsTitle')}</h3>
+        <p className="font-body text-caption text-on-surface-variant mb-4">{t('funnyCertsDesc')}</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {PRESET_AWARDS.map(a => (
             <button
@@ -51,13 +51,13 @@ const CertificateEditor = () => {
 
       {/* Custom certificate */}
       <div className="bg-surface rounded-2xl p-5 shadow-card border border-outline-variant/20">
-        <h3 className="font-display text-headline-md text-on-surface mb-4">Custom Certificate</h3>
+        <h3 className="font-display text-headline-md text-on-surface mb-4">{t('customCertTitle')}</h3>
         <div className="space-y-3">
           <div>
             <label className="font-body text-caption text-on-surface-variant block mb-1">Award Title *</label>
             <input
               className="w-full border-2 border-primary-fixed-dim bg-surface-bright rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:border-secondary focus:outline-none transition-colors"
-              placeholder="e.g. Official Snack Stealer"
+              placeholder={t('certTitlePlaceholder')}
               value={form.awardTitle}
               onChange={e => setForm(f => ({ ...f, awardTitle: e.target.value }))}
             />
@@ -67,7 +67,7 @@ const CertificateEditor = () => {
             <textarea
               rows={2}
               className="w-full border-2 border-primary-fixed-dim bg-surface-bright rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:border-secondary focus:outline-none resize-none transition-colors"
-              placeholder="For exceptional achievements in snack theft and midnight fridge raids…"
+              placeholder={t('certDescPlaceholder')}
               value={form.description}
               onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
             />
@@ -77,7 +77,7 @@ const CertificateEditor = () => {
             className="w-full bg-primary text-on-primary py-3 rounded-xl font-body font-bold text-label-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
           >
             <span className="material-symbols-outlined text-[18px]">workspace_premium</span>
-            Create Certificate
+            {t('createCertBtn')}
           </button>
         </div>
       </div>

@@ -64,7 +64,7 @@ const MiniWheel = ({ punishments }) => {
 };
 
 const WheelCustomizer = () => {
-  const { packet, addPunishment, removePunishment } = usePacket();
+  const { packet, addPunishment, removePunishment, t } = usePacket();
   const [input, setInput] = useState('');
 
   const handleAdd = () => {
@@ -73,23 +73,31 @@ const WheelCustomizer = () => {
     setInput('');
   };
 
-  const PRESETS = ['Buy me food for 3 days', 'Do my chores for a week', 'One free apology', 'Pick the movie', 'Foot massage', 'No roasting for 24h'];
+  const PRESETS = [
+    t('presetBuyFood'),
+    t('presetChores'),
+    t('presetApology'),
+    t('presetMovie'),
+    t('presetMassage'),
+    t('presetNoRoasting'),
+  ];
 
   return (
     <div className="space-y-5">
       <div className="bg-surface rounded-2xl p-5 shadow-card border border-outline-variant/20">
-        <h3 className="font-display text-headline-md text-on-surface mb-4">The Punishment Wheel 🎰</h3>
+        <h3 className="font-display text-headline-md text-on-surface mb-1">{t('wheelTitle')}</h3>
+        <p className="font-body text-caption text-on-surface-variant mb-4">{t('wheelDesc')}</p>
 
         <div className="flex flex-col items-center gap-3 mb-5">
           <MiniWheel punishments={packet.punishments} />
           <p className="font-body text-caption text-on-surface-variant">
-            {packet.punishments.length} punishment{packet.punishments.length !== 1 ? 's' : ''} loaded
+            {packet.punishments.length} {t('wheelLoadedText')}
           </p>
         </div>
 
         {/* Quick presets */}
         <div className="mb-4">
-          <p className="font-body text-caption text-on-surface-variant font-bold uppercase tracking-wider mb-2">Quick-Add Presets</p>
+          <p className="font-body text-caption text-on-surface-variant font-bold uppercase tracking-wider mb-2">{t('quickPresetsTitle')}</p>
           <div className="flex flex-wrap gap-2">
             {PRESETS.map(p => (
               <button
@@ -107,7 +115,7 @@ const WheelCustomizer = () => {
         <div className="flex gap-2">
           <input
             className="flex-1 border-2 border-primary-fixed-dim bg-surface-bright rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:border-secondary focus:outline-none transition-colors"
-            placeholder="Make them do dishes for a week…"
+            placeholder={t('addPunishmentPlaceholder')}
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleAdd()}
@@ -117,7 +125,7 @@ const WheelCustomizer = () => {
             className="bg-primary text-on-primary px-4 py-2.5 rounded-xl font-body font-bold text-label-bold hover:opacity-90 transition-opacity flex items-center gap-1"
           >
             <span className="material-symbols-outlined text-[18px]">add</span>
-            Add
+            {t('addBtn')}
           </button>
         </div>
       </div>

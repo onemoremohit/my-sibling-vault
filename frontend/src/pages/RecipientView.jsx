@@ -9,12 +9,14 @@ import CouponCard from '../components/recipient/CouponCard';
 import CertificateCard from '../components/recipient/CertificateCard';
 import { getPacket } from '../services/api';
 import { showError } from '../components/common/Toast';
+import { t } from '../i18n/translations';
 
 // Fallback demo data if user visits /vault/demo
 const DEMO_PACKET = {
   packetId: 'demo',
   senderName: 'Alex',
   recipientName: 'Sarah',
+  language: 'en',
   theme: 'nostalgic',
   modules: ['timeline', 'wishlist', 'wheel', 'coupons'],
   timeline: [
@@ -89,6 +91,7 @@ const RecipientView = () => {
 
   if (loading) return <Loader message="Unlocking your Memory Vault…" />;
 
+  const lang = packet?.language || 'en';
   const modules = packet?.modules || ['timeline', 'wishlist', 'wheel', 'coupons'];
 
   return (
@@ -108,15 +111,15 @@ const RecipientView = () => {
       {/* Hero Header */}
       <header className="relative pt-12 pb-16 px-gutter text-center max-w-4xl mx-auto space-y-4">
         <div className="inline-block bg-primary-fixed text-on-primary-fixed px-4 py-1 rounded-full font-body font-bold text-caption uppercase tracking-wider shadow-sm">
-          A Gift For You
+          {t('recipientGiftBadge', lang)}
         </div>
 
         <h1 className="font-display text-display-lg text-primary">
-          {packet.recipientName}'s Memory Vault 💌
+          {packet.recipientName}{t('recipientHeroTitle', lang)}
         </h1>
 
         <p className="font-body text-body-lg text-on-surface-variant max-w-2xl mx-auto">
-          Crafted with love by <strong>{packet.senderName}</strong>. Scroll down to open your memories, spin the punishment wheel, and redeem your coupons!
+          {t('recipientHeroSubtitle', lang)} <strong>{packet.senderName}</strong>. {t('recipientHeroIntro', lang)}
         </p>
       </header>
 
@@ -124,17 +127,17 @@ const RecipientView = () => {
       <main className="flex-1 max-w-container w-full mx-auto px-gutter pb-24 space-y-20">
         {/* Module 1: Memory Timeline */}
         {modules.includes('timeline') && (
-          <MemoryTimeline items={packet.timeline} />
+          <MemoryTimeline items={packet.timeline} lang={lang} />
         )}
 
         {/* Module 2: Punishment Wheel */}
         {modules.includes('wheel') && (
-          <SpinWheel punishments={packet.punishments} />
+          <SpinWheel punishments={packet.punishments} lang={lang} />
         )}
 
         {/* Module 3: Wishlist */}
         {modules.includes('wishlist') && (
-          <WishlistDisplay packetId={packetId} items={packet.wishlist} />
+          <WishlistDisplay packetId={packetId} items={packet.wishlist} lang={lang} />
         )}
 
         {/* Module 4: Coupons & Certificates */}
@@ -144,13 +147,13 @@ const RecipientView = () => {
             {packet.coupons?.length > 0 && (
               <div className="space-y-6">
                 <div className="text-center space-y-1">
-                  <h2 className="font-display text-headline-md text-primary">Favor Coupons 🎟️</h2>
-                  <p className="font-body text-body-md text-on-surface-variant">Tap to redeem your sibling favors!</p>
+                  <h2 className="font-display text-headline-md text-primary">{t('couponsSectionHeader', lang)}</h2>
+                  <p className="font-body text-body-md text-on-surface-variant">{t('couponsSectionSub', lang)}</p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {packet.coupons.map((c) => (
-                    <CouponCard key={c.id || c._id} packetId={packetId} coupon={c} />
+                    <CouponCard key={c.id || c._id} packetId={packetId} coupon={c} lang={lang} />
                   ))}
                 </div>
               </div>
@@ -160,8 +163,8 @@ const RecipientView = () => {
             {packet.certificates?.length > 0 && (
               <div className="space-y-6">
                 <div className="text-center space-y-1">
-                  <h2 className="font-display text-headline-md text-primary">Official Awards 🏆</h2>
-                  <p className="font-body text-body-md text-on-surface-variant">Honorary certificates awarded to you.</p>
+                  <h2 className="font-display text-headline-md text-primary">{t('certsSectionHeader', lang)}</h2>
+                  <p className="font-body text-body-md text-on-surface-variant">{t('certsSectionSub', lang)}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -170,6 +173,7 @@ const RecipientView = () => {
                       key={cert.id || cert._id}
                       recipientName={packet.recipientName}
                       certificate={cert}
+                      lang={lang}
                     />
                   ))}
                 </div>
@@ -182,9 +186,9 @@ const RecipientView = () => {
       {/* Footer */}
       <footer className="border-t border-outline-variant px-gutter py-8 text-center bg-surface-container-low">
         <div className="max-w-container mx-auto space-y-2">
-          <p className="font-display text-headline-md text-on-surface">Kinship &amp; Keepsake</p>
+          <p className="font-display text-headline-md text-on-surface">{t('footerBrand', lang)}</p>
           <p className="font-body text-caption text-on-surface-variant">
-            Built for {packet.recipientName} by {packet.senderName} ❤️
+            {t('footerBuiltBy', lang)} {packet.recipientName} {t('footerWithLove', lang)} {packet.senderName}
           </p>
         </div>
       </footer>

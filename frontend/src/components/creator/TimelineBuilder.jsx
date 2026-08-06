@@ -7,7 +7,7 @@ import { showSuccess, showError } from '../common/Toast';
 const emptyForm = { title: '', date: '', story: '', secretNote: '', mediaUrl: '', mediaType: 'none' };
 
 const TimelineBuilder = () => {
-  const { packet, addTimelineItem, removeTimelineItem } = usePacket();
+  const { packet, addTimelineItem, removeTimelineItem, t } = usePacket();
   const [form, setForm]       = useState(emptyForm);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef(null);
@@ -22,7 +22,7 @@ const TimelineBuilder = () => {
       const { data } = await uploadMedia(fd);
       const type = file.type.startsWith('video') ? 'video' : 'image';
       setForm(f => ({ ...f, mediaUrl: data.mediaUrl, mediaType: type }));
-      showSuccess('Media uploaded!');
+      showSuccess(t('mediaReady'));
     } catch {
       showError('Upload failed. Please try again.');
     } finally {
@@ -35,14 +35,14 @@ const TimelineBuilder = () => {
     addTimelineItem({ ...form });
     setForm(emptyForm);
     fileRef.current.value = '';
-    showSuccess('Memory added to your vault!');
+    showSuccess(t('addMemoryTitle'));
   };
 
   return (
     <div className="space-y-5">
       {/* ── Add Memory Form ── */}
       <div className="bg-surface rounded-2xl p-5 shadow-card border border-outline-variant/20">
-        <h3 className="font-display text-headline-md text-on-surface mb-4">Add a Memory</h3>
+        <h3 className="font-display text-headline-md text-on-surface mb-4">{t('addMemoryTitle')}</h3>
 
         {/* Upload zone */}
         <div
@@ -61,13 +61,13 @@ const TimelineBuilder = () => {
                 ? <img src={`http://localhost:5000${form.mediaUrl}`} alt="preview" className="w-full max-h-40 object-cover rounded-xl" />
                 : <video src={`http://localhost:5000${form.mediaUrl}`} className="w-full max-h-40 rounded-xl" controls />
               }
-              <p className="font-body text-caption text-tertiary mt-1">✅ Media ready</p>
+              <p className="font-body text-caption text-tertiary mt-1">{t('mediaReady')}</p>
             </>
           ) : (
             <>
               <span className="material-symbols-outlined text-4xl text-primary">add_a_photo</span>
-              <p className="font-body font-bold text-label-bold text-on-surface">Upload Photo or Video</p>
-              <p className="font-body text-caption text-on-surface-variant">Drag & drop or click to browse (max 50 MB)</p>
+              <p className="font-body font-bold text-label-bold text-on-surface">{t('uploadMediaTitle')}</p>
+              <p className="font-body text-caption text-on-surface-variant">{t('uploadMediaHint')}</p>
             </>
           )}
         </div>
@@ -75,16 +75,16 @@ const TimelineBuilder = () => {
 
         <div className="space-y-3">
           <div>
-            <label className="font-body text-caption text-on-surface-variant block mb-1">Title *</label>
+            <label className="font-body text-caption text-on-surface-variant block mb-1">{t('titleLabel')}</label>
             <input
               className="w-full border-2 border-primary-fixed-dim bg-surface-bright rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:border-secondary focus:outline-none transition-colors"
-              placeholder="The Great Cookie Heist 🍪"
+              placeholder={t('titlePlaceholder')}
               value={form.title}
               onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
             />
           </div>
           <div>
-            <label className="font-body text-caption text-on-surface-variant block mb-1">Date</label>
+            <label className="font-body text-caption text-on-surface-variant block mb-1">{t('dateLabel')}</label>
             <input
               type="date"
               className="w-full border-2 border-primary-fixed-dim bg-surface-bright rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:border-secondary focus:outline-none transition-colors"
@@ -93,23 +93,23 @@ const TimelineBuilder = () => {
             />
           </div>
           <div>
-            <label className="font-body text-caption text-on-surface-variant block mb-1">Story</label>
+            <label className="font-body text-caption text-on-surface-variant block mb-1">{t('storyLabel')}</label>
             <textarea
               rows={3}
               className="w-full border-2 border-primary-fixed-dim bg-surface-bright rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:border-secondary focus:outline-none transition-colors resize-none"
-              placeholder="Tell the full story of this memory…"
+              placeholder={t('storyPlaceholder')}
               value={form.story}
               onChange={e => setForm(f => ({ ...f, story: e.target.value }))}
             />
           </div>
           <div>
             <label className="font-body text-caption text-on-surface-variant block mb-1">
-              🔒 Secret Note <span className="text-on-surface-variant/60">(sibling must click to reveal)</span>
+              {t('secretNoteLabel')} <span className="text-on-surface-variant/60">{t('secretNoteHint')}</span>
             </label>
             <textarea
               rows={2}
               className="w-full border-2 border-secondary-fixed bg-secondary-fixed/20 rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:border-secondary focus:outline-none transition-colors resize-none"
-              placeholder="Your secret message or inside joke…"
+              placeholder={t('secretNotePlaceholder')}
               value={form.secretNote}
               onChange={e => setForm(f => ({ ...f, secretNote: e.target.value }))}
             />
@@ -119,7 +119,7 @@ const TimelineBuilder = () => {
             className="w-full bg-secondary text-on-secondary py-3 rounded-xl font-body font-bold text-label-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
           >
             <span className="material-symbols-outlined text-[18px]">add</span>
-            Add to Vault
+            {t('addToVaultBtn')}
           </button>
         </div>
       </div>
@@ -128,7 +128,7 @@ const TimelineBuilder = () => {
       {packet.timeline.length > 0 && (
         <div className="space-y-3">
           <p className="font-body text-caption text-on-surface-variant font-bold uppercase tracking-wider">
-            {packet.timeline.length} Memor{packet.timeline.length === 1 ? 'y' : 'ies'} Added
+            {packet.timeline.length} {t('memoriesAddedCount')}
           </p>
           <AnimatePresence>
             {packet.timeline.map((item) => (
@@ -147,10 +147,10 @@ const TimelineBuilder = () => {
                 }
                 <div className="flex-1 min-w-0">
                   <p className="font-body font-bold text-label-bold text-on-surface truncate">{item.title}</p>
-                  <p className="font-body text-caption text-on-surface-variant">{item.date || 'No date'}</p>
+                  <p className="font-body text-caption text-on-surface-variant">{item.date || t('noDateText')}</p>
                 </div>
                 {item.secretNote && (
-                  <span className="material-symbols-outlined text-secondary text-[18px]" title="Has secret note">lock</span>
+                  <span className="material-symbols-outlined text-secondary text-[18px]" title={t('hasSecretNoteTooltip')}>lock</span>
                 )}
                 <button onClick={() => removeTimelineItem(item.id)} className="p-1 rounded-lg hover:bg-error-container text-on-surface-variant hover:text-error transition-colors">
                   <span className="material-symbols-outlined text-[18px]">delete</span>

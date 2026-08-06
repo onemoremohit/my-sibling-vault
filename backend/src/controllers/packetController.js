@@ -8,6 +8,7 @@ export const createPacket = async (req, res, next) => {
     const {
       senderName,
       recipientName,
+      language,
       theme,
       modules,
       timeline,
@@ -27,6 +28,7 @@ export const createPacket = async (req, res, next) => {
       packetId,
       senderName,
       recipientName,
+      language: language || 'en',
       theme: theme || 'nostalgic',
       modules: modules || ['timeline', 'wheel', 'coupons', 'wishlist'],
       timeline:     timeline     || [],

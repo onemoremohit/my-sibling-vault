@@ -1,21 +1,31 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Modal from '../common/Modal';
 import Button from '../common/Button';
+import { t } from '../../i18n/translations';
 
 const WHEEL_COLORS = [
   '#ffb4a3', '#e5deff', '#6bfe9c', '#ffdad2',
   '#c9bfff', '#4ae183', '#ff8264', '#7459f7', '#13bf66',
 ];
 
-const SpinWheel = ({ punishments = [] }) => {
+const SpinWheel = ({ punishments = [], lang = 'en' }) => {
   const canvasRef = useRef(null);
   const [isSpinning, setIsSpinning] = useState(false);
   const [winner, setWinner] = useState(null);
   const [rotationAngle, setRotationAngle] = useState(0);
 
-  const items = punishments.length > 0 ? punishments : [
+  const defaultItems = lang === 'hinglish' ? [
+    '3 din tak khana order kar 🍕',
+    '1 hafte tak bartan dho 🧹',
+    'Ek free sorry bol 🤐',
+    'Movie choice meri hogi 🎬',
+    '24h no roasting 🕊️',
+    'Chai banake laa ☕',
+  ] : [
     'Buy dinner', 'Walk the dog', 'Do dishes', 'Apologize', 'Movie choice', 'Free pass',
   ];
+
+  const items = punishments.length > 0 ? punishments : defaultItems;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -92,9 +102,9 @@ const SpinWheel = ({ punishments = [] }) => {
       <div className="absolute top-0 right-0 w-64 h-64 bg-secondary-fixed/30 rounded-full blur-3xl pointer-events-none" />
 
       <div className="space-y-1 relative z-10">
-        <h2 className="font-display text-headline-md text-primary">The Punishment Wheel 🎰</h2>
+        <h2 className="font-display text-headline-md text-primary">{t('wheelSectionHeader', lang)}</h2>
         <p className="font-body text-body-md text-on-surface-variant">
-          Spin to settle our next argument once and for all!
+          {t('wheelSectionSub', lang)}
         </p>
       </div>
 
@@ -119,24 +129,24 @@ const SpinWheel = ({ punishments = [] }) => {
         disabled={isSpinning}
         icon="casino"
       >
-        {isSpinning ? 'Spinning…' : 'Spin the Wheel!'}
+        {isSpinning ? t('spinningBtnText', lang) : t('spinBtnText', lang)}
       </Button>
 
       {/* Winning Popup Modal */}
       <Modal
         isOpen={!!winner}
         onClose={() => setWinner(null)}
-        title="🎉 The Wheel Has Spoken!"
+        title={t('wheelWinnerTitle', lang)}
       >
         <div className="text-center space-y-4 py-2">
           <div className="text-5xl animate-bounce">🏆</div>
-          <p className="font-body text-body-lg text-on-surface-variant">Your punishment is:</p>
+          <p className="font-body text-body-lg text-on-surface-variant">{t('wheelWinnerSub', lang)}</p>
           <h3 className="font-display text-display-mobile text-secondary font-bold bg-secondary-fixed/40 p-4 rounded-2xl border border-secondary-fixed">
             "{winner}"
           </h3>
-          <p className="font-body text-caption text-on-surface-variant italic">No takebacks allowed!</p>
+          <p className="font-body text-caption text-on-surface-variant italic">{t('noTakebacksText', lang)}</p>
           <Button variant="primary" onClick={() => setWinner(null)}>
-            Accept Fate 🤝
+            {t('acceptFateBtn', lang)}
           </Button>
         </div>
       </Modal>
