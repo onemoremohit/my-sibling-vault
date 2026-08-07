@@ -68,6 +68,7 @@ const CreatorStudio = () => {
         mode="creator"
         onShare={handleGenerate}
         onPreview={() => setShowPreviewModal(true)}
+        lang={packet.language}
       />
 
       <main className="flex-1 max-w-container w-full mx-auto px-gutter py-8">

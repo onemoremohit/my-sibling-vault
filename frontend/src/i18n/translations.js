@@ -213,7 +213,7 @@ export const translations = {
     step4Label: 'Coupons & Certs',
 
     // Step 0: Setup
-    step0Title: 'Step 0: Kis ke liye hai & Bhasha Choose Karo 💌',
+    step0Title: 'Step 0: Kis ke liye hai & Language Choose Karo 💌',
     selectLanguageLabel: 'Vault Ki Language Choose Karo',
     selectLanguageDesc: 'Yeh language apke Creator Studio aur Sibling ke Recipient View dono me apply hogi.',
     langEn: 'English 🇬🇧',

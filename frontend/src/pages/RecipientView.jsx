@@ -77,8 +77,13 @@ const RecipientView = () => {
 
       try {
         const { data } = await getPacket(packetId);
-        setPacket(data);
+        if (data && data.packetId) {
+          setPacket(data);
+        } else {
+          setPacket(DEMO_PACKET);
+        }
       } catch (err) {
+        console.error('Fetch vault error:', err);
         showError('Could not load memory vault.');
         setPacket(DEMO_PACKET); // Fallback to demo
       } finally {
@@ -96,7 +101,7 @@ const RecipientView = () => {
 
   return (
     <div className="min-h-screen bg-surface paper-texture flex flex-col">
-      <Navbar mode="recipient" />
+      <Navbar mode="recipient" lang={lang} />
 
       {/* Floating Demo Banner if viewing demo */}
       {packetId === 'demo' && (

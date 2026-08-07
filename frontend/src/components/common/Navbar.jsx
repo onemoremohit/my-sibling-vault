@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { t } from '../../i18n/translations';
 
-const Navbar = ({ mode = 'creator', onShare, onPreview }) => {
+const Navbar = ({ mode = 'creator', onShare, onPreview, lang = 'en' }) => {
   const location = useLocation();
   const isStudio = location.pathname === '/studio';
 
@@ -11,7 +12,7 @@ const Navbar = ({ mode = 'creator', onShare, onPreview }) => {
 
         {/* Brand */}
         <Link to="/" className="font-display text-display-mobile text-primary tracking-tight hover:opacity-80 transition-opacity">
-          Kinship &amp; Keepsake
+          {t('brandName', lang)}
         </Link>
 
         {/* Right actions */}
@@ -23,7 +24,7 @@ const Navbar = ({ mode = 'creator', onShare, onPreview }) => {
               : 'bg-tertiary-fixed text-on-tertiary-fixed'
           }`}>
             <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse-slow" />
-            {mode === 'creator' ? 'Creator Studio' : 'Preview Mode'}
+            {mode === 'creator' ? t('creatorStudioBadge', lang) : t('previewModeBadge', lang)}
           </span>
 
           {/* Preview toggle (creator only) */}
@@ -44,7 +45,7 @@ const Navbar = ({ mode = 'creator', onShare, onPreview }) => {
               className="bg-primary text-on-primary px-5 py-2 rounded-full font-body font-bold text-label-bold transition-transform hover:scale-105 active:scale-95 flex items-center gap-2 shadow-card"
             >
               <span className="material-symbols-outlined text-[18px]">ios_share</span>
-              <span className="hidden sm:inline">Generate & Share</span>
+              <span className="hidden sm:inline">{t('generateShareBtn', lang)}</span>
             </button>
           )}
         </div>
