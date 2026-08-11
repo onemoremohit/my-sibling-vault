@@ -112,14 +112,24 @@ export const pledgeWishlistItem = async (req, res, next) => {
   }
 };
 
-// ─── POST /api/packets/upload (Multer handles file) ───────────────────────
+// ─── POST /api/packets/upload (Multer handles files) ───────────────────────
 export const uploadMedia = async (req, res, next) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded.' });
+    const files = req.files || (req.file ? [req.file] : []);
+    if (!files || files.length === 0) {
+      return res.status(400).json({ error: 'No files uploaded.' });
     }
-    const mediaUrl = `/uploads/${req.file.filename}`;
-    res.json({ mediaUrl, filename: req.file.filename });
+
+    const mediaUrls = files.map(f => `/uploads/${f.filename}`);
+    const isVideo = files.some(f => f.mimetype.startsWith('video'));
+    const mediaType = isVideo ? 'video' : (mediaUrls.length > 1 ? 'images' : 'image');
+
+    res.json({
+      mediaUrls,
+      mediaUrl: mediaUrls[0],
+      mediaType,
+      count: mediaUrls.length,
+    });
   } catch (err) {
     next(err);
   }

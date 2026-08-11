@@ -2,7 +2,8 @@ import mongoose from 'mongoose';
 
 const timelineItemSchema = new mongoose.Schema({
   mediaUrl:   { type: String, default: '' },
-  mediaType:  { type: String, enum: ['image', 'video', 'none'], default: 'none' },
+  mediaUrls:  { type: [String], default: [] },
+  mediaType:  { type: String, enum: ['image', 'images', 'video', 'none'], default: 'none' },
   title:      { type: String, required: true },
   date:       { type: String, default: '' },
   story:      { type: String, default: '' },

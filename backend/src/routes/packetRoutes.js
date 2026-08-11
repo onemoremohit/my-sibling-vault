@@ -31,7 +31,8 @@ const upload = multer({
 });
 
 // ── Routes ─────────────────────────────────────────────────────────────────
-router.post('/upload',                   upload.single('media'), uploadMedia);
+// Accepts single 'media' OR multiple 'mediaFiles' (up to 6)
+router.post('/upload', upload.any(), uploadMedia);
 router.post('/',                         createPacket);
 router.get('/:packetId',                 getPacket);
 router.patch('/:packetId/redeem-coupon', redeemCoupon);

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import SecretNoteReveal from './SecretNoteReveal';
+import CollageGrid from './CollageGrid';
 import Modal from '../common/Modal';
 import { t } from '../../i18n/translations';
 
@@ -9,18 +10,30 @@ const MemoryTimeline = ({ items = [], lang = 'en' }) => {
 
   if (items.length === 0) return null;
 
+  const handleCardClick = (e, item) => {
+    // If clicking on secret note button or photo zoom button, do not open detail modal
+    if (e.target.closest('button') || e.target.closest('.group')) return;
+    setSelectedItem(item);
+  };
+
   return (
-    <section className="space-y-6">
-      <div className="text-center space-y-1">
-        <h2 className="font-display text-headline-md text-primary">{t('timelineSectionHeader', lang)}</h2>
-        <p className="font-body text-body-md text-on-surface-variant">{t('timelineSectionSub', lang)}</p>
+    <section className="space-y-8">
+      <div className="text-center space-y-2">
+        <h2 className="font-display text-headline-md text-primary font-bold">
+          {t('timelineSectionHeader', lang)}
+        </h2>
+        <p className="font-body text-body-md text-on-surface-variant max-w-xl mx-auto">
+          {t('timelineSectionSub', lang)}
+        </p>
       </div>
 
-      <div className="relative pl-6 sm:pl-8 border-l-2 border-dashed border-primary-fixed-dim space-y-8 ml-2 sm:ml-4">
+      <div className="relative pl-6 sm:pl-10 border-l-3 border-dashed border-primary-fixed-dim space-y-10 ml-2 sm:ml-6">
         {items.map((item, index) => {
-          const mediaSrc = item.mediaUrl?.startsWith('/uploads')
-            ? `http://localhost:5000${item.mediaUrl}`
-            : item.mediaUrl;
+          const urls = item.mediaUrls?.length > 0
+            ? item.mediaUrls
+            : item.mediaUrl
+            ? [item.mediaUrl]
+            : [];
 
           return (
             <motion.div
@@ -31,39 +44,51 @@ const MemoryTimeline = ({ items = [], lang = 'en' }) => {
               transition={{ delay: index * 0.1, duration: 0.5 }}
               className="relative group"
             >
-              {/* Timeline Dot */}
-              <div className="absolute -left-[31px] sm:-left-[39px] top-1.5 w-5 h-5 rounded-full bg-primary border-4 border-surface shadow-sm group-hover:scale-125 transition-transform" />
+              {/* Timeline Scrapbook Dot / Pin */}
+              <div className="absolute -left-[32px] sm:-left-[49px] top-2 w-6 h-6 rounded-full bg-primary border-4 border-surface shadow-md group-hover:scale-125 transition-transform flex items-center justify-center">
+                <span className="w-1.5 h-1.5 rounded-full bg-on-primary" />
+              </div>
 
               {/* Memory Card */}
               <div
-                onClick={() => setSelectedItem(item)}
-                className="bg-surface-container-lowest rounded-3xl p-5 shadow-soft-memory border border-outline-variant/30 hover:shadow-card hover:-translate-y-1 transition-all cursor-pointer"
+                onClick={(e) => handleCardClick(e, item)}
+                className="bg-surface-container-lowest rounded-3xl p-6 pt-7 shadow-soft-memory border-2 border-outline-variant/30 hover:shadow-card hover:-translate-y-0.5 transition-all cursor-pointer relative overflow-visible"
               >
-                {mediaSrc && (
-                  <div className="mb-4 overflow-hidden rounded-2xl bg-surface-container max-h-80 flex items-center justify-center">
-                    {item.mediaType === 'video' ? (
-                      <video src={mediaSrc} controls className="w-full max-h-80 object-cover" />
-                    ) : (
-                      <img src={mediaSrc} alt={item.title} className="w-full max-h-80 object-cover hover:scale-105 transition-transform duration-500" />
-                    )}
-                  </div>
-                )}
+                {/* Vintage Tape Graphic at top corner */}
+                <div className="absolute -top-3.5 left-8 bg-amber-200 text-amber-950 font-mono text-[11px] font-bold px-4 py-0.5 shadow-md transform -rotate-2 border border-amber-400/60 select-none rounded-sm z-10">
+                  MEMORY #{index + 1}
+                </div>
 
-                <div className="flex items-center justify-between gap-2 mb-1">
-                  <h3 className="font-display text-headline-md text-on-surface">{item.title}</h3>
-                  {item.date && (
-                    <span className="font-body text-caption font-bold bg-secondary-fixed text-on-secondary-fixed px-3 py-1 rounded-full whitespace-nowrap">
-                      {item.date}
+                {/* Date Tag Badge */}
+                <div className="flex items-center justify-between gap-3 mb-3 pt-1">
+                  <div className="inline-flex items-center gap-1.5 bg-secondary-fixed text-on-secondary-fixed font-body font-bold text-caption px-3.5 py-1 rounded-full shadow-sm">
+                    <span>🗓️</span>
+                    <span>{item.date || t('noDateText', lang)}</span>
+                  </div>
+
+                  {urls.length > 1 && (
+                    <span className="font-body text-[11px] font-bold bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-full shadow-sm">
+                      🖼️ {urls.length} Photos Collage
                     </span>
                   )}
                 </div>
 
+                {/* Memory Title */}
+                <h3 className="font-display text-headline-md text-primary font-bold mb-3 tracking-tight">
+                  {item.title}
+                </h3>
+
+                {/* Smart Collage Grid for 1, 2, 3, 4, 5+ Photos or Video */}
+                <CollageGrid item={item} />
+
+                {/* Story Description */}
                 {item.story && (
-                  <p className="font-body text-body-md text-on-surface-variant line-clamp-3 mb-2">
+                  <p className="font-body text-body-md text-on-surface leading-relaxed line-clamp-4 mb-3">
                     {item.story}
                   </p>
                 )}
 
+                {/* Wax-Sealed Secret Note Feature */}
                 <SecretNoteReveal secretNote={item.secretNote} lang={lang} />
               </div>
             </motion.div>
@@ -78,28 +103,13 @@ const MemoryTimeline = ({ items = [], lang = 'en' }) => {
         title={selectedItem?.title}
       >
         <div className="space-y-4">
-          {selectedItem?.mediaUrl && (
-            <div className="rounded-2xl overflow-hidden bg-black/5 flex items-center justify-center">
-              {selectedItem.mediaType === 'video' ? (
-                <video
-                  src={selectedItem.mediaUrl?.startsWith('/uploads') ? `http://localhost:5000${selectedItem.mediaUrl}` : selectedItem.mediaUrl}
-                  controls
-                  className="w-full max-h-[400px]"
-                />
-              ) : (
-                <img
-                  src={selectedItem.mediaUrl?.startsWith('/uploads') ? `http://localhost:5000${selectedItem.mediaUrl}` : selectedItem.mediaUrl}
-                  alt={selectedItem.title}
-                  className="w-full max-h-[400px] object-contain"
-                />
-              )}
-            </div>
-          )}
+          {selectedItem && <CollageGrid item={selectedItem} />}
 
           {selectedItem?.date && (
-            <p className="font-body text-caption font-bold text-primary">
-              Date: {selectedItem.date}
-            </p>
+            <div className="inline-flex items-center gap-1.5 bg-secondary-fixed text-on-secondary-fixed font-body font-bold text-caption px-3 py-1 rounded-full">
+              <span>🗓️</span>
+              <span>{selectedItem.date}</span>
+            </div>
           )}
 
           {selectedItem?.story && (

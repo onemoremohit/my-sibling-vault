@@ -118,11 +118,11 @@ const LandingPage = () => {
           </div>
 
           {/* Language Feature Highlight Card */}
-          <div className="mt-8 inline-flex items-center gap-3 bg-surface-container-lowest border-2 border-primary-fixed-dim/40 rounded-2xl px-6 py-3 shadow-card">
-            <span className="text-2xl">💬</span>
-            <div className="text-left">
-              <p className="font-body font-bold text-label-bold text-on-surface">Vault in Your Language! Gen-Z special</p>
-              <p className="font-body text-caption text-on-surface-variant">Create your vault in <strong>English</strong> or <strong>Hinglish</strong> — studio &amp; recipient view both adapt automatically!</p>
+          <div className="mt-8 inline-flex items-center gap-4 bg-surface-container-lowest border-2 border-primary-fixed-dim/40 rounded-2xl px-6 py-4 shadow-card max-w-2xl text-left">
+            <span className="text-3xl flex-shrink-0">💬</span>
+            <div>
+              <p className="font-body font-bold text-body-md text-on-surface mb-0.5">Vault in Your Language! Gen-Z special ⚡</p>
+              <p className="font-body text-body-md text-on-surface-variant leading-relaxed">Create your vault in <strong>English</strong> or <strong>Hinglish</strong> — studio &amp; recipient view both adapt automatically!</p>
             </div>
           </div>
         </motion.div>
