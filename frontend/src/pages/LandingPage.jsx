@@ -75,22 +75,24 @@ const LandingPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: 'easeOut' }}
         >
-          <span className="inline-block bg-secondary-fixed text-on-secondary-fixed font-body font-bold text-caption uppercase tracking-widest px-4 py-1.5 rounded-full mb-6">
-            🎉 Festival Season Special
-          </span>
+          <div className="flex items-center justify-center gap-3 mb-6 flex-wrap">
+            <span className="inline-block bg-secondary-fixed text-on-secondary-fixed font-body font-bold text-caption uppercase tracking-widest px-4 py-1.5 rounded-full">
+              🎉 Festival Season Special
+            </span>
+            <span className="inline-flex items-center gap-1.5 bg-primary-fixed text-on-primary-fixed font-body font-bold text-caption uppercase tracking-wider px-4 py-1.5 rounded-full shadow-card">
+              🌐 English 🇬🇧 &amp; Hinglish 🇮🇳 Supported
+            </span>
+          </div>
 
           <h1 className="font-display text-display-lg text-on-surface mb-4 leading-[1.1]">
             Build a{' '}
-            <span className="text-primary relative">
+            <span className="text-primary">
               Memory Vault
-              <svg className="absolute -bottom-1 left-0 w-full" height="6" viewBox="0 0 300 6" fill="none">
-                <path d="M0 3C75 1 150 5 300 3" stroke="#a33d25" strokeWidth="3" strokeLinecap="round" />
-              </svg>
             </span>
             {' '}for your Sibling
           </h1>
 
-          <p className="font-body text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-10">
+          <p className="font-body text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-8">
             Turn your shared memories, inside jokes, and festival love into a personalized interactive gift — no login, no coding, just magic. ✨
           </p>
 
@@ -114,6 +116,15 @@ const LandingPage = () => {
               See a Demo Vault
             </motion.button>
           </div>
+
+          {/* Language Feature Highlight Card */}
+          <div className="mt-8 inline-flex items-center gap-3 bg-surface-container-lowest border-2 border-primary-fixed-dim/40 rounded-2xl px-6 py-3 shadow-card">
+            <span className="text-2xl">💬</span>
+            <div className="text-left">
+              <p className="font-body font-bold text-label-bold text-on-surface">Vault in Your Language! Gen-Z special</p>
+              <p className="font-body text-caption text-on-surface-variant">Create your vault in <strong>English</strong> or <strong>Hinglish</strong> — studio &amp; recipient view both adapt automatically!</p>
+            </div>
+          </div>
         </motion.div>
 
         {/* Hero image / mockup */}
@@ -125,9 +136,9 @@ const LandingPage = () => {
         >
           <div className="absolute inset-0 bg-primary-fixed-dim/30 rounded-6xl blur-3xl -z-10 scale-110" />
           <div className="bg-surface-container-lowest rounded-4xl shadow-[0_32px_80px_rgba(0,0,0,0.12)] p-2 border border-outline-variant/30 inline-block">
-            <div className="bg-gradient-to-br from-primary-fixed via-secondary-fixed to-tertiary-fixed rounded-3xl p-10 flex items-center gap-6 flex-wrap justify-center">
-              {['🖼️ Timeline', '🎰 Wheel', '🎟️ Coupons', '🎁 Wishlist'].map(item => (
-                <div key={item} className="bg-white/80 backdrop-blur-sm px-6 py-4 rounded-2xl shadow-sm font-body font-bold text-on-surface text-label-bold whitespace-nowrap">
+            <div className="bg-gradient-to-br from-primary-fixed via-secondary-fixed to-tertiary-fixed rounded-3xl p-8 flex items-center gap-4 flex-wrap justify-center">
+              {['🌐 English & Hinglish', '🖼️ Timeline', '🎰 Wheel', '🎟️ Coupons', '🎁 Wishlist'].map(item => (
+                <div key={item} className="bg-white/80 backdrop-blur-sm px-5 py-3 rounded-2xl shadow-sm font-body font-bold text-on-surface text-label-bold whitespace-nowrap">
                   {item}
                 </div>
               ))}
@@ -137,12 +148,12 @@ const LandingPage = () => {
       </section>
 
       {/* ── Features Grid ── */}
-      <section className="relative z-10 px-gutter pb-24 max-w-container mx-auto">
+      <section className="relative z-10 px-gutter pb-10 max-w-container mx-auto">
         <motion.h2
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="font-display text-headline-md text-center text-on-surface mb-12"
+          className="font-display text-headline-md text-center text-on-surface mb-8"
         >
           Everything inside your vault 🗝️
         </motion.h2>
@@ -169,9 +180,9 @@ const LandingPage = () => {
       </section>
 
       {/* ── How it Works ── */}
-      <section className="relative z-10 bg-surface-container-low px-gutter py-20">
+      <section className="relative z-10 bg-surface-container-low px-gutter py-12">
         <div className="max-w-container mx-auto text-center">
-          <h2 className="font-display text-headline-md text-on-surface mb-12">How it works 🛠️</h2>
+          <h2 className="font-display text-headline-md text-on-surface mb-8">How it works 🛠️</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               { step: '01', icon: 'edit_note', title: 'Build Your Vault', desc: 'Use the Creator Studio to add memories, coupons, punishments, and wishes.' },
