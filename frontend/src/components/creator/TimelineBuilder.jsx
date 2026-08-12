@@ -28,6 +28,7 @@ const TimelineBuilder = () => {
     const videoFile = selectedFiles.find((f) => f.type.startsWith('video'));
     if (videoFile && selectedFiles.length > 1) {
       showError('Please upload either 1 video OR multiple photos (not both).');
+      if (fileRef.current) fileRef.current.value = '';
       return;
     }
 
@@ -40,25 +41,41 @@ const TimelineBuilder = () => {
 
       const { data } = await uploadMedia(fd);
       const isVideo = !!videoFile;
-      const urls = data.mediaUrls || [data.mediaUrl];
-      const type = isVideo ? 'video' : urls.length > 1 ? 'images' : 'image';
+      const newUrls = data.mediaUrls || (data.mediaUrl ? [data.mediaUrl] : []);
 
-      setForm((f) => ({
-        ...f,
-        mediaUrls: urls,
-        mediaUrl: urls[0],
-        mediaType: type,
-      }));
+      setForm((f) => {
+        let combinedUrls = [];
+        let type = 'image';
+
+        if (isVideo) {
+          combinedUrls = newUrls;
+          type = 'video';
+        } else {
+          // Keep existing photos unless current media is a video
+          const existingPhotos = f.mediaType === 'video' ? [] : f.mediaUrls || [];
+          combinedUrls = [...existingPhotos, ...newUrls].slice(0, 6);
+          type = combinedUrls.length > 1 ? 'images' : 'image';
+        }
+
+        return {
+          ...f,
+          mediaUrls: combinedUrls,
+          mediaUrl: combinedUrls[0] || '',
+          mediaType: type,
+        };
+      });
 
       showSuccess(
         isVideo
           ? '📹 Video ready!'
-          : `📸 ${urls.length} ${t('photosCountReady') || 'photos uploaded!'}`
+          : `📸 ${newUrls.length} photo(s) added! Total: ${Math.min(6, (form.mediaType === 'video' ? 0 : form.mediaUrls.length) + newUrls.length)} photos.`
       );
-    } catch {
+    } catch (err) {
+      console.error('Upload error:', err);
       showError('Upload failed. Please try again.');
     } finally {
       setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
     }
   };
 

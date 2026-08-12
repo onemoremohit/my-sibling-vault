@@ -7,6 +7,7 @@ import WishlistDisplay from '../components/recipient/WishlistDisplay';
 import SpinWheel from '../components/recipient/SpinWheel';
 import CouponCard from '../components/recipient/CouponCard';
 import CertificateCard from '../components/recipient/CertificateCard';
+import FunZoneDisplay from '../components/recipient/FunZoneDisplay';
 import { getPacket } from '../services/api';
 import { showError } from '../components/common/Toast';
 import { t } from '../i18n/translations';
@@ -18,7 +19,7 @@ const DEMO_PACKET = {
   recipientName: 'Sarah',
   language: 'en',
   theme: 'nostalgic',
-  modules: ['timeline', 'wishlist', 'wheel', 'coupons'],
+  modules: ['timeline', 'wishlist', 'wheel', 'coupons', 'funZone'],
   timeline: [
     {
       id: 'demo-1',
@@ -57,6 +58,29 @@ const DEMO_PACKET = {
   ],
   certificates: [
     { id: 'cert1', awardTitle: 'Official Maggi Thief', description: 'For stealing Maggi at 2 AM without permission.' },
+  ],
+  roasts: [
+    { id: 'r1', text: 'Takes 2 hours to get ready for a 5-minute errand ⏰', trueVotes: 3, fakeVotes: 0 },
+    { id: 'r2', text: 'Always steals my clothes and denies it even while wearing them 👕', trueVotes: 5, fakeVotes: 1 },
+    { id: 'r3', text: 'Starts crying the exact second Mom enters the room 😭', trueVotes: 4, fakeVotes: 0 },
+  ],
+  secretChallenge: {
+    question: 'Guess what I broke in 2019 without telling Mom!',
+    options: ["Mom's favourite vase", 'Your laptop charger', "Dad's car key", 'The living room lamp'],
+    correctIndex: 1,
+    hint: 'It involved wires and your bedroom...',
+    revealMsg: 'Yes! I broke your laptop charger and blamed the dog! 🐶',
+  },
+  siblingFavor: {
+    requestText: 'Treat me to Momos & Boba Tea this weekend! 🥟🧋',
+    priority: 'high',
+    status: 'pending',
+  },
+  fines: [
+    { id: 'f1', crimeTitle: 'Stealing clothes without asking 👕', amount: 500 },
+    { id: 'f2', crimeTitle: 'Unanswered phone calls > 3 times 📱', amount: 200 },
+    { id: 'f3', crimeTitle: 'Eating my ice cream from fridge 🍦', amount: 300 },
+    { id: 'f4', crimeTitle: 'Bathroom occupancy > 45 minutes 🛁', amount: 400 },
   ],
 };
 
@@ -97,7 +121,7 @@ const RecipientView = () => {
   if (loading) return <Loader message="Unlocking your Memory Vault…" />;
 
   const lang = packet?.language || 'en';
-  const modules = packet?.modules || ['timeline', 'wishlist', 'wheel', 'coupons'];
+  const modules = packet?.modules || ['timeline', 'wishlist', 'wheel', 'coupons', 'funZone'];
 
   return (
     <div className="min-h-screen bg-surface paper-texture flex flex-col">
@@ -185,6 +209,19 @@ const RecipientView = () => {
               </div>
             )}
           </section>
+        )}
+
+        {/* Module 5: Roast & Fun Zone */}
+        {modules.includes('funZone') && (
+          <FunZoneDisplay
+            roasts={packet.roasts}
+            secretChallenge={packet.secretChallenge}
+            siblingFavor={packet.siblingFavor}
+            fines={packet.fines}
+            senderName={packet.senderName}
+            recipientName={packet.recipientName}
+            lang={lang}
+          />
         )}
       </main>
 

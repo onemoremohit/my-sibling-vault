@@ -1,0 +1,394 @@
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import Button from '../common/Button';
+import usePacket from '../../hooks/usePacket';
+import { t as translate } from '../../i18n/translations';
+
+const PRESET_ROASTS_EN = [
+  'Takes 2 hours to get ready for a 5-minute errand ⏰',
+  'Always steals my clothes and denies it even while wearing them 👕',
+  'Starts crying the exact second Mom enters the room 😭',
+  'Asks for my phone password then reads all my private chats 📱',
+  'Never returns borrowed money ("I\'m your sibling, it\'s a tax") 💸',
+];
+
+const PRESET_ROASTS_HINGLISH = [
+  '5 min ke kaam ke liye 2 ghante taiyar hone me lagati hai ⏰',
+  'Mera hoodie pehan ke kehti hai "yeh toh mera hi hai" 👕',
+  'Mummy ke aate hi rona shuru kar deti hai 😭',
+  'Mere fridge me rakhi chocolate secretly khaa jaati hai 🍫',
+  'Udhari maango toh bolti hai "Bhai-behen me kaisa hisaab" 💸',
+];
+
+const PRESET_CRIMES_EN = [
+  { crimeTitle: 'Stealing clothes without asking 👕', amount: 500 },
+  { crimeTitle: 'Unanswered phone calls > 3 times 📱', amount: 200 },
+  { crimeTitle: 'Eating my ice cream from fridge 🍦', amount: 300 },
+  { crimeTitle: 'Spoiling movie climax ending 🎬', amount: 1000 },
+  { crimeTitle: 'Bathroom occupancy > 45 minutes 🛁', amount: 400 },
+];
+
+const PRESET_CRIMES_HINGLISH = [
+  { crimeTitle: 'Bina puche kapde churana 👕', amount: 500 },
+  { crimeTitle: 'Call pick na karna (3+ baar) 📱', amount: 200 },
+  { crimeTitle: 'Fridge se meri Maggi/Ice cream khana 🍦', amount: 300 },
+  { crimeTitle: 'Movie ka climax pehle bata dena 🎬', amount: 1000 },
+  { crimeTitle: 'Bathroom me 45 min lagana 🛁', amount: 400 },
+];
+
+const FunZoneEditor = () => {
+  const {
+    packet,
+    addRoast,
+    removeRoast,
+    updateSecretChallenge,
+    updateSiblingFavor,
+    addFine,
+    removeFine,
+    t: contextT,
+  } = usePacket();
+
+  const t = (key) => (contextT ? contextT(key) : translate(key, packet?.language || 'en'));
+  const isHinglish = packet?.language === 'hinglish';
+
+  const [activeTab, setActiveTab] = useState(0);
+
+  // Roast Form
+  const [newRoast, setNewRoast] = useState('');
+
+  // Fine Form
+  const [crimeTitle, setCrimeTitle] = useState('');
+  const [fineAmount, setFineAmount] = useState('');
+
+  const handleAddRoast = (e) => {
+    e?.preventDefault();
+    if (!newRoast.trim()) return;
+    addRoast(newRoast.trim());
+    setNewRoast('');
+  };
+
+  const handleAddFine = (e) => {
+    e?.preventDefault();
+    if (!crimeTitle.trim() || !fineAmount) return;
+    addFine({ crimeTitle: crimeTitle.trim(), amount: Number(fineAmount) });
+    setCrimeTitle('');
+    setFineAmount('');
+  };
+
+  const secretChallenge = packet.secretChallenge || {
+    question: '',
+    options: ['', '', '', ''],
+    correctIndex: 0,
+    hint: '',
+    revealMsg: '',
+  };
+
+  const handleOptionChange = (idx, val) => {
+    const newOptions = [...(secretChallenge.options || ['', '', '', ''])];
+    newOptions[idx] = val;
+    updateSecretChallenge({ options: newOptions });
+  };
+
+  const presetRoasts = isHinglish ? PRESET_ROASTS_HINGLISH : PRESET_ROASTS_EN;
+  const presetCrimes = isHinglish ? PRESET_CRIMES_HINGLISH : PRESET_CRIMES_EN;
+
+  return (
+    <div className="bg-surface rounded-2xl p-6 shadow-card border border-outline-variant/20 space-y-6">
+      <div>
+        <h2 className="font-display text-headline-md text-primary flex items-center gap-2">
+          <span>🌶️</span> {t('funZoneHeader')}
+        </h2>
+        <p className="font-body text-body-md text-on-surface-variant">{t('funZoneSub')}</p>
+      </div>
+
+      {/* Sub-Tabs Navigation */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-outline-variant/30">
+        {[
+          { id: 0, label: t('tabRoasts'), icon: 'local_fire_department' },
+          { id: 1, label: t('tabSecretQuiz'), icon: 'psychology' },
+          { id: 2, label: t('tabRequest'), icon: 'volunteer_activism' },
+          { id: 3, label: t('tabFines'), icon: 'receipt_long' },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-body font-bold text-label-bold whitespace-nowrap transition-all ${
+              activeTab === tab.id
+                ? 'bg-secondary text-on-secondary shadow-sm'
+                : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[18px]">{tab.icon}</span>
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* TAB 0: Sibling Roasts */}
+      {activeTab === 0 && (
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <h3 className="font-display text-title-lg text-on-surface">{t('roastBuilderTitle')}</h3>
+            <p className="font-body text-caption text-on-surface-variant">{t('roastBuilderDesc')}</p>
+
+            {/* Quick Presets */}
+            <div className="space-y-2">
+              <p className="font-body text-label font-bold text-primary">{t('quickRoastPresets')}</p>
+              <div className="flex flex-wrap gap-2">
+                {presetRoasts.map((preset, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => addRoast(preset)}
+                    className="bg-secondary-fixed/50 hover:bg-secondary-fixed text-on-surface text-caption font-body px-3 py-1.5 rounded-full border border-secondary/20 transition-all text-left"
+                  >
+                    + {preset}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom Roast Form */}
+            <form onSubmit={handleAddRoast} className="flex gap-2 pt-2">
+              <input
+                type="text"
+                value={newRoast}
+                onChange={(e) => setNewRoast(e.target.value)}
+                placeholder={t('roastPlaceholder')}
+                className="flex-1 bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
+              />
+              <Button type="submit" variant="primary" icon="add">
+                {t('addRoastBtn')}
+              </Button>
+            </form>
+          </div>
+
+          {/* Added Roasts List */}
+          <div className="space-y-3 pt-2 border-t border-outline-variant/30">
+            <h4 className="font-body font-bold text-label-bold text-on-surface">
+              Added Roasts ({packet.roasts?.length || 0})
+            </h4>
+            <div className="space-y-2">
+              {packet.roasts?.map((roast) => (
+                <motion.div
+                  key={roast.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center justify-between p-3.5 bg-surface-container-low rounded-xl border border-outline-variant/40"
+                >
+                  <p className="font-body text-body-md text-on-surface flex-1 pr-3">🔥 "{roast.text}"</p>
+                  <button
+                    onClick={() => removeRoast(roast.id)}
+                    className="p-1 text-on-surface-variant hover:text-error transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[20px]">delete</span>
+                  </button>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 1: Catch My Secret Quiz */}
+      {activeTab === 1 && (
+        <div className="space-y-5">
+          <div>
+            <h3 className="font-display text-title-lg text-on-surface">{t('secretQuizTitle')}</h3>
+            <p className="font-body text-caption text-on-surface-variant">{t('secretQuizDesc')}</p>
+          </div>
+
+          <div className="space-y-4">
+            {/* Question */}
+            <div className="space-y-1.5">
+              <label className="font-body text-label-bold text-on-surface">{t('secretQuestionLabel')}</label>
+              <input
+                type="text"
+                value={secretChallenge.question || ''}
+                onChange={(e) => updateSecretChallenge({ question: e.target.value })}
+                placeholder={t('secretQuestionPlaceholder')}
+                className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
+              />
+            </div>
+
+            {/* Options */}
+            <div className="space-y-2">
+              <label className="font-body text-label-bold text-on-surface">{t('secretOptionsLabel')}</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[0, 1, 2, 3].map((idx) => (
+                  <div key={idx} className="flex items-center gap-2 bg-surface-container-low p-2.5 rounded-xl border border-outline-variant/40">
+                    <input
+                      type="radio"
+                      name="correctOption"
+                      checked={secretChallenge.correctIndex === idx}
+                      onChange={() => updateSecretChallenge({ correctIndex: idx })}
+                      className="w-4 h-4 text-primary focus:ring-primary accent-primary"
+                    />
+                    <input
+                      type="text"
+                      value={secretChallenge.options?.[idx] || ''}
+                      onChange={(e) => handleOptionChange(idx, e.target.value)}
+                      placeholder={`${t('optionPlaceholder')} ${idx + 1}`}
+                      className="flex-1 bg-transparent font-body text-body-md text-on-surface focus:outline-none"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Hint */}
+            <div className="space-y-1.5">
+              <label className="font-body text-label-bold text-on-surface">{t('secretHintLabel')}</label>
+              <input
+                type="text"
+                value={secretChallenge.hint || ''}
+                onChange={(e) => updateSecretChallenge({ hint: e.target.value })}
+                placeholder={t('secretHintPlaceholder')}
+                className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
+              />
+            </div>
+
+            {/* Secret Reveal */}
+            <div className="space-y-1.5">
+              <label className="font-body text-label-bold text-on-surface">{t('secretRevealLabel')}</label>
+              <textarea
+                rows={2}
+                value={secretChallenge.revealMsg || ''}
+                onChange={(e) => updateSecretChallenge({ revealMsg: e.target.value })}
+                placeholder={t('secretRevealPlaceholder')}
+                className="w-full bg-surface-container-low border border-outline-variant rounded-xl p-3 font-body text-body-md text-on-surface focus:outline-none focus:border-primary resize-none"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: One Request (Sibling Favor) */}
+      {activeTab === 2 && (
+        <div className="space-y-5">
+          <div>
+            <h3 className="font-display text-title-lg text-on-surface">{t('favorTitle')}</h3>
+            <p className="font-body text-caption text-on-surface-variant">{t('favorDesc')}</p>
+          </div>
+
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="font-body text-label-bold text-on-surface">{t('favorTextLabel')}</label>
+              <textarea
+                rows={3}
+                value={packet.siblingFavor?.requestText || ''}
+                onChange={(e) => updateSiblingFavor({ requestText: e.target.value })}
+                placeholder={t('favorTextPlaceholder')}
+                className="w-full bg-surface-container-low border border-outline-variant rounded-xl p-3 font-body text-body-md text-on-surface focus:outline-none focus:border-primary resize-none"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="font-body text-label-bold text-on-surface">{t('favorPriorityLabel')}</label>
+              <div className="flex flex-wrap gap-3">
+                {[
+                  { key: 'high', label: t('priorityHigh') },
+                  { key: 'medium', label: t('priorityMedium') },
+                  { key: 'funny', label: t('priorityFunny') },
+                ].map((p) => (
+                  <button
+                    key={p.key}
+                    type="button"
+                    onClick={() => updateSiblingFavor({ priority: p.key })}
+                    className={`px-4 py-2 rounded-xl font-body font-bold text-caption transition-all ${
+                      packet.siblingFavor?.priority === p.key
+                        ? 'bg-primary text-on-primary shadow-sm'
+                        : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high border border-outline-variant/40'
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: Fine Calculator */}
+      {activeTab === 3 && (
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <h3 className="font-display text-title-lg text-on-surface">{t('finesTitle')}</h3>
+            <p className="font-body text-caption text-on-surface-variant">{t('finesDesc')}</p>
+
+            {/* Quick Crime Presets */}
+            <div className="space-y-2">
+              <p className="font-body text-label font-bold text-primary">{t('quickCrimePresets')}</p>
+              <div className="flex flex-wrap gap-2">
+                {presetCrimes.map((item, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => addFine(item)}
+                    className="bg-secondary-fixed/50 hover:bg-secondary-fixed text-on-surface text-caption font-body px-3 py-1.5 rounded-full border border-secondary/20 transition-all text-left"
+                  >
+                    + {item.crimeTitle} (₹{item.amount})
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom Crime Fine Form */}
+            <form onSubmit={handleAddFine} className="grid grid-cols-1 sm:grid-cols-12 gap-2 pt-2">
+              <input
+                type="text"
+                value={crimeTitle}
+                onChange={(e) => setCrimeTitle(e.target.value)}
+                placeholder={t('crimeTitlePlaceholder')}
+                className="sm:col-span-7 bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
+              />
+              <input
+                type="number"
+                value={fineAmount}
+                onChange={(e) => setFineAmount(e.target.value)}
+                placeholder={t('crimeAmountPlaceholder')}
+                className="sm:col-span-3 bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
+              />
+              <div className="sm:col-span-2">
+                <Button type="submit" variant="primary" icon="add" className="w-full">
+                  {t('addFineBtn')}
+                </Button>
+              </div>
+            </form>
+          </div>
+
+          {/* Added Fines List */}
+          <div className="space-y-3 pt-2 border-t border-outline-variant/30">
+            <h4 className="font-body font-bold text-label-bold text-on-surface">
+              Configured Crimes ({packet.fines?.length || 0})
+            </h4>
+            <div className="space-y-2">
+              {packet.fines?.map((fine) => (
+                <motion.div
+                  key={fine.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center justify-between p-3.5 bg-surface-container-low rounded-xl border border-outline-variant/40"
+                >
+                  <p className="font-body text-body-md text-on-surface flex-1 pr-3">
+                    ⚖️ {fine.crimeTitle}
+                  </p>
+                  <span className="font-display font-bold text-primary mr-3">₹{fine.amount}</span>
+                  <button
+                    onClick={() => removeFine(fine.id)}
+                    className="p-1 text-on-surface-variant hover:text-error transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[20px]">delete</span>
+                  </button>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default FunZoneEditor;

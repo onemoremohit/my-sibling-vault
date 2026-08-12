@@ -12,6 +12,7 @@ const ModuleToggle = () => {
     { id: 'wishlist', icon: 'card_giftcard',  label: t('modWishlistTitle'), desc: t('modWishlistDesc') },
     { id: 'wheel',    icon: 'casino',         label: t('modWheelTitle'),    desc: t('modWheelDesc') },
     { id: 'coupons',  icon: 'confirmation_number', label: t('modCouponsTitle'), desc: t('modCouponsDesc') },
+    { id: 'funZone',  icon: 'local_fire_department', label: t('modFunZoneTitle'), desc: t('modFunZoneDesc') },
   ];
 
   return (

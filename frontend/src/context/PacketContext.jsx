@@ -8,12 +8,35 @@ const initialPacket = {
   recipientName: '',
   language:      'en', // 'en' | 'hinglish'
   theme:         'nostalgic',
-  modules:       ['timeline', 'wishlist', 'wheel', 'coupons'],
+  modules:       ['timeline', 'wishlist', 'wheel', 'coupons', 'funZone'],
   timeline:      [],
   wishlist:      [],
   punishments:   [],
   coupons:       [],
   certificates:  [],
+  roasts:        [
+    { id: 'r1', text: 'Takes 2 hours to get ready for a 5-minute errand ⏰', trueVotes: 0, fakeVotes: 0 },
+    { id: 'r2', text: 'Always steals my clothes and denies it even while wearing them 👕', trueVotes: 0, fakeVotes: 0 },
+    { id: 'r3', text: 'Starts crying the exact second Mom enters the room 😭', trueVotes: 0, fakeVotes: 0 },
+  ],
+  secretChallenge: {
+    question: 'Guess what I broke in 2019 without telling Mom!',
+    options: ['Mom\'s favourite vase', 'Your laptop charger', 'Dad\'s car key', 'The living room lamp'],
+    correctIndex: 1,
+    hint: 'It involved wires and your bedroom...',
+    revealMsg: 'Yes! I broke your laptop charger and blamed the dog! 🐶',
+  },
+  siblingFavor: {
+    requestText: 'Treat me to Momos & Boba Tea this weekend! 🥟🧋',
+    priority: 'high',
+    status: 'pending',
+  },
+  fines: [
+    { id: 'f1', crimeTitle: 'Stealing clothes without asking 👕', amount: 500 },
+    { id: 'f2', crimeTitle: 'Unanswered phone calls > 3 times 📱', amount: 200 },
+    { id: 'f3', crimeTitle: 'Eating my ice cream from fridge 🍦', amount: 300 },
+    { id: 'f4', crimeTitle: 'Bathroom occupancy > 45 minutes 🛁', amount: 400 },
+  ],
 };
 
 // ── Reducer ──────────────────────────────────────────────────────────────────
@@ -70,6 +93,26 @@ const packetReducer = (state, action) => {
     case 'REMOVE_CERTIFICATE':
       return { ...state, certificates: state.certificates.filter(c => c.id !== action.payload) };
 
+    // Roasts
+    case 'ADD_ROAST':
+      return { ...state, roasts: [...state.roasts, { id: uuidv4(), text: action.payload, trueVotes: 0, fakeVotes: 0 }] };
+    case 'REMOVE_ROAST':
+      return { ...state, roasts: state.roasts.filter(r => r.id !== action.payload) };
+
+    // Secret Challenge
+    case 'UPDATE_SECRET_CHALLENGE':
+      return { ...state, secretChallenge: { ...state.secretChallenge, ...action.payload } };
+
+    // Sibling Favor
+    case 'UPDATE_SIBLING_FAVOR':
+      return { ...state, siblingFavor: { ...state.siblingFavor, ...action.payload } };
+
+    // Fines
+    case 'ADD_FINE':
+      return { ...state, fines: [...state.fines, { id: uuidv4(), ...action.payload }] };
+    case 'REMOVE_FINE':
+      return { ...state, fines: state.fines.filter(f => f.id !== action.payload) };
+
     case 'RESET':
       return initialPacket;
 
@@ -104,9 +147,17 @@ export const PacketProvider = ({ children }) => {
   const addCertificate      = useCallback(cert    => dispatch({ type: 'ADD_CERTIFICATE', payload: cert }), []);
   const removeCertificate   = useCallback(id      => dispatch({ type: 'REMOVE_CERTIFICATE', payload: id }), []);
 
+  const addRoast            = useCallback(text    => dispatch({ type: 'ADD_ROAST', payload: text }), []);
+  const removeRoast         = useCallback(id      => dispatch({ type: 'REMOVE_ROAST', payload: id }), []);
+
+  const updateSecretChallenge = useCallback(payload => dispatch({ type: 'UPDATE_SECRET_CHALLENGE', payload }), []);
+  const updateSiblingFavor    = useCallback(payload => dispatch({ type: 'UPDATE_SIBLING_FAVOR', payload }), []);
+
+  const addFine             = useCallback(fine    => dispatch({ type: 'ADD_FINE', payload: fine }), []);
+  const removeFine          = useCallback(id      => dispatch({ type: 'REMOVE_FINE', payload: id }), []);
+
   const resetPacket         = useCallback(()      => dispatch({ type: 'RESET' }), []);
 
-  /** Translation helper bound to current context packet.language */
   const t = useCallback((key) => translate(key, packet.language), [packet.language]);
 
   return (
@@ -120,6 +171,10 @@ export const PacketProvider = ({ children }) => {
       addPunishment, removePunishment,
       addCoupon, removeCoupon,
       addCertificate, removeCertificate,
+      addRoast, removeRoast,
+      updateSecretChallenge,
+      updateSiblingFavor,
+      addFine, removeFine,
       resetPacket,
       t,
     }}>

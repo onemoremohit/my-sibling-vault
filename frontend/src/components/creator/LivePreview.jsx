@@ -121,6 +121,21 @@ const LivePreview = ({ activeStep }) => {
               </p>
             </div>
           )}
+
+          {/* Roast & Fun Zone preview */}
+          {packet.modules.includes('funZone') && (
+            <div className={`p-3 rounded-2xl border transition-all ${activeStep === 5 ? 'ring-2 ring-primary bg-primary-fixed/20' : 'bg-surface-container-lowest'}`}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-display font-bold text-xs text-on-surface">🌶️ Roast & Fun Zone</span>
+                <span className="text-[10px] bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded-full font-bold">
+                  4 features
+                </span>
+              </div>
+              <p className="font-body text-[10px] text-on-surface-variant">
+                {packet.roasts?.length || 0} roasts • Quiz • Request • Fines
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

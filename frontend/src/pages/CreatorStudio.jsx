@@ -9,6 +9,7 @@ import WishlistSetup from '../components/creator/WishlistSetup';
 import WheelCustomizer from '../components/creator/WheelCustomizer';
 import CouponEditor from '../components/creator/CouponEditor';
 import CertificateEditor from '../components/creator/CertificateEditor';
+import FunZoneEditor from '../components/creator/FunZoneEditor';
 import LivePreview from '../components/creator/LivePreview';
 import usePacket from '../hooks/usePacket';
 import useMediaQuery from '../hooks/useMediaQuery';
@@ -34,6 +35,7 @@ const CreatorStudio = () => {
     { id: 2, label: t('step2Label'), icon: 'card_giftcard' },
     { id: 3, label: t('step3Label'), icon: 'casino' },
     { id: 4, label: t('step4Label'), icon: 'confirmation_number' },
+    { id: 5, label: t('step5Label'), icon: 'local_fire_department' },
   ];
 
   const handleGenerate = async () => {
@@ -178,6 +180,9 @@ const CreatorStudio = () => {
                 <CertificateEditor />
               </div>
             )}
+
+            {/* Step 5: Roast & Fun Zone */}
+            {activeStep === 5 && <FunZoneEditor />}
 
             {/* Navigation buttons between steps */}
             <div className="flex items-center justify-between pt-4">
