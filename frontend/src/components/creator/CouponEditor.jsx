@@ -32,22 +32,34 @@ const CouponEditor = () => {
     <div className="space-y-5">
       {/* Preset coupons */}
       <div className="bg-surface rounded-2xl p-5 shadow-card border border-outline-variant/20">
-        <h3 className="font-display text-headline-md text-on-surface mb-1">{t('presetCouponsTitle')}</h3>
-        <p className="font-body text-caption text-on-surface-variant mb-4">{t('presetCouponsDesc')}</p>
+        <h3 className="font-display text-headline-md text-on-surface mb-1">{t('couponsEditorTitle')}</h3>
+        <p className="font-body text-caption text-on-surface-variant mb-4">{t('couponsEditorDesc')}</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {PRESETS.map(p => (
-            <button
-              key={p.title}
-              onClick={() => handleAddPreset(p)}
-              className="flex items-start gap-3 p-3 border-2 border-dashed border-outline-variant rounded-xl hover:border-secondary hover:bg-secondary-fixed/20 transition-all text-left"
-            >
-              <span className="text-2xl flex-shrink-0">{p.icon}</span>
-              <div>
-                <p className="font-body font-bold text-label-bold text-on-surface">{p.title}</p>
-                <p className="font-body text-caption text-on-surface-variant">{p.terms}</p>
-              </div>
-            </button>
-          ))}
+          {PRESETS.map(p => {
+            const isSelected = packet.coupons?.some(c => c.title === p.title);
+            return (
+              <button
+                key={p.title}
+                onClick={() => handleAddPreset(p)}
+                className={`relative flex items-start gap-3 p-3 border-2 border-dashed rounded-xl transition-all text-left ${
+                  isSelected
+                    ? 'border-secondary bg-secondary-fixed/30 font-bold'
+                    : 'border-outline-variant hover:border-secondary hover:bg-secondary-fixed/20'
+                }`}
+              >
+                <span className="text-2xl flex-shrink-0">{p.icon}</span>
+                <div className="flex-1 min-w-0 pr-3">
+                  <p className="font-body font-bold text-label-bold text-on-surface">{p.title}</p>
+                  <p className="font-body text-caption text-on-surface-variant line-clamp-1">{p.terms}</p>
+                </div>
+                {isSelected && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-secondary text-on-secondary w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold shadow-md border-2 border-surface">
+                    ✓
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -73,7 +85,7 @@ const CouponEditor = () => {
             className="w-full bg-secondary text-on-secondary py-3 rounded-xl font-body font-bold text-label-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
           >
             <span className="material-symbols-outlined text-[18px]">add</span>
-            {t('addCustomCouponBtn')}
+            {t('addCouponBtn')}
           </button>
         </div>
       </div>

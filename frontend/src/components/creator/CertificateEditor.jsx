@@ -33,19 +33,31 @@ const CertificateEditor = () => {
         <h3 className="font-display text-headline-md text-on-surface mb-1">{t('funnyCertsTitle')}</h3>
         <p className="font-body text-caption text-on-surface-variant mb-4">{t('funnyCertsDesc')}</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {PRESET_AWARDS.map(a => (
-            <button
-              key={a.awardTitle}
-              onClick={() => handleAddPreset(a)}
-              className="flex flex-col gap-1 p-4 bg-surface-container-low border-2 border-outline-variant/30 rounded-xl hover:border-primary hover:bg-primary-fixed/20 transition-all text-left"
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-xl">🏆</span>
-                <p className="font-body font-bold text-label-bold text-primary">{a.awardTitle}</p>
-              </div>
-              <p className="font-body text-caption text-on-surface-variant">{a.description}</p>
-            </button>
-          ))}
+          {PRESET_AWARDS.map(a => {
+            const isSelected = packet.certificates?.some(c => c.awardTitle === a.awardTitle);
+            return (
+              <button
+                key={a.awardTitle}
+                onClick={() => handleAddPreset(a)}
+                className={`relative flex flex-col gap-1 p-4 border-2 rounded-xl transition-all text-left ${
+                  isSelected
+                    ? 'border-primary bg-primary-fixed/20 font-bold'
+                    : 'border-outline-variant/30 bg-surface-container-low hover:border-primary hover:bg-primary-fixed/10'
+                }`}
+              >
+                <div className="flex items-center gap-2 pr-3">
+                  <span className="text-xl">🏆</span>
+                  <p className="font-body font-bold text-label-bold text-primary">{a.awardTitle}</p>
+                </div>
+                <p className="font-body text-caption text-on-surface-variant">{a.description}</p>
+                {isSelected && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-primary text-on-primary w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold shadow-md border-2 border-surface">
+                    ✓
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 

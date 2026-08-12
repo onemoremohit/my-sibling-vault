@@ -18,8 +18,13 @@ const WishlistSetup = () => {
   ];
 
   const handleAddPreset = (cat) => {
-    addWishlistItem({ item: cat.label, category: cat.id });
-    showSuccess(`${cat.label} added!`);
+    const existing = packet.wishlist?.find(w => w.item === cat.label || w.category === cat.id);
+    if (existing) {
+      removeWishlistItem(existing.id);
+    } else {
+      addWishlistItem({ item: cat.label, category: cat.id });
+      showSuccess(`${cat.label} added!`);
+    }
   };
 
   const handleAddCustom = () => {
@@ -36,15 +41,27 @@ const WishlistSetup = () => {
         <h3 className="font-display text-headline-md text-on-surface mb-1">{t('quickAddCategoriesTitle')}</h3>
         <p className="font-body text-caption text-on-surface-variant mb-4">{t('quickAddCategoriesDesc')}</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {PRESET_CATEGORIES.map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => handleAddPreset(cat)}
-              className="flex items-center gap-2 p-3 border-2 border-outline-variant rounded-xl hover:border-primary hover:bg-primary-fixed/20 transition-all font-body text-label-bold text-on-surface text-left"
-            >
-              {cat.label}
-            </button>
-          ))}
+          {PRESET_CATEGORIES.map(cat => {
+            const isSelected = packet.wishlist?.some(w => w.item === cat.label || w.category === cat.id);
+            return (
+              <button
+                key={cat.id}
+                onClick={() => handleAddPreset(cat)}
+                className={`relative flex items-center justify-between p-3 border-2 rounded-xl transition-all font-body text-label-bold text-left ${
+                  isSelected
+                    ? 'border-primary bg-primary-fixed/20 text-primary font-bold'
+                    : 'border-outline-variant text-on-surface hover:border-primary hover:bg-primary-fixed/10'
+                }`}
+              >
+                <span>{cat.label}</span>
+                {isSelected && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-primary text-on-primary w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold shadow-md border-2 border-surface">
+                    ✓
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 

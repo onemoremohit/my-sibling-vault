@@ -74,12 +74,12 @@ const WheelCustomizer = () => {
   };
 
   const PRESETS = [
-    t('presetBuyFood'),
-    t('presetChores'),
-    t('presetApology'),
-    t('presetMovie'),
-    t('presetMassage'),
-    t('presetNoRoasting'),
+    t('p1'),
+    t('p2'),
+    t('p3'),
+    t('p4'),
+    t('p5'),
+    t('p6'),
   ];
 
   return (
@@ -99,15 +99,27 @@ const WheelCustomizer = () => {
         <div className="mb-4">
           <p className="font-body text-caption text-on-surface-variant font-bold uppercase tracking-wider mb-2">{t('quickPresetsTitle')}</p>
           <div className="flex flex-wrap gap-2">
-            {PRESETS.map(p => (
-              <button
-                key={p}
-                onClick={() => addPunishment(p)}
-                className="font-body text-caption bg-surface-container-high text-on-surface px-3 py-1.5 rounded-full hover:bg-primary-fixed transition-colors"
-              >
-                + {p}
-              </button>
-            ))}
+            {PRESETS.map(p => {
+              const isSelected = packet.punishments?.includes(p);
+              return (
+                <button
+                  key={p}
+                  onClick={() => addPunishment(p)}
+                  className={`relative font-body text-caption px-3.5 py-1.5 rounded-full transition-all border ${
+                    isSelected
+                      ? 'bg-primary-fixed border-primary text-primary font-bold shadow-sm'
+                      : 'bg-surface-container-high border-outline-variant/30 text-on-surface hover:bg-primary-fixed/40'
+                  }`}
+                >
+                  + {p}
+                  {isSelected && (
+                    <span className="absolute -top-1 -right-1 bg-primary text-on-primary w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm border border-surface">
+                      ✓
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 

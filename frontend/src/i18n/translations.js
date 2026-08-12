@@ -83,16 +83,16 @@ export const translations = {
     wheelDesc: 'Add punishments for your sibling to spin!',
     wheelLoadedText: 'punishments loaded',
     quickPresetsTitle: 'Quick-Add Presets',
-    addPunishmentPlaceholder: 'Make them do dishes for a week…',
+    addPunishmentPlaceholder: 'Punishment missing? Add it here.',
     addBtn: 'Add',
 
     // Wheel Presets
-    p1: '3 days dinner on you 🍕',
-    p2: '1 week dishes duty 🧹',
-    p3: '1 free apology pass 🤐',
-    p4: 'Movie choice is mine 🎬',
-    p5: '24h no roasting 🕊️',
-    p6: 'Make chai on demand ☕',
+    p1: 'Treat me to a lavish meal 🍕',
+    p2: 'Take me out for a movie 🎬',
+    p3: 'Do my laundry for a week 🧺',
+    p4: 'Introduce me to your cute friend 🤝',
+    p5: 'Take me on a fun trip / hangout 🚗',
+    p6: 'Apologize to me for no reason right now 🤐',
 
     // Step 4: Coupons Editor
     couponsEditorTitle: 'Sibling Coupons 🎟️',
@@ -357,19 +357,19 @@ export const translations = {
 
     // Step 3: Wheel Customizer
     wheelTitle: 'The Punishment Wheel 🎰',
-    wheelDesc: 'Bhai/behen ke liye funny punishments add karo!',
+    wheelDesc: 'Bhai/behen ke liye funny punishments add karo! Inme se ek punishment usko milegi',
     wheelLoadedText: 'punishments loaded',
     quickPresetsTitle: 'Quick-Add Presets',
-    addPunishmentPlaceholder: '1 hafte tak bartan dho…',
+    addPunishmentPlaceholder: 'List me nahi hai? to new punishment yaha add karo',
     addBtn: 'Add',
 
     // Wheel Presets
-    p1: '3 din tak khana order kar 🍕',
-    p2: '1 hafte tak bartan dho 🧹',
-    p3: 'Ek free sorry bol 🤐',
-    p4: 'Movie choice meri hogi 🎬',
-    p5: '24h no roasting 🕊️',
-    p6: 'Chai banake laa ☕',
+    p1: 'Khana khilao 🍕',
+    p2: 'Movie dikhao 🎬',
+    p3: 'Mere kapde dhulo 🧺',
+    p4: 'Apni cute friend se baat karao 🤝',
+    p5: 'Kisi acchi place ghoomao 🚗',
+    p6: 'Bina baat ke mujhse maafi maango 🤐',
 
     // Step 4: Coupons Editor
     couponsEditorTitle: 'Sibling Coupons 🎟️',
@@ -382,8 +382,8 @@ export const translations = {
     // Coupon Presets
     c1Title: 'Free Hug Pass',
     c1Terms: 'Valid 1x. Bina kisi sawal ke.',
-    c2Title: 'No Arguments Pass',
-    c2Terms: '24h tak koi behas nahi karunga.',
+    c2Title: '24 hours No Arguments Pass',
+    c2Terms: '24 hours tak koi behas nahi karunga.',
     c3Title: 'Movie Selection Choice',
     c3Terms: 'Aapki pasand ki movie chalegi.',
     c4Title: 'Midnight Maggi Pass',

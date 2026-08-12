@@ -135,16 +135,28 @@ const FunZoneEditor = () => {
             <div className="space-y-2">
               <p className="font-body text-label font-bold text-primary">{t('quickRoastPresets')}</p>
               <div className="flex flex-wrap gap-2">
-                {presetRoasts.map((preset, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => addRoast(preset)}
-                    className="bg-secondary-fixed/50 hover:bg-secondary-fixed text-on-surface text-caption font-body px-3 py-1.5 rounded-full border border-secondary/20 transition-all text-left"
-                  >
-                    + {preset}
-                  </button>
-                ))}
+                {presetRoasts.map((preset, idx) => {
+                  const isSelected = packet.roasts?.some((r) => r.text === preset);
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => addRoast(preset)}
+                      className={`relative font-body text-caption px-3.5 py-1.5 rounded-full transition-all text-left border ${
+                        isSelected
+                          ? 'bg-secondary-fixed border-secondary text-secondary font-bold shadow-sm'
+                          : 'bg-secondary-fixed/50 border-secondary/20 text-on-surface hover:bg-secondary-fixed'
+                      }`}
+                    >
+                      + {preset}
+                      {isSelected && (
+                        <span className="absolute -top-1 -right-1 bg-secondary text-on-secondary w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm border border-surface">
+                          ✓
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -321,16 +333,28 @@ const FunZoneEditor = () => {
             <div className="space-y-2">
               <p className="font-body text-label font-bold text-primary">{t('quickCrimePresets')}</p>
               <div className="flex flex-wrap gap-2">
-                {presetCrimes.map((item, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => addFine(item)}
-                    className="bg-secondary-fixed/50 hover:bg-secondary-fixed text-on-surface text-caption font-body px-3 py-1.5 rounded-full border border-secondary/20 transition-all text-left"
-                  >
-                    + {item.crimeTitle} (₹{item.amount})
-                  </button>
-                ))}
+                {presetCrimes.map((item, idx) => {
+                  const isSelected = packet.fines?.some((f) => f.crimeTitle === item.crimeTitle);
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => addFine(item)}
+                      className={`relative font-body text-caption px-3.5 py-1.5 rounded-full transition-all text-left border ${
+                        isSelected
+                          ? 'bg-secondary-fixed border-secondary text-secondary font-bold shadow-sm'
+                          : 'bg-secondary-fixed/50 border-secondary/20 text-on-surface hover:bg-secondary-fixed'
+                      }`}
+                    >
+                      + {item.crimeTitle} (₹{item.amount})
+                      {isSelected && (
+                        <span className="absolute -top-1 -right-1 bg-secondary text-on-secondary w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm border border-surface">
+                          ✓
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

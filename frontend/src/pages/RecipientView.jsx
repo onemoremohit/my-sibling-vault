@@ -46,11 +46,12 @@ const DEMO_PACKET = {
     { id: 'w3', item: 'Concert Tickets', category: 'experiences', status: 'open' },
   ],
   punishments: [
-    'Buy dinner for 3 days',
-    'Do my chores for a week',
-    'One free apology pass',
-    'Pick the movie next time',
-    'No roasting for 24 hours',
+    'Treat me to a lavish meal 🍕',
+    'Take me out for a movie 🎬',
+    'Do my laundry for a week 🧺',
+    'Introduce me to your cute friend 🤝',
+    'Take me on a fun trip / hangout 🚗',
+    'Apologize to me for no reason right now 🤐',
   ],
   coupons: [
     { id: 'c1', title: 'Free Hug Pass', terms: 'Valid anytime. No questions asked.', redeemed: false },
