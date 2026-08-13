@@ -165,9 +165,8 @@ const RecipientView = () => {
           <SpinWheel punishments={packet.punishments} lang={lang} />
         )}
 
-        {modules.includes('wishlist') && (
-          <WishlistDisplay packetId={packetId} items={packet.wishlist} brotherMessage={packet.brotherMessage || ''} lang={lang} />
-        )}
+        {/* Module 3: Gift Wishlist — Always shown (mandatory) */}
+        <WishlistDisplay packetId={packetId} items={packet.wishlist} brotherMessage={packet.brotherMessage || ''} lang={lang} />
 
         {/* Module 4: Coupons & Certificates */}
         {modules.includes('coupons') && (

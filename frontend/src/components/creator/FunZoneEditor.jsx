@@ -107,11 +107,16 @@ const FunZoneEditor = () => {
         <p className="font-body text-body-md text-on-surface-variant">{t('funZoneSub')}</p>
       </div>
 
-      {/* FEATURE 1: Sibling Roasts 🌶️ */}
+      {/* FEATURE 1: Sibling Roasts 🌶️ (Optional) */}
       <div className="bg-surface rounded-2xl p-6 shadow-card border border-outline-variant/20 space-y-6">
-        <div className="flex items-center gap-2 border-b border-outline-variant/30 pb-3">
-          <span className="material-symbols-outlined text-secondary text-2xl">local_fire_department</span>
-          <h3 className="font-display text-title-lg text-on-surface">{t('roastBuilderTitle')}</h3>
+        <div className="flex items-center justify-between gap-2 border-b border-outline-variant/30 pb-3">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-secondary text-2xl">local_fire_department</span>
+            <h3 className="font-display text-title-lg text-on-surface">{t('roastBuilderTitle')}</h3>
+          </div>
+          <span className="flex-shrink-0 font-body text-[10px] font-bold bg-surface-container text-on-surface-variant border border-outline-variant/40 px-2 py-0.5 rounded-full uppercase tracking-wider">
+            Optional
+          </span>
         </div>
         <p className="font-body text-caption text-on-surface-variant">{t('roastBuilderDesc')}</p>
 
@@ -144,19 +149,25 @@ const FunZoneEditor = () => {
           </div>
         </div>
 
-        {/* Custom Roast Form */}
-        <form onSubmit={handleAddRoast} className="flex gap-2 pt-2">
-          <input
-            type="text"
-            value={newRoast}
-            onChange={(e) => setNewRoast(e.target.value)}
-            placeholder={t('roastPlaceholder')}
-            className="flex-1 bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
-          />
-          <Button type="submit" variant="primary" icon="add">
-            {t('addRoastBtn')}
-          </Button>
-        </form>
+        {/* Custom Roast Form — Optional */}
+        <div className="space-y-1.5 pt-2">
+          <p className="font-body text-[10px] font-bold text-on-surface-variant uppercase tracking-wider flex items-center gap-2">
+            Or write your own
+            <span className="bg-surface-container border border-outline-variant/40 px-2 py-0.5 rounded-full">Optional</span>
+          </p>
+          <form onSubmit={handleAddRoast} className="flex gap-2">
+            <input
+              type="text"
+              value={newRoast}
+              onChange={(e) => setNewRoast(e.target.value)}
+              placeholder={t('roastPlaceholder')}
+              className="flex-1 bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
+            />
+            <Button type="submit" variant="primary" icon="add">
+              {t('addRoastBtn')}
+            </Button>
+          </form>
+        </div>
 
         {/* Added Roasts List */}
         {packet.roasts?.length > 0 && (
@@ -186,11 +197,16 @@ const FunZoneEditor = () => {
         )}
       </div>
 
-      {/* FEATURE 2: Catch My Secret Challenge 🕵️‍♂️ (Simplified Compact Card) */}
+      {/* FEATURE 2: Catch My Secret Challenge 🕵️‍♂️ (Optional) */}
       <div className="bg-surface rounded-2xl p-6 shadow-card border border-outline-variant/20 space-y-5">
-        <div className="flex items-center gap-2 border-b border-outline-variant/30 pb-3">
-          <span className="material-symbols-outlined text-secondary text-2xl">psychology</span>
-          <h3 className="font-display text-title-lg text-on-surface">{t('secretQuizTitle')}</h3>
+        <div className="flex items-center justify-between gap-2 border-b border-outline-variant/30 pb-3">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-secondary text-2xl">psychology</span>
+            <h3 className="font-display text-title-lg text-on-surface">{t('secretQuizTitle')}</h3>
+          </div>
+          <span className="flex-shrink-0 font-body text-[10px] font-bold bg-surface-container text-on-surface-variant border border-outline-variant/40 px-2 py-0.5 rounded-full uppercase tracking-wider">
+            Optional
+          </span>
         </div>
         <p className="font-body text-caption text-on-surface-variant">{t('secretQuizDesc')}</p>
 
@@ -219,11 +235,16 @@ const FunZoneEditor = () => {
         </div>
       </div>
 
-      {/* FEATURE 3: One Request (Sibling Favor) 🙏 */}
+      {/* FEATURE 3: One Request (Sibling Favor) 🙏 (Optional) */}
       <div className="bg-surface rounded-2xl p-6 shadow-card border border-outline-variant/20 space-y-5">
-        <div className="flex items-center gap-2 border-b border-outline-variant/30 pb-3">
-          <span className="material-symbols-outlined text-secondary text-2xl">volunteer_activism</span>
-          <h3 className="font-display text-title-lg text-on-surface">{t('favorTitle')}</h3>
+        <div className="flex items-center justify-between gap-2 border-b border-outline-variant/30 pb-3">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-secondary text-2xl">volunteer_activism</span>
+            <h3 className="font-display text-title-lg text-on-surface">{t('favorTitle')}</h3>
+          </div>
+          <span className="flex-shrink-0 font-body text-[10px] font-bold bg-surface-container text-on-surface-variant border border-outline-variant/40 px-2 py-0.5 rounded-full uppercase tracking-wider">
+            Optional
+          </span>
         </div>
         <p className="font-body text-caption text-on-surface-variant">{t('favorDesc')}</p>
 
@@ -265,11 +286,16 @@ const FunZoneEditor = () => {
         </div>
       </div>
 
-      {/* FEATURE 4: Fine Calculator 💸 */}
+      {/* FEATURE 4: Fine Calculator 💸 (Optional) */}
       <div className="bg-surface rounded-2xl p-6 shadow-card border border-outline-variant/20 space-y-6">
-        <div className="flex items-center gap-2 border-b border-outline-variant/30 pb-3">
-          <span className="material-symbols-outlined text-secondary text-2xl">receipt_long</span>
-          <h3 className="font-display text-title-lg text-on-surface">{t('finesTitle')}</h3>
+        <div className="flex items-center justify-between gap-2 border-b border-outline-variant/30 pb-3">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-secondary text-2xl">receipt_long</span>
+            <h3 className="font-display text-title-lg text-on-surface">{t('finesTitle')}</h3>
+          </div>
+          <span className="flex-shrink-0 font-body text-[10px] font-bold bg-surface-container text-on-surface-variant border border-outline-variant/40 px-2 py-0.5 rounded-full uppercase tracking-wider">
+            Optional
+          </span>
         </div>
         <p className="font-body text-caption text-on-surface-variant">{t('finesDesc')}</p>
 
@@ -302,28 +328,34 @@ const FunZoneEditor = () => {
           </div>
         </div>
 
-        {/* Custom Crime Fine Form */}
-        <form onSubmit={handleAddFine} className="grid grid-cols-1 sm:grid-cols-12 gap-2 pt-2">
-          <input
-            type="text"
-            value={crimeTitle}
-            onChange={(e) => setCrimeTitle(e.target.value)}
-            placeholder={t('crimeTitlePlaceholder')}
-            className="sm:col-span-7 bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
-          />
-          <input
-            type="number"
-            value={fineAmount}
-            onChange={(e) => setFineAmount(e.target.value)}
-            placeholder={t('crimeAmountPlaceholder')}
-            className="sm:col-span-3 bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
-          />
-          <div className="sm:col-span-2">
-            <Button type="submit" variant="primary" icon="add" className="w-full">
-              {t('addFineBtn')}
-            </Button>
-          </div>
-        </form>
+        {/* Custom Crime Fine Form — Optional */}
+        <div className="space-y-1.5 pt-2">
+          <p className="font-body text-[10px] font-bold text-on-surface-variant uppercase tracking-wider flex items-center gap-2">
+            Or add a custom crime
+            <span className="bg-surface-container border border-outline-variant/40 px-2 py-0.5 rounded-full">Optional</span>
+          </p>
+          <form onSubmit={handleAddFine} className="grid grid-cols-1 sm:grid-cols-12 gap-2">
+            <input
+              type="text"
+              value={crimeTitle}
+              onChange={(e) => setCrimeTitle(e.target.value)}
+              placeholder={t('crimeTitlePlaceholder')}
+              className="sm:col-span-7 bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
+            />
+            <input
+              type="number"
+              value={fineAmount}
+              onChange={(e) => setFineAmount(e.target.value)}
+              placeholder={t('crimeAmountPlaceholder')}
+              className="sm:col-span-3 bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
+            />
+            <div className="sm:col-span-2">
+              <Button type="submit" variant="primary" icon="add" className="w-full">
+                {t('addFineBtn')}
+              </Button>
+            </div>
+          </form>
+        </div>
 
         {/* Added Fines List */}
         {packet.fines?.length > 0 && (

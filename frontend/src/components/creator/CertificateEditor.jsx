@@ -66,9 +66,14 @@ const CertificateEditor = () => {
         </div>
       </div>
 
-      {/* Custom certificate */}
+      {/* Custom certificate (Optional) */}
       <div className="bg-surface rounded-2xl p-5 shadow-card border border-outline-variant/20">
-        <h3 className="font-display text-headline-md text-on-surface mb-4">{t('customCertTitle')}</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-display text-headline-md text-on-surface">{t('customCertTitle')}</h3>
+          <span className="flex-shrink-0 font-body text-[10px] font-bold bg-surface-container text-on-surface-variant border border-outline-variant/40 px-2 py-0.5 rounded-full uppercase tracking-wider">
+            Optional
+          </span>
+        </div>
         <div className="space-y-3">
           <div>
             <label className="font-body text-caption text-on-surface-variant block mb-1">Award Title *</label>

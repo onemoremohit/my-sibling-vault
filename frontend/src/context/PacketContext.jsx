@@ -51,6 +51,8 @@ const packetReducer = (state, action) => {
 
     case 'TOGGLE_MODULE': {
       const { module } = action.payload;
+      const MANDATORY = ['wishlist'];
+      if (MANDATORY.includes(module)) return state; // Cannot toggle mandatory modules
       const modules = state.modules.includes(module)
         ? state.modules.filter(m => m !== module)
         : [...state.modules, module];

@@ -68,6 +68,7 @@ const WishlistSetup = () => {
           <div>
             <h3 className="font-display text-headline-md text-primary">
               {isHinglish ? 'Behen ke liye Raksha Bandhan Message' : 'Raksha Bandhan Message for Sister'}
+              <span className="text-error ml-1" title="Required">*</span>
             </h3>
             <p className="font-body text-caption text-on-surface-variant">
               {isHinglish
@@ -110,6 +111,7 @@ const WishlistSetup = () => {
       <div className="bg-surface rounded-2xl p-5 shadow-card border border-outline-variant/20">
         <h3 className="font-display text-headline-md text-on-surface mb-1">
           {isHinglish ? '5 Gift Categories (Preview) 🎁' : '5 Gift Categories (Preview) 🎁'}
+          <span className="text-error ml-1" title="Required">*</span>
         </h3>
         <p className="font-body text-caption text-on-surface-variant mb-4">
           {isHinglish
@@ -147,11 +149,16 @@ const WishlistSetup = () => {
         </p>
       </div>
 
-      {/* ── Custom Item Add ── */}
+      {/* ── Custom Item Add (Optional) ── */}
       <div className="bg-surface rounded-2xl p-5 shadow-card border border-outline-variant/20">
-        <h3 className="font-display text-headline-md text-on-surface mb-4">
-          {isHinglish ? 'Custom Item Add Karo' : 'Add Custom Item'}
-        </h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-display text-headline-md text-on-surface">
+            {isHinglish ? 'Custom Item Add Karo' : 'Add Custom Item'}
+          </h3>
+          <span className="flex-shrink-0 font-body text-[10px] font-bold bg-surface-container text-on-surface-variant border border-outline-variant/40 px-2 py-0.5 rounded-full uppercase tracking-wider">
+            Optional
+          </span>
+        </div>
         <div className="space-y-3">
           <input
             className="w-full border-2 border-primary-fixed-dim bg-surface-bright rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:border-secondary focus:outline-none transition-colors"
@@ -162,14 +169,6 @@ const WishlistSetup = () => {
             onChange={e => setCustomItem(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleAddCustom()}
           />
-          <select
-            className="w-full border-2 border-primary-fixed-dim bg-surface-bright rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:border-secondary focus:outline-none"
-            value={customCategory}
-            onChange={e => setCustomCategory(e.target.value)}
-          >
-            <option value="Custom">Custom 🎁</option>
-            {categories.map(c => <option key={c.id} value={c.id}>{c.emoji} {c.label}</option>)}
-          </select>
           <button
             onClick={handleAddCustom}
             className="w-full bg-primary text-on-primary py-3 rounded-xl font-body font-bold text-label-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"

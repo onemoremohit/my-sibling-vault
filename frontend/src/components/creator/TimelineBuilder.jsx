@@ -254,13 +254,18 @@ const TimelineBuilder = () => {
 
           {/* ── Highlighting Secret Note Feature Box ── */}
           <div className="bg-gradient-to-r from-amber-500/10 via-secondary-fixed/20 to-primary-fixed/20 border-2 border-secondary/40 rounded-2xl p-4 space-y-2 shadow-sm relative">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-2">
               <label className="font-display font-bold text-body-md text-secondary flex items-center gap-2">
                 <span className="text-xl">✉️</span> {t('secretNoteLabel')}
               </label>
-              <span className="font-body text-[11px] font-bold bg-secondary text-on-secondary px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                Flagship Feature ✨
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="font-body text-[10px] font-bold bg-surface-container text-on-surface-variant border border-outline-variant/40 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                  Optional
+                </span>
+                <span className="font-body text-[10px] font-bold bg-secondary text-on-secondary px-2 py-0.5 rounded-full uppercase tracking-wider">
+                  Flagship ✨
+                </span>
+              </div>
             </div>
             <p className="font-body text-caption text-on-surface-variant">
               {t('secretNoteHint')}
