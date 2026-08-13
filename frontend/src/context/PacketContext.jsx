@@ -11,6 +11,7 @@ const initialPacket = {
   modules:       ['timeline', 'wishlist', 'wheel', 'coupons', 'funZone'],
   timeline:      [],
   wishlist:      [],
+  brotherMessage: '',
   punishments:   [],
   coupons:       [],
   certificates:  [],
@@ -74,6 +75,8 @@ const packetReducer = (state, action) => {
       return { ...state, wishlist: [...state.wishlist, { id: uuidv4(), status: 'open', ...action.payload }] };
     case 'REMOVE_WISHLIST_ITEM':
       return { ...state, wishlist: state.wishlist.filter(w => w.id !== action.payload) };
+    case 'UPDATE_BROTHER_MESSAGE':
+      return { ...state, brotherMessage: action.payload };
 
     // Punishments
     case 'ADD_PUNISHMENT':
@@ -135,8 +138,9 @@ export const PacketProvider = ({ children }) => {
   const removeTimelineItem  = useCallback(id      => dispatch({ type: 'REMOVE_TIMELINE_ITEM', payload: id }), []);
   const updateTimelineItem  = useCallback(item    => dispatch({ type: 'UPDATE_TIMELINE_ITEM', payload: item }), []);
 
-  const addWishlistItem     = useCallback(item    => dispatch({ type: 'ADD_WISHLIST_ITEM', payload: item }), []);
-  const removeWishlistItem  = useCallback(id      => dispatch({ type: 'REMOVE_WISHLIST_ITEM', payload: id }), []);
+  const addWishlistItem       = useCallback(item => dispatch({ type: 'ADD_WISHLIST_ITEM', payload: item }), []);
+  const removeWishlistItem    = useCallback(id   => dispatch({ type: 'REMOVE_WISHLIST_ITEM', payload: id }), []);
+  const updateBrotherMessage  = useCallback(msg  => dispatch({ type: 'UPDATE_BROTHER_MESSAGE', payload: msg }), []);
 
   const addPunishment       = useCallback(text    => dispatch({ type: 'ADD_PUNISHMENT', payload: text }), []);
   const removePunishment    = useCallback(index   => dispatch({ type: 'REMOVE_PUNISHMENT', payload: index }), []);
@@ -167,7 +171,7 @@ export const PacketProvider = ({ children }) => {
       setLanguage,
       toggleModule,
       addTimelineItem, removeTimelineItem, updateTimelineItem,
-      addWishlistItem, removeWishlistItem,
+      addWishlistItem, removeWishlistItem, updateBrotherMessage,
       addPunishment, removePunishment,
       addCoupon, removeCoupon,
       addCertificate, removeCertificate,
