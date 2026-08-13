@@ -13,16 +13,78 @@ const FunZoneDisplay = ({
   recipientName = 'You',
   lang = 'en',
 }) => {
+  const DEFAULT_ROASTS_EN = [
+    { id: 'r1', text: 'Takes 2 hours to get ready for a 5-minute errand ⏰', trueVotes: 3, fakeVotes: 0 },
+    { id: 'r2', text: 'Always steals my clothes and denies it even while wearing them 👕', trueVotes: 5, fakeVotes: 1 },
+    { id: 'r3', text: 'Starts crying the exact second Mom enters the room 😭', trueVotes: 4, fakeVotes: 0 },
+  ];
+
+  const DEFAULT_ROASTS_HINGLISH = [
+    { id: 'r1', text: '5 min ke kaam ke liye 2 ghante taiyar hone me lagati hai ⏰', trueVotes: 3, fakeVotes: 0 },
+    { id: 'r2', text: 'Mera hoodie pehan ke kehti hai "yeh toh mera hi hai" 👕', trueVotes: 5, fakeVotes: 1 },
+    { id: 'r3', text: 'Mummy ke aate hi rona shuru kar deti hai 😭', trueVotes: 4, fakeVotes: 0 },
+  ];
+
+  const DEFAULT_CHALLENGE_EN = {
+    challengeText: "Keep the secret about who broke the kitchen lamp for 3 days!",
+    rewardMsg: "1 free Boba tea or Ice cream treat 🧋🍦",
+  };
+
+  const DEFAULT_CHALLENGE_HINGLISH = {
+    challengeText: "Sunday tak Mummy se hidden diary ki baat mat batana!",
+    rewardMsg: "100 Rs Paytm reward ya Swiggy treat 🍕",
+  };
+
+  const DEFAULT_FAVOR_EN = {
+    requestText: 'Treat me to Momos & Boba Tea this weekend! 🥟🧋',
+    priority: 'high',
+  };
+
+  const DEFAULT_FAVOR_HINGLISH = {
+    requestText: 'Is weekend mujhe Momos aur Chai ki treat do! 🥟☕',
+    priority: 'high',
+  };
+
+  const DEFAULT_FINES_EN = [
+    { id: 'f1', crimeTitle: 'Stealing clothes without asking 👕', amount: 500 },
+    { id: 'f2', crimeTitle: 'Unanswered phone calls > 3 times 📱', amount: 200 },
+    { id: 'f3', crimeTitle: 'Eating my ice cream from fridge 🍦', amount: 300 },
+    { id: 'f4', crimeTitle: 'Bathroom occupancy > 45 minutes 🛁', amount: 400 },
+  ];
+
+  const DEFAULT_FINES_HINGLISH = [
+    { id: 'f1', crimeTitle: 'Bina puche kapde churana 👕', amount: 500 },
+    { id: 'f2', crimeTitle: 'Call pick na karna (3+ baar) 📱', amount: 200 },
+    { id: 'f3', crimeTitle: 'Fridge se meri Maggi/Ice cream khana 🍦', amount: 300 },
+    { id: 'f4', crimeTitle: 'Bathroom me 45 min lagana 🛁', amount: 400 },
+  ];
+
+  const activeRoasts = (roasts && roasts.length > 0)
+    ? roasts
+    : (lang === 'hinglish' ? DEFAULT_ROASTS_HINGLISH : DEFAULT_ROASTS_EN);
+
+  const activeChallenge = (secretChallenge && (secretChallenge.question || secretChallenge.challengeText))
+    ? secretChallenge
+    : (lang === 'hinglish' ? DEFAULT_CHALLENGE_HINGLISH : DEFAULT_CHALLENGE_EN);
+
+  const activeFavor = (siblingFavor && siblingFavor.requestText)
+    ? siblingFavor
+    : (lang === 'hinglish' ? DEFAULT_FAVOR_HINGLISH : DEFAULT_FAVOR_EN);
+
+  const activeFines = (fines && fines.length > 0)
+    ? fines
+    : (lang === 'hinglish' ? DEFAULT_FINES_HINGLISH : DEFAULT_FINES_EN);
+
   // 1. Roast votes state
   const [roastVotes, setRoastVotes] = useState(
-    roasts.map((r, i) => ({ id: r.id || i, trueVotes: r.trueVotes || 0, fakeVotes: r.fakeVotes || 0, userVote: null }))
+    activeRoasts.map((r, i) => ({ id: r.id || i, trueVotes: r.trueVotes || 0, fakeVotes: r.fakeVotes || 0, userVote: null }))
   );
 
   const handleVote = (index, type) => {
     setRoastVotes((prev) =>
       prev.map((item, i) => {
         if (i !== index) return item;
-        if (item.userVote === type) return item; // Already voted this way
+        if (item.userVote === type) return item;
 
         const newTrue = type === 'true' ? item.trueVotes + 1 : item.userVote === 'true' ? item.trueVotes - 1 : item.trueVotes;
         const newFake = type === 'fake' ? item.fakeVotes + 1 : item.userVote === 'fake' ? item.fakeVotes - 1 : item.fakeVotes;
@@ -31,22 +93,11 @@ const FunZoneDisplay = ({
     );
   };
 
-  // 2. Secret Quiz state
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [showHint, setShowHint] = useState(false);
-  const [quizStatus, setQuizStatus] = useState(null); // 'correct' | 'wrong'
-
-  const handleQuizSubmit = () => {
-    if (selectedOption === null) return;
-    if (selectedOption === (secretChallenge.correctIndex || 0)) {
-      setQuizStatus('correct');
-    } else {
-      setQuizStatus('wrong');
-    }
-  };
+  // 2. Secret Challenge state
+  const [quizStatus, setQuizStatus] = useState(null);
 
   // 3. Sibling Favor state
-  const [favorStatus, setFavorStatus] = useState(siblingFavor.status || 'pending');
+  const [favorStatus, setFavorStatus] = useState(activeFavor.status || 'pending');
   const [showFavorModal, setShowFavorModal] = useState(false);
 
   const handleGrantFavor = () => {
@@ -55,7 +106,7 @@ const FunZoneDisplay = ({
   };
 
   // 4. Fine Calculator state
-  const [checkedFines, setCheckedFines] = useState(fines.map((f, i) => f.id || i)); // All checked by default
+  const [checkedFines, setCheckedFines] = useState(activeFines.map((f, i) => f.id || i));
   const [showPaidModal, setShowPaidModal] = useState(false);
 
   const toggleFineCheck = (id) => {
@@ -64,7 +115,7 @@ const FunZoneDisplay = ({
     );
   };
 
-  const totalFine = fines
+  const totalFine = activeFines
     .filter((f, i) => checkedFines.includes(f.id || i))
     .reduce((sum, f) => sum + (f.amount || 0), 0);
 
@@ -80,182 +131,113 @@ const FunZoneDisplay = ({
       </div>
 
       {/* FEATURE 1: Sibling Roast Wall 🌶️ */}
-      {roasts.length > 0 && (
-        <div className="space-y-6">
-          <div className="flex items-center gap-3 border-b border-outline-variant/30 pb-3">
-            <span className="text-3xl">🔥</span>
-            <div>
-              <h3 className="font-display text-headline-md text-on-surface">{t('roastWallHeader', lang)}</h3>
-              <p className="font-body text-caption text-on-surface-variant">Vote to agree or call out fake news!</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {roasts.map((roast, idx) => {
-              const voteData = roastVotes[idx] || { trueVotes: 0, fakeVotes: 0, userVote: null };
-              return (
-                <motion.div
-                  key={roast.id || idx}
-                  whileHover={{ y: -4 }}
-                  className="bg-surface rounded-3xl p-6 shadow-card border border-outline-variant/40 flex flex-col justify-between space-y-5 relative overflow-hidden"
-                >
-                  {/* Decorative tape badge */}
-                  <div className="absolute top-0 right-6 bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-b-xl font-display text-caption font-bold tracking-wider shadow-sm">
-                    ROAST #{idx + 1}
-                  </div>
-
-                  <p className="font-display text-title-lg text-on-surface pt-2 leading-relaxed">
-                    "{roast.text}"
-                  </p>
-
-                  <div className="flex items-center gap-2 pt-2 border-t border-outline-variant/30">
-                    <button
-                      onClick={() => handleVote(idx, 'true')}
-                      className={`flex-1 py-2 px-3 rounded-xl font-body font-bold text-caption flex items-center justify-center gap-1.5 transition-all ${
-                        voteData.userVote === 'true'
-                          ? 'bg-secondary text-on-secondary shadow-sm'
-                          : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'
-                      }`}
-                    >
-                      <span>{t('voteTrueBtn', lang)}</span>
-                      <span className="opacity-80">({voteData.trueVotes})</span>
-                    </button>
-
-                    <button
-                      onClick={() => handleVote(idx, 'fake')}
-                      className={`flex-1 py-2 px-3 rounded-xl font-body font-bold text-caption flex items-center justify-center gap-1.5 transition-all ${
-                        voteData.userVote === 'fake'
-                          ? 'bg-primary text-on-primary shadow-sm'
-                          : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'
-                      }`}
-                    >
-                      <span>{t('voteFakeBtn', lang)}</span>
-                      <span className="opacity-80">({voteData.fakeVotes})</span>
-                    </button>
-                  </div>
-                </motion.div>
-              );
-            })}
+      <div className="space-y-6">
+        <div className="flex items-center gap-3 border-b border-outline-variant/30 pb-3">
+          <span className="text-3xl">🔥</span>
+          <div>
+            <h3 className="font-display text-headline-md text-on-surface">{t('roastWallHeader', lang)}</h3>
+            <p className="font-body text-caption text-on-surface-variant">Vote to agree or call out fake news!</p>
           </div>
         </div>
-      )}
 
-      {/* FEATURE 2: Catch My Secret Challenge 🕵️‍♂️ */}
-      {secretChallenge.question && (
-        <div className="bg-surface rounded-3xl p-6 sm:p-8 shadow-card border-2 border-secondary/30 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {activeRoasts.map((roast, idx) => {
+            const voteData = roastVotes[idx] || { trueVotes: 0, fakeVotes: 0, userVote: null };
+            return (
+              <motion.div
+                key={roast.id || idx}
+                whileHover={{ y: -4 }}
+                className="bg-surface rounded-3xl p-6 shadow-card border border-outline-variant/40 flex flex-col justify-between space-y-5 relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-6 bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-b-xl font-display text-caption font-bold tracking-wider shadow-sm">
+                  ROAST #{idx + 1}
+                </div>
+
+                <p className="font-display text-title-lg text-on-surface pt-2 leading-relaxed">
+                  "{roast.text}"
+                </p>
+
+                <div className="flex items-center gap-2 pt-2 border-t border-outline-variant/30">
+                  <button
+                    onClick={() => handleVote(idx, 'true')}
+                    className={`flex-1 py-2 px-3 rounded-xl font-body font-bold text-caption flex items-center justify-center gap-1.5 transition-all ${
+                      voteData.userVote === 'true'
+                        ? 'bg-secondary text-on-secondary shadow-sm'
+                        : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'
+                    }`}
+                  >
+                    <span>{t('voteTrueBtn', lang)}</span>
+                    <span className="opacity-80">({voteData.trueVotes})</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleVote(idx, 'fake')}
+                    className={`flex-1 py-2 px-3 rounded-xl font-body font-bold text-caption flex items-center justify-center gap-1.5 transition-all ${
+                      voteData.userVote === 'fake'
+                        ? 'bg-primary text-on-primary shadow-sm'
+                        : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'
+                    }`}
+                  >
+                    <span>{t('voteFakeBtn', lang)}</span>
+                    <span className="opacity-80">({voteData.fakeVotes})</span>
+                  </button>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* FEATURE 2: Catch My Secret Challenge 🕵️‍♂️ (Compact Challenge Card) */}
+      {(activeChallenge.question || activeChallenge.challengeText) && (
+        <div className="bg-surface rounded-3xl p-6 sm:p-8 shadow-card border-2 border-secondary/30 space-y-5">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <div className="inline-block bg-secondary-fixed text-on-secondary-fixed px-3 py-0.5 rounded-full font-body font-bold text-caption uppercase tracking-wider">
-                🕵️‍♂️ Mini Challenge
+                🕵️‍♂️ Sibling Challenge
               </div>
-              <h3 className="font-display text-headline-md text-on-surface">{t('secretQuizHeader', lang)}</h3>
-              <p className="font-body text-body-md text-on-surface-variant">{t('secretQuizSub', lang)}</p>
+              <h3 className="font-display text-headline-md text-on-surface">Catch My Secret Challenge</h3>
+              <p className="font-body text-body-md text-on-surface-variant">A special task set by {senderName} for you to work upon!</p>
             </div>
+            <div className="text-3xl">🎯</div>
           </div>
 
           <div className="bg-surface-container-low p-5 rounded-2xl border border-outline-variant/40 space-y-4">
             <p className="font-display text-title-lg text-primary">
-              ❓ "{secretChallenge.question}"
+              🎯 "{activeChallenge.question || activeChallenge.challengeText}"
             </p>
 
-            {/* Multiple Choice Options */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {secretChallenge.options?.map((opt, idx) => {
-                if (!opt) return null;
-                const isSelected = selectedOption === idx;
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      setSelectedOption(idx);
-                      setQuizStatus(null);
-                    }}
-                    className={`p-4 rounded-xl font-body font-bold text-body-md text-left transition-all flex items-center justify-between border-2 ${
-                      isSelected
-                        ? 'bg-secondary-fixed border-secondary text-on-surface shadow-sm'
-                        : 'bg-surface border-outline-variant/40 text-on-surface-variant hover:bg-surface-container-high'
-                    }`}
-                  >
-                    <span>{opt}</span>
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                      isSelected ? 'border-secondary bg-secondary' : 'border-outline-variant'
-                    }`}>
-                      {isSelected && <span className="material-symbols-outlined text-on-secondary text-[12px]">check</span>}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Hint Dropdown */}
-            {secretChallenge.hint && (
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowHint(!showHint)}
-                  className="font-body text-caption font-bold text-secondary hover:underline flex items-center gap-1"
-                >
-                  <span>{t('showHintBtn', lang)}</span>
-                </button>
-                <AnimatePresence>
-                  {showHint && (
-                    <motion.p
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="font-body text-caption text-on-surface-variant italic bg-surface p-3 rounded-xl border border-outline-variant/30 mt-2"
-                    >
-                      💡 Hint: {secretChallenge.hint}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
+            {(activeChallenge.revealMsg || activeChallenge.rewardMsg) && (
+              <div className="bg-secondary-fixed/30 border border-secondary/40 rounded-xl p-3.5 flex items-center gap-3">
+                <span className="text-2xl">🎁</span>
+                <div>
+                  <p className="font-body text-caption font-bold text-secondary uppercase tracking-wider">Challenge Reward / Goal</p>
+                  <p className="font-body text-body-md font-medium text-on-surface">
+                    {activeChallenge.revealMsg || activeChallenge.rewardMsg}
+                  </p>
+                </div>
               </div>
             )}
 
-            {/* Quiz Submit Button & Results */}
-            <div className="pt-3 flex flex-wrap items-center gap-4">
-              {quizStatus !== 'correct' && (
-                <Button
-                  variant="primary"
-                  onClick={handleQuizSubmit}
-                  disabled={selectedOption === null}
-                  icon="key"
-                >
-                  {t('submitQuizBtn', lang)}
-                </Button>
-              )}
-
-              {quizStatus === 'wrong' && (
-                <div className="flex items-center gap-3">
-                  <span className="font-body font-bold text-caption text-error">
-                    {t('quizWrongTitle', lang)} {t('quizWrongDesc', lang)}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* Secret Unlocked Reveal Banner */}
-            {quizStatus === 'correct' && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="bg-secondary-fixed/50 border-2 border-secondary rounded-2xl p-5 text-center space-y-2 mt-4"
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setQuizStatus(quizStatus === 'accepted' ? null : 'accepted')}
+                className={`w-full py-3 px-4 rounded-xl font-body font-bold text-body-md flex items-center justify-center gap-2 transition-all ${
+                  quizStatus === 'accepted'
+                    ? 'bg-secondary text-on-secondary shadow-md'
+                    : 'bg-primary text-on-primary hover:opacity-90 shadow-sm'
+                }`}
               >
-                <div className="text-4xl animate-bounce">🎉</div>
-                <h4 className="font-display font-bold text-headline-sm text-secondary">
-                  {t('quizCorrectTitle', lang)}
-                </h4>
-                <p className="font-body text-body-lg font-medium text-on-surface">
-                  "{secretChallenge.revealMsg || 'You cracked the secret!'}"
-                </p>
-              </motion.div>
-            )}
+                <span>{quizStatus === 'accepted' ? 'Challenge Accepted! 🤝 In Progress' : 'Accept Challenge 🎯'}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {/* FEATURE 3: One Request Contract 🙏 */}
-      {siblingFavor.requestText && (
+      {activeFavor.requestText && (
         <div className="bg-surface rounded-3xl p-6 sm:p-8 shadow-card border border-outline-variant/40 space-y-6 relative overflow-hidden">
           <div className="flex items-center justify-between border-b border-outline-variant/30 pb-4">
             <div>
@@ -274,7 +256,7 @@ const FunZoneDisplay = ({
             </p>
 
             <blockquote className="font-display text-display-mobile sm:text-headline-md text-on-surface italic px-4 py-2">
-              "{siblingFavor.requestText}"
+              "{activeFavor.requestText}"
             </blockquote>
 
             <div className="flex items-center justify-center gap-3 pt-4">
@@ -298,7 +280,7 @@ const FunZoneDisplay = ({
       )}
 
       {/* FEATURE 4: Funny Fine Calculator 💸 */}
-      {fines.length > 0 && (
+      {activeFines.length > 0 && (
         <div className="bg-surface rounded-3xl p-6 sm:p-8 shadow-card border-2 border-outline-variant/60 space-y-6">
           <div className="space-y-1">
             <div className="inline-block bg-tertiary-fixed text-on-tertiary-fixed px-3 py-0.5 rounded-full font-body font-bold text-caption uppercase tracking-wider">
@@ -319,7 +301,7 @@ const FunZoneDisplay = ({
 
             {/* Crime Checklist */}
             <div className="space-y-3">
-              {fines.map((fine, idx) => {
+              {activeFines.map((fine, idx) => {
                 const fineId = fine.id || idx;
                 const isChecked = checkedFines.includes(fineId);
                 return (

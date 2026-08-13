@@ -19,17 +19,31 @@ const WishlistDisplay = ({ packetId, items = [], lang = 'en' }) => {
 
   if (items.length === 0) return null;
 
-  const handlePledge = async (item) => {
-    if (item.status === 'pledged') return;
+  const handlePledge = async (item, targetIdx) => {
+    const isPledged = item.status === 'pledged';
+    const newStatus = isPledged ? 'open' : 'pledged';
 
     try {
-      if (packetId && packetId !== 'demo') {
-        await pledgeWishlistItem(packetId, item.id || item._id);
+      const targetId = item.id || item._id;
+      if (packetId && packetId !== 'demo' && targetId) {
+        await pledgeWishlistItem(packetId, targetId);
       }
       setWishlist(prev =>
-        prev.map(i => (i.id === item.id || i._id === item._id) ? { ...i, status: 'pledged' } : i)
+        prev.map((i, idx) => {
+          if (targetId && (i.id === targetId || i._id === targetId)) {
+            return { ...i, status: newStatus };
+          }
+          if (idx === targetIdx) {
+            return { ...i, status: newStatus };
+          }
+          return i;
+        })
       );
-      showSuccess(`🎁 Promised: ${item.item}!`);
+      if (newStatus === 'pledged') {
+        showSuccess(`🎁 Promised: ${item.item}!`);
+      } else {
+        showSuccess(`Undo: ${item.item}`);
+      }
     } catch {
       showError('Failed to record pledge. Please try again.');
     }
@@ -73,11 +87,10 @@ const WishlistDisplay = ({ packetId, items = [], lang = 'en' }) => {
               </div>
 
               <button
-                onClick={() => handlePledge(item)}
-                disabled={isPledged}
+                onClick={() => handlePledge(item, index)}
                 className={`w-full py-2.5 px-4 rounded-full font-body font-bold text-label-bold transition-all flex items-center justify-center gap-2 ${
                   isPledged
-                    ? 'bg-tertiary text-on-tertiary cursor-default'
+                    ? 'bg-tertiary text-on-tertiary hover:opacity-90 shadow-sm'
                     : 'bg-primary text-on-primary hover:scale-105 active:scale-95 shadow-md'
                 }`}
               >

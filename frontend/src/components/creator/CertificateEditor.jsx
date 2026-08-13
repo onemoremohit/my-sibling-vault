@@ -15,8 +15,13 @@ const CertificateEditor = () => {
   ];
 
   const handleAddPreset = (p) => {
-    addCertificate({ awardTitle: p.awardTitle, description: p.description });
-    showSuccess(`🏆 "${p.awardTitle}" certificate added!`);
+    const existing = packet.certificates?.find(c => c.awardTitle === p.awardTitle);
+    if (existing) {
+      removeCertificate(existing.id);
+    } else {
+      addCertificate({ awardTitle: p.awardTitle, description: p.description });
+      showSuccess(`🏆 "${p.awardTitle}" certificate added!`);
+    }
   };
 
   const handleAddCustom = () => {

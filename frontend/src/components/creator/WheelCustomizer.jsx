@@ -82,6 +82,15 @@ const WheelCustomizer = () => {
     t('p6'),
   ];
 
+  const handleTogglePreset = (p) => {
+    const idx = packet.punishments?.indexOf(p);
+    if (idx !== undefined && idx !== -1) {
+      removePunishment(idx);
+    } else {
+      addPunishment(p);
+    }
+  };
+
   return (
     <div className="space-y-5">
       <div className="bg-surface rounded-2xl p-5 shadow-card border border-outline-variant/20">
@@ -104,7 +113,7 @@ const WheelCustomizer = () => {
               return (
                 <button
                   key={p}
-                  onClick={() => addPunishment(p)}
+                  onClick={() => handleTogglePreset(p)}
                   className={`relative font-body text-caption px-3.5 py-1.5 rounded-full transition-all border ${
                     isSelected
                       ? 'bg-primary-fixed border-primary text-primary font-bold shadow-sm'

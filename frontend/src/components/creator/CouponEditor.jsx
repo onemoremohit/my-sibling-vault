@@ -17,8 +17,13 @@ const CouponEditor = () => {
   ];
 
   const handleAddPreset = (p) => {
-    addCoupon({ title: p.title, terms: p.terms });
-    showSuccess(`🎟️ "${p.title}" coupon added!`);
+    const existing = packet.coupons?.find(c => c.title === p.title);
+    if (existing) {
+      removeCoupon(existing.id);
+    } else {
+      addCoupon({ title: p.title, terms: p.terms });
+      showSuccess(`🎟️ "${p.title}" coupon added!`);
+    }
   };
 
   const handleAddCustom = () => {

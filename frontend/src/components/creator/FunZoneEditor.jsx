@@ -51,14 +51,28 @@ const FunZoneEditor = () => {
   const t = (key) => (contextT ? contextT(key) : translate(key, packet?.language || 'en'));
   const isHinglish = packet?.language === 'hinglish';
 
-  const [activeTab, setActiveTab] = useState(0);
-
-  // Roast Form
+  // Form states
   const [newRoast, setNewRoast] = useState('');
-
-  // Fine Form
   const [crimeTitle, setCrimeTitle] = useState('');
   const [fineAmount, setFineAmount] = useState('');
+
+  const handleToggleRoast = (preset) => {
+    const existing = packet.roasts?.find((r) => r.text === preset);
+    if (existing) {
+      removeRoast(existing.id);
+    } else {
+      addRoast(preset);
+    }
+  };
+
+  const handleToggleFine = (item) => {
+    const existing = packet.fines?.find((f) => f.crimeTitle === item.crimeTitle);
+    if (existing) {
+      removeFine(existing.id);
+    } else {
+      addFine(item);
+    }
+  };
 
   const handleAddRoast = (e) => {
     e?.preventDefault();
@@ -77,105 +91,75 @@ const FunZoneEditor = () => {
 
   const secretChallenge = packet.secretChallenge || {
     question: '',
-    options: ['', '', '', ''],
-    correctIndex: 0,
-    hint: '',
     revealMsg: '',
-  };
-
-  const handleOptionChange = (idx, val) => {
-    const newOptions = [...(secretChallenge.options || ['', '', '', ''])];
-    newOptions[idx] = val;
-    updateSecretChallenge({ options: newOptions });
   };
 
   const presetRoasts = isHinglish ? PRESET_ROASTS_HINGLISH : PRESET_ROASTS_EN;
   const presetCrimes = isHinglish ? PRESET_CRIMES_HINGLISH : PRESET_CRIMES_EN;
 
   return (
-    <div className="bg-surface rounded-2xl p-6 shadow-card border border-outline-variant/20 space-y-6">
-      <div>
+    <div className="space-y-6">
+      {/* Module Header */}
+      <div className="bg-surface rounded-2xl p-6 shadow-card border border-outline-variant/20">
         <h2 className="font-display text-headline-md text-primary flex items-center gap-2">
           <span>🌶️</span> {t('funZoneHeader')}
         </h2>
         <p className="font-body text-body-md text-on-surface-variant">{t('funZoneSub')}</p>
       </div>
 
-      {/* Sub-Tabs Navigation */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-outline-variant/30">
-        {[
-          { id: 0, label: t('tabRoasts'), icon: 'local_fire_department' },
-          { id: 1, label: t('tabSecretQuiz'), icon: 'psychology' },
-          { id: 2, label: t('tabRequest'), icon: 'volunteer_activism' },
-          { id: 3, label: t('tabFines'), icon: 'receipt_long' },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-body font-bold text-label-bold whitespace-nowrap transition-all ${
-              activeTab === tab.id
-                ? 'bg-secondary text-on-secondary shadow-sm'
-                : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'
-            }`}
-          >
-            <span className="material-symbols-outlined text-[18px]">{tab.icon}</span>
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      {/* FEATURE 1: Sibling Roasts 🌶️ */}
+      <div className="bg-surface rounded-2xl p-6 shadow-card border border-outline-variant/20 space-y-6">
+        <div className="flex items-center gap-2 border-b border-outline-variant/30 pb-3">
+          <span className="material-symbols-outlined text-secondary text-2xl">local_fire_department</span>
+          <h3 className="font-display text-title-lg text-on-surface">{t('roastBuilderTitle')}</h3>
+        </div>
+        <p className="font-body text-caption text-on-surface-variant">{t('roastBuilderDesc')}</p>
 
-      {/* TAB 0: Sibling Roasts */}
-      {activeTab === 0 && (
-        <div className="space-y-6">
-          <div className="space-y-3">
-            <h3 className="font-display text-title-lg text-on-surface">{t('roastBuilderTitle')}</h3>
-            <p className="font-body text-caption text-on-surface-variant">{t('roastBuilderDesc')}</p>
-
-            {/* Quick Presets */}
-            <div className="space-y-2">
-              <p className="font-body text-label font-bold text-primary">{t('quickRoastPresets')}</p>
-              <div className="flex flex-wrap gap-2">
-                {presetRoasts.map((preset, idx) => {
-                  const isSelected = packet.roasts?.some((r) => r.text === preset);
-                  return (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => addRoast(preset)}
-                      className={`relative font-body text-caption px-3.5 py-1.5 rounded-full transition-all text-left border ${
-                        isSelected
-                          ? 'bg-secondary-fixed border-secondary text-secondary font-bold shadow-sm'
-                          : 'bg-secondary-fixed/50 border-secondary/20 text-on-surface hover:bg-secondary-fixed'
-                      }`}
-                    >
-                      + {preset}
-                      {isSelected && (
-                        <span className="absolute -top-1 -right-1 bg-secondary text-on-secondary w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm border border-surface">
-                          ✓
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Custom Roast Form */}
-            <form onSubmit={handleAddRoast} className="flex gap-2 pt-2">
-              <input
-                type="text"
-                value={newRoast}
-                onChange={(e) => setNewRoast(e.target.value)}
-                placeholder={t('roastPlaceholder')}
-                className="flex-1 bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
-              />
-              <Button type="submit" variant="primary" icon="add">
-                {t('addRoastBtn')}
-              </Button>
-            </form>
+        {/* Quick Presets */}
+        <div className="space-y-2">
+          <p className="font-body text-label font-bold text-primary">{t('quickRoastPresets')}</p>
+          <div className="flex flex-wrap gap-2">
+            {presetRoasts.map((preset, idx) => {
+              const isSelected = packet.roasts?.some((r) => r.text === preset);
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handleToggleRoast(preset)}
+                  className={`relative font-body text-caption px-3.5 py-1.5 rounded-full transition-all text-left border ${
+                    isSelected
+                      ? 'bg-secondary-fixed border-secondary text-secondary font-bold shadow-sm'
+                      : 'bg-secondary-fixed/50 border-secondary/20 text-on-surface hover:bg-secondary-fixed'
+                  }`}
+                >
+                  + {preset}
+                  {isSelected && (
+                    <span className="absolute -top-1 -right-1 bg-secondary text-on-secondary w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm border border-surface">
+                      ✓
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
+        </div>
 
-          {/* Added Roasts List */}
+        {/* Custom Roast Form */}
+        <form onSubmit={handleAddRoast} className="flex gap-2 pt-2">
+          <input
+            type="text"
+            value={newRoast}
+            onChange={(e) => setNewRoast(e.target.value)}
+            placeholder={t('roastPlaceholder')}
+            className="flex-1 bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
+          />
+          <Button type="submit" variant="primary" icon="add">
+            {t('addRoastBtn')}
+          </Button>
+        </form>
+
+        {/* Added Roasts List */}
+        {packet.roasts?.length > 0 && (
           <div className="space-y-3 pt-2 border-t border-outline-variant/30">
             <h4 className="font-body font-bold text-label-bold text-on-surface">
               Added Roasts ({packet.roasts?.length || 0})
@@ -199,190 +183,150 @@ const FunZoneEditor = () => {
               ))}
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* TAB 1: Catch My Secret Quiz */}
-      {activeTab === 1 && (
-        <div className="space-y-5">
-          <div>
-            <h3 className="font-display text-title-lg text-on-surface">{t('secretQuizTitle')}</h3>
-            <p className="font-body text-caption text-on-surface-variant">{t('secretQuizDesc')}</p>
+      {/* FEATURE 2: Catch My Secret Challenge 🕵️‍♂️ (Simplified Compact Card) */}
+      <div className="bg-surface rounded-2xl p-6 shadow-card border border-outline-variant/20 space-y-5">
+        <div className="flex items-center gap-2 border-b border-outline-variant/30 pb-3">
+          <span className="material-symbols-outlined text-secondary text-2xl">psychology</span>
+          <h3 className="font-display text-title-lg text-on-surface">{t('secretQuizTitle')}</h3>
+        </div>
+        <p className="font-body text-caption text-on-surface-variant">{t('secretQuizDesc')}</p>
+
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="font-body text-label-bold text-on-surface">{t('secretQuestionLabel')}</label>
+            <input
+              type="text"
+              value={secretChallenge.question || secretChallenge.challengeText || ''}
+              onChange={(e) => updateSecretChallenge({ question: e.target.value, challengeText: e.target.value })}
+              placeholder={t('secretQuestionPlaceholder')}
+              className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
+            />
           </div>
 
-          <div className="space-y-4">
-            {/* Question */}
-            <div className="space-y-1.5">
-              <label className="font-body text-label-bold text-on-surface">{t('secretQuestionLabel')}</label>
-              <input
-                type="text"
-                value={secretChallenge.question || ''}
-                onChange={(e) => updateSecretChallenge({ question: e.target.value })}
-                placeholder={t('secretQuestionPlaceholder')}
-                className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
-              />
-            </div>
-
-            {/* Options */}
-            <div className="space-y-2">
-              <label className="font-body text-label-bold text-on-surface">{t('secretOptionsLabel')}</label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {[0, 1, 2, 3].map((idx) => (
-                  <div key={idx} className="flex items-center gap-2 bg-surface-container-low p-2.5 rounded-xl border border-outline-variant/40">
-                    <input
-                      type="radio"
-                      name="correctOption"
-                      checked={secretChallenge.correctIndex === idx}
-                      onChange={() => updateSecretChallenge({ correctIndex: idx })}
-                      className="w-4 h-4 text-primary focus:ring-primary accent-primary"
-                    />
-                    <input
-                      type="text"
-                      value={secretChallenge.options?.[idx] || ''}
-                      onChange={(e) => handleOptionChange(idx, e.target.value)}
-                      placeholder={`${t('optionPlaceholder')} ${idx + 1}`}
-                      className="flex-1 bg-transparent font-body text-body-md text-on-surface focus:outline-none"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Hint */}
-            <div className="space-y-1.5">
-              <label className="font-body text-label-bold text-on-surface">{t('secretHintLabel')}</label>
-              <input
-                type="text"
-                value={secretChallenge.hint || ''}
-                onChange={(e) => updateSecretChallenge({ hint: e.target.value })}
-                placeholder={t('secretHintPlaceholder')}
-                className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
-              />
-            </div>
-
-            {/* Secret Reveal */}
-            <div className="space-y-1.5">
-              <label className="font-body text-label-bold text-on-surface">{t('secretRevealLabel')}</label>
-              <textarea
-                rows={2}
-                value={secretChallenge.revealMsg || ''}
-                onChange={(e) => updateSecretChallenge({ revealMsg: e.target.value })}
-                placeholder={t('secretRevealPlaceholder')}
-                className="w-full bg-surface-container-low border border-outline-variant rounded-xl p-3 font-body text-body-md text-on-surface focus:outline-none focus:border-primary resize-none"
-              />
-            </div>
+          <div className="space-y-1.5">
+            <label className="font-body text-label-bold text-on-surface">{t('secretRewardLabel')}</label>
+            <input
+              type="text"
+              value={secretChallenge.revealMsg || secretChallenge.rewardMsg || ''}
+              onChange={(e) => updateSecretChallenge({ revealMsg: e.target.value, rewardMsg: e.target.value })}
+              placeholder={t('secretRewardPlaceholder')}
+              className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
+            />
           </div>
         </div>
-      )}
+      </div>
 
-      {/* TAB 2: One Request (Sibling Favor) */}
-      {activeTab === 2 && (
-        <div className="space-y-5">
-          <div>
-            <h3 className="font-display text-title-lg text-on-surface">{t('favorTitle')}</h3>
-            <p className="font-body text-caption text-on-surface-variant">{t('favorDesc')}</p>
+      {/* FEATURE 3: One Request (Sibling Favor) 🙏 */}
+      <div className="bg-surface rounded-2xl p-6 shadow-card border border-outline-variant/20 space-y-5">
+        <div className="flex items-center gap-2 border-b border-outline-variant/30 pb-3">
+          <span className="material-symbols-outlined text-secondary text-2xl">volunteer_activism</span>
+          <h3 className="font-display text-title-lg text-on-surface">{t('favorTitle')}</h3>
+        </div>
+        <p className="font-body text-caption text-on-surface-variant">{t('favorDesc')}</p>
+
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="font-body text-label-bold text-on-surface">{t('favorTextLabel')}</label>
+            <textarea
+              rows={3}
+              value={packet.siblingFavor?.requestText || ''}
+              onChange={(e) => updateSiblingFavor({ requestText: e.target.value })}
+              placeholder={t('favorTextPlaceholder')}
+              className="w-full bg-surface-container-low border border-outline-variant rounded-xl p-3 font-body text-body-md text-on-surface focus:outline-none focus:border-primary resize-none"
+            />
           </div>
 
-          <div className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="font-body text-label-bold text-on-surface">{t('favorTextLabel')}</label>
-              <textarea
-                rows={3}
-                value={packet.siblingFavor?.requestText || ''}
-                onChange={(e) => updateSiblingFavor({ requestText: e.target.value })}
-                placeholder={t('favorTextPlaceholder')}
-                className="w-full bg-surface-container-low border border-outline-variant rounded-xl p-3 font-body text-body-md text-on-surface focus:outline-none focus:border-primary resize-none"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="font-body text-label-bold text-on-surface">{t('favorPriorityLabel')}</label>
-              <div className="flex flex-wrap gap-3">
-                {[
-                  { key: 'high', label: t('priorityHigh') },
-                  { key: 'medium', label: t('priorityMedium') },
-                  { key: 'funny', label: t('priorityFunny') },
-                ].map((p) => (
-                  <button
-                    key={p.key}
-                    type="button"
-                    onClick={() => updateSiblingFavor({ priority: p.key })}
-                    className={`px-4 py-2 rounded-xl font-body font-bold text-caption transition-all ${
-                      packet.siblingFavor?.priority === p.key
-                        ? 'bg-primary text-on-primary shadow-sm'
-                        : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high border border-outline-variant/40'
-                    }`}
-                  >
-                    {p.label}
-                  </button>
-                ))}
-              </div>
+          <div className="space-y-1.5">
+            <label className="font-body text-label-bold text-on-surface">{t('favorPriorityLabel')}</label>
+            <div className="flex flex-wrap gap-3">
+              {[
+                { key: 'high', label: t('priorityHigh') },
+                { key: 'medium', label: t('priorityMedium') },
+                { key: 'funny', label: t('priorityFunny') },
+              ].map((p) => (
+                <button
+                  key={p.key}
+                  type="button"
+                  onClick={() => updateSiblingFavor({ priority: p.key })}
+                  className={`px-4 py-2 rounded-xl font-body font-bold text-caption transition-all ${
+                    packet.siblingFavor?.priority === p.key
+                      ? 'bg-primary text-on-primary shadow-sm'
+                      : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high border border-outline-variant/40'
+                  }`}
+                >
+                  {p.label}
+                </button>
+              ))}
             </div>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* TAB 3: Fine Calculator */}
-      {activeTab === 3 && (
-        <div className="space-y-6">
-          <div className="space-y-3">
-            <h3 className="font-display text-title-lg text-on-surface">{t('finesTitle')}</h3>
-            <p className="font-body text-caption text-on-surface-variant">{t('finesDesc')}</p>
+      {/* FEATURE 4: Fine Calculator 💸 */}
+      <div className="bg-surface rounded-2xl p-6 shadow-card border border-outline-variant/20 space-y-6">
+        <div className="flex items-center gap-2 border-b border-outline-variant/30 pb-3">
+          <span className="material-symbols-outlined text-secondary text-2xl">receipt_long</span>
+          <h3 className="font-display text-title-lg text-on-surface">{t('finesTitle')}</h3>
+        </div>
+        <p className="font-body text-caption text-on-surface-variant">{t('finesDesc')}</p>
 
-            {/* Quick Crime Presets */}
-            <div className="space-y-2">
-              <p className="font-body text-label font-bold text-primary">{t('quickCrimePresets')}</p>
-              <div className="flex flex-wrap gap-2">
-                {presetCrimes.map((item, idx) => {
-                  const isSelected = packet.fines?.some((f) => f.crimeTitle === item.crimeTitle);
-                  return (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => addFine(item)}
-                      className={`relative font-body text-caption px-3.5 py-1.5 rounded-full transition-all text-left border ${
-                        isSelected
-                          ? 'bg-secondary-fixed border-secondary text-secondary font-bold shadow-sm'
-                          : 'bg-secondary-fixed/50 border-secondary/20 text-on-surface hover:bg-secondary-fixed'
-                      }`}
-                    >
-                      + {item.crimeTitle} (₹{item.amount})
-                      {isSelected && (
-                        <span className="absolute -top-1 -right-1 bg-secondary text-on-secondary w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm border border-surface">
-                          ✓
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Custom Crime Fine Form */}
-            <form onSubmit={handleAddFine} className="grid grid-cols-1 sm:grid-cols-12 gap-2 pt-2">
-              <input
-                type="text"
-                value={crimeTitle}
-                onChange={(e) => setCrimeTitle(e.target.value)}
-                placeholder={t('crimeTitlePlaceholder')}
-                className="sm:col-span-7 bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
-              />
-              <input
-                type="number"
-                value={fineAmount}
-                onChange={(e) => setFineAmount(e.target.value)}
-                placeholder={t('crimeAmountPlaceholder')}
-                className="sm:col-span-3 bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
-              />
-              <div className="sm:col-span-2">
-                <Button type="submit" variant="primary" icon="add" className="w-full">
-                  {t('addFineBtn')}
-                </Button>
-              </div>
-            </form>
+        {/* Quick Crime Presets */}
+        <div className="space-y-2">
+          <p className="font-body text-label font-bold text-primary">{t('quickCrimePresets')}</p>
+          <div className="flex flex-wrap gap-2">
+            {presetCrimes.map((item, idx) => {
+              const isSelected = packet.fines?.some((f) => f.crimeTitle === item.crimeTitle);
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handleToggleFine(item)}
+                  className={`relative font-body text-caption px-3.5 py-1.5 rounded-full transition-all text-left border ${
+                    isSelected
+                      ? 'bg-secondary-fixed border-secondary text-secondary font-bold shadow-sm'
+                      : 'bg-secondary-fixed/50 border-secondary/20 text-on-surface hover:bg-secondary-fixed'
+                  }`}
+                >
+                  + {item.crimeTitle} (₹{item.amount})
+                  {isSelected && (
+                    <span className="absolute -top-1 -right-1 bg-secondary text-on-secondary w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm border border-surface">
+                      ✓
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
+        </div>
 
-          {/* Added Fines List */}
+        {/* Custom Crime Fine Form */}
+        <form onSubmit={handleAddFine} className="grid grid-cols-1 sm:grid-cols-12 gap-2 pt-2">
+          <input
+            type="text"
+            value={crimeTitle}
+            onChange={(e) => setCrimeTitle(e.target.value)}
+            placeholder={t('crimeTitlePlaceholder')}
+            className="sm:col-span-7 bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
+          />
+          <input
+            type="number"
+            value={fineAmount}
+            onChange={(e) => setFineAmount(e.target.value)}
+            placeholder={t('crimeAmountPlaceholder')}
+            className="sm:col-span-3 bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
+          />
+          <div className="sm:col-span-2">
+            <Button type="submit" variant="primary" icon="add" className="w-full">
+              {t('addFineBtn')}
+            </Button>
+          </div>
+        </form>
+
+        {/* Added Fines List */}
+        {packet.fines?.length > 0 && (
           <div className="space-y-3 pt-2 border-t border-outline-variant/30">
             <h4 className="font-body font-bold text-label-bold text-on-surface">
               Configured Crimes ({packet.fines?.length || 0})
@@ -409,8 +353,8 @@ const FunZoneEditor = () => {
               ))}
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

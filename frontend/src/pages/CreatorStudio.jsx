@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/common/Navbar';
 import Modal from '../components/common/Modal';
@@ -24,6 +24,11 @@ const CreatorStudio = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [shareData, setShareData] = useState(null); // { packetId, shareUrl }
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+
+  // Scroll to top whenever step changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeStep]);
 
   const isDesktop = useMediaQuery('(min-width: 1024px)');
 

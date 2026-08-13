@@ -98,7 +98,7 @@ export const translations = {
     couponsEditorTitle: 'Sibling Coupons 🎟️',
     couponsEditorDesc: 'Add redeemable coupons your sibling can claim',
     customCouponTitle: 'Add Custom Coupon',
-    couponTitlePlaceholder: 'e.g. Free Massage Pass',
+    couponTitlePlaceholder: 'e.g. Free head Massage Pass',
     couponTermsPlaceholder: 'Terms (e.g. Valid on weekends only)',
     addCouponBtn: 'Add Coupon',
 
@@ -149,15 +149,11 @@ export const translations = {
     quickRoastPresets: 'Quick-Add Roasts:',
 
     secretQuizTitle: 'Catch My Secret Challenge 🕵️‍♂️',
-    secretQuizDesc: 'Create a secret multiple-choice question for your sibling to guess',
-    secretQuestionLabel: 'Secret Question:',
-    secretQuestionPlaceholder: 'e.g. Guess what I broke in 2019 without telling Mom!',
-    secretOptionsLabel: 'Options (Pick 1 correct answer):',
-    optionPlaceholder: 'Option',
-    secretHintLabel: 'Hint (Optional):',
-    secretHintPlaceholder: 'e.g. It involved wires and your bedroom…',
-    secretRevealLabel: 'Secret Reveal Message:',
-    secretRevealPlaceholder: 'e.g. Yes! I broke your charger and blamed the dog! 🐶',
+    secretQuizDesc: 'Set a fun challenge for your sibling to work upon in the days ahead!',
+    secretQuestionLabel: 'Challenge Task / Message *',
+    secretQuestionPlaceholder: 'e.g. Find my hidden diary before Sunday or keep the secret about the broken lamp!',
+    secretRewardLabel: 'Secret Reward / Goal (Optional):',
+    secretRewardPlaceholder: 'e.g. 100 Rs cash reward or 1 free Boba treat 🧋',
 
     favorTitle: 'One Request (Ultimate Sibling Favor) 🙏',
     favorDesc: 'Ask your sibling for one non-negotiable or high priority favor!',
@@ -211,6 +207,8 @@ export const translations = {
     wishlistSectionHeader: 'Gift Wishlist 🎁',
     wishlistSectionSub: 'Items your sibling would love to get as a gift',
     pledgeBtnText: 'I Will Gift This 🎁',
+    pledgedStatus: 'PLEDGED',
+    pledgedBtnText: 'Promised / Gift Pledged',
     pledgedByText: 'Pledged by',
 
     // Recipient View - Coupons & Certs Section
@@ -426,15 +424,11 @@ export const translations = {
     quickRoastPresets: 'Quick-Add Roasts:',
 
     secretQuizTitle: 'Catch My Secret Challenge 🕵️‍♂️',
-    secretQuizDesc: 'Bhai/behen ke liye ek secret guess karne waala quiz banayein',
-    secretQuestionLabel: 'Secret Sawaal:',
-    secretQuestionPlaceholder: 'Jaise: Guess karo 2019 me maine Mummy se chhupke kya toda tha!',
-    secretOptionsLabel: 'Options (Sahi jawaab select karo):',
-    optionPlaceholder: 'Option',
-    secretHintLabel: 'Hint (Optional):',
-    secretHintPlaceholder: 'Jaise: Isme wires aur bedroom shamil tha…',
-    secretRevealLabel: 'Secret Khulne Par Message:',
-    secretRevealPlaceholder: 'Jaise: Haan! Maine apka charger toda tha aur kutte par naam laga diya tha! 🐶',
+    secretQuizDesc: 'Apne sibling ke liye ek mazedaar challenge task set karo!',
+    secretQuestionLabel: 'Challenge Task / Message *',
+    secretQuestionPlaceholder: 'Jaise: Sunday se pehle meri hidden diary dhoondho ya broken vase wali baat chhupao!',
+    secretRewardLabel: 'Secret Reward / Goal (Optional):',
+    secretRewardPlaceholder: 'Jaise: 100 Rs cash reward ya 1 free Boba treat 🧋',
 
     favorTitle: 'One Request (Ultimate Favor) 🙏',
     favorDesc: 'Apne bhai/behen se ek khaas request ya favor mango!',
@@ -488,6 +482,8 @@ export const translations = {
     wishlistSectionHeader: 'Gift Wishlist 🎁',
     wishlistSectionSub: 'Jo gift apka bhai/behen chahta hai',
     pledgeBtnText: 'Main Yeh Gift Dungaa 🎁',
+    pledgedStatus: 'PLEDGED',
+    pledgedBtnText: 'Gift Dene Ka Pakka Vaada',
     pledgedByText: 'Pledged by',
 
     // Recipient View - Coupons & Certs Section
