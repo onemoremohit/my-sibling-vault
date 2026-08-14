@@ -12,10 +12,15 @@ export const createPacket = async (req, res, next) => {
       theme,
       modules,
       timeline,
+      brotherMessage,
       wishlist,
       punishments,
       coupons,
       certificates,
+      roasts,
+      secretChallenge,
+      siblingFavor,
+      fines,
     } = req.body;
 
     if (!senderName || !recipientName) {
@@ -30,12 +35,17 @@ export const createPacket = async (req, res, next) => {
       recipientName,
       language: language || 'en',
       theme: theme || 'nostalgic',
-      modules: modules || ['timeline', 'wheel', 'coupons', 'wishlist'],
-      timeline:     timeline     || [],
-      wishlist:     wishlist     || [],
-      punishments:  punishments  || [],
-      coupons:      coupons      || [],
-      certificates: certificates || [],
+      modules: modules || ['timeline', 'wheel', 'coupons', 'wishlist', 'funZone'],
+      timeline:        timeline        || [],
+      brotherMessage:  brotherMessage  || '',
+      wishlist:        wishlist        || [],
+      punishments:     punishments     || [],
+      coupons:         coupons         || [],
+      certificates:    certificates    || [],
+      roasts:          roasts          || [],
+      secretChallenge: secretChallenge || {},
+      siblingFavor:    siblingFavor    || {},
+      fines:           fines           || [],
     });
 
     const shareUrl = generateLink(packetId);
@@ -103,7 +113,7 @@ export const pledgeWishlistItem = async (req, res, next) => {
     const item = packet.wishlist.id(itemId);
     if (!item) return res.status(404).json({ error: 'Wishlist item not found.' });
 
-    item.status = 'pledged';
+    item.status = item.status === 'pledged' ? 'open' : 'pledged';
     await packet.save();
 
     res.json({ success: true, item });

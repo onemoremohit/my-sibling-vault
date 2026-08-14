@@ -1,24 +1,36 @@
 import mongoose from 'mongoose';
 
-const connectDB = async () => {
-  const MAX_RETRIES = 5;
-  let retries = 0;
+// ── Connection Lifecycle Event Listeners ────────────────────────────────────
+mongoose.connection.on('connected', () => {
+  console.log(`✅ MongoDB Atlas connected successfully (Host: ${mongoose.connection.host})`);
+});
 
-  while (retries < MAX_RETRIES) {
-    try {
-      const conn = await mongoose.connect(process.env.MONGO_URI);
-      console.log(`✅ MongoDB connected: ${conn.connection.host}`);
-      return;
-    } catch (err) {
-      retries++;
-      console.error(`❌ MongoDB connection attempt ${retries} failed: ${err.message}`);
-      if (retries >= MAX_RETRIES) {
-        console.error('💀 Max retries reached. Exiting.');
-        process.exit(1);
-      }
-      // Wait 2s before retry
-      await new Promise(res => setTimeout(res, 2000));
-    }
+mongoose.connection.on('error', (err) => {
+  console.error(`❌ MongoDB connection error: ${err.message}`);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.warn('⚠️ MongoDB disconnected. Attempting reconnection...');
+});
+
+// ── Connect DB Function ─────────────────────────────────────────────────────
+const connectDB = async () => {
+  if (!process.env.MONGO_URI) {
+    console.error('❌ MONGO_URI is missing in environment variables');
+    process.exit(1);
+  }
+
+  const options = {
+    maxPoolSize: 10,
+    serverSelectionTimeoutMS: 5000,
+    autoIndex: process.env.NODE_ENV !== 'production',
+  };
+
+  try {
+    await mongoose.connect(process.env.MONGO_URI, options);
+  } catch (err) {
+    console.error(`❌ Initial MongoDB connection failed: ${err.message}`);
+    process.exit(1);
   }
 };
 

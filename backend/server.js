@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import mongoose from 'mongoose';
 
 import connectDB from './src/config/db.js';
 import packetRoutes from './src/routes/packetRoutes.js';
@@ -37,8 +38,25 @@ app.use('/uploads', express.static(uploadsDir));
 // ── API Routes ───────────────────────────────────────────────────────────────
 app.use('/api/packets', packetRoutes);
 
-// ── Health check ─────────────────────────────────────────────────────────────
-app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
+// ── Health Check & Connection Monitoring ─────────────────────────────────────
+app.get('/api/health', (req, res) => {
+  const readyState = mongoose.connection.readyState;
+  const stateMap = {
+    0: 'Disconnected',
+    1: 'Connected',
+    2: 'Connecting',
+    3: 'Disconnecting',
+  };
+
+  const isHealthy = readyState === 1;
+
+  res.status(isHealthy ? 200 : 503).json({
+    status: isHealthy ? 'healthy' : 'degraded',
+    database: stateMap[readyState] || 'Unknown',
+    uptime: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString(),
+  });
+});
 
 // ── 404 handler ──────────────────────────────────────────────────────────────
 app.use((req, res) => res.status(404).json({ error: `Route ${req.method} ${req.path} not found.` }));
@@ -48,6 +66,25 @@ app.use(errorHandler);
 
 // ── Start server ─────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
+// ── Process Lifecycle & Graceful Shutdown ────────────────────────────────────
+const gracefulShutdown = async (signal) => {
+  console.log(`\n⚠️ Received ${signal}. Closing MongoDB connection & shutting down server gracefully...`);
+  try {
+    server.close(() => {
+      console.log('HTTP server closed.');
+    });
+    await mongoose.connection.close();
+    console.log('✅ MongoDB connection closed cleanly.');
+    process.exit(0);
+  } catch (err) {
+    console.error(`❌ Error during graceful shutdown: ${err.message}`);
+    process.exit(1);
+  }
+};
+
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));

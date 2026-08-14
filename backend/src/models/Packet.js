@@ -61,6 +61,7 @@ const packetSchema = new mongoose.Schema(
     theme:           { type: String, default: 'nostalgic' },
     modules:         { type: [String], default: ['timeline', 'wheel', 'coupons', 'wishlist', 'funZone'] },
     timeline:        [timelineItemSchema],
+    brotherMessage:  { type: String, default: '' },
     wishlist:        [wishlistItemSchema],
     punishments:     { type: [String], default: [] },
     coupons:         [couponSchema],
