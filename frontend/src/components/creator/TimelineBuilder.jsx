@@ -20,6 +20,13 @@ const TimelineBuilder = () => {
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef(null);
 
+  const getMediaUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (url.startsWith('/')) return `http://localhost:5000${url}`;
+    return `http://localhost:5000/${url}`;
+  };
+
   const handleFiles = async (e) => {
     const selectedFiles = Array.from(e.target.files);
     if (selectedFiles.length === 0) return;
@@ -144,7 +151,7 @@ const TimelineBuilder = () => {
                 {form.mediaType === 'video' ? (
                   <div className="relative rounded-xl overflow-hidden bg-black/5 max-h-52 flex items-center justify-center">
                     <video
-                      src={`http://localhost:5000${form.mediaUrl}`}
+                      src={getMediaUrl(form.mediaUrl)}
                       className="w-full max-h-52 object-cover rounded-xl"
                       controls
                     />
@@ -155,7 +162,7 @@ const TimelineBuilder = () => {
                     {form.mediaUrls.map((url, idx) => (
                       <div key={idx} className="relative group rounded-xl overflow-hidden aspect-square bg-surface-container">
                         <img
-                          src={`http://localhost:5000${url}`}
+                          src={getMediaUrl(url)}
                           alt={`preview-${idx}`}
                           className="w-full h-full object-cover"
                         />
@@ -311,7 +318,7 @@ const TimelineBuilder = () => {
                   {firstUrl ? (
                     <div className="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-surface-container">
                       <img
-                        src={`http://localhost:5000${firstUrl}`}
+                        src={getMediaUrl(firstUrl)}
                         alt={item.title}
                         className="w-full h-full object-cover"
                       />

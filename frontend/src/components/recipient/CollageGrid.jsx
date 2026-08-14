@@ -12,7 +12,12 @@ const CollageGrid = ({ item }) => {
 
   if (urls.length === 0) return null;
 
-  const getFullUrl = (url) => (url.startsWith('/uploads') ? `http://localhost:5000${url}` : url);
+  const getFullUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (url.startsWith('/')) return `http://localhost:5000${url}`;
+    return `http://localhost:5000/${url}`;
+  };
 
   // 1. Single Video Player
   if (item.mediaType === 'video') {

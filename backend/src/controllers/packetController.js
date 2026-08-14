@@ -120,7 +120,7 @@ export const uploadMedia = async (req, res, next) => {
       return res.status(400).json({ error: 'No files uploaded.' });
     }
 
-    const mediaUrls = files.map(f => `/uploads/${f.filename}`);
+    const mediaUrls = files.map(f => f.location || `/uploads/${f.filename}`);
     const isVideo = files.some(f => f.mimetype.startsWith('video'));
     const mediaType = isVideo ? 'video' : (mediaUrls.length > 1 ? 'images' : 'image');
 
