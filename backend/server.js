@@ -45,7 +45,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (e.g., curl, Postman, server-to-server)
+    // Allow requests with no origin (e.g., curl, Postman, server-to-server, health probes)
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
     callback(new Error(`CORS blocked: origin "${origin}" is not allowed.`));
@@ -86,10 +86,18 @@ app.use('/api/packets/upload', strictLimiter);
 // ── 6. Serve uploaded media as static files ──────────────────────────────────
 app.use('/uploads', express.static(uploadsDir));
 
-// ── 7. API Routes ───────────────────────────────────────────────────────────
-app.use('/api/packets', packetRoutes);
+// ── 7. Root Probe & Health Check ────────────────────────────────────────────
+// Root probe for Cloud Run, load balancers, and container orchestration
+app.get('/', (req, res) => {
+  res.status(200).json({
+    service: 'sibling-vault-backend',
+    status: 'ok',
+    uptime: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString(),
+  });
+});
 
-// ── 8. Health Check & Connection Monitoring ──────────────────────────────────
+// Detailed Health Check & MongoDB Connection Monitoring
 app.get('/api/health', (req, res) => {
   const readyState = mongoose.connection.readyState;
   const stateMap = {
@@ -109,16 +117,21 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// ── 8. API Routes ───────────────────────────────────────────────────────────
+app.use('/api/packets', packetRoutes);
+
 // ── 9. 404 handler ──────────────────────────────────────────────────────────
 app.use((req, res) => res.status(404).json({ error: `Route ${req.method} ${req.path} not found.` }));
 
 // ── 10. Global error handler ─────────────────────────────────────────────────
 app.use(errorHandler);
 
-// ── 11. Start server ─────────────────────────────────────────────────────────
-const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT} [${process.env.NODE_ENV || 'development'}]`);
+// ── 11. Start server (0.0.0.0 binding for Cloud Run compatibility) ───────────
+const PORT = process.env.PORT || 8080;
+const HOST = '0.0.0.0';
+
+const server = app.listen(PORT, HOST, () => {
+  console.log(`🚀 Server running at http://${HOST}:${PORT} [${process.env.NODE_ENV || 'development'}]`);
 });
 
 // ── 12. Process Lifecycle & Graceful Shutdown ────────────────────────────────

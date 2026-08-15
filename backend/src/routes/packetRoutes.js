@@ -18,15 +18,24 @@ const endpointRaw = process.env.B2_ENDPOINT || 's3.us-west-004.backblazeb2.com';
 const endpointUrl = endpointRaw.startsWith('http') ? endpointRaw : `https://${endpointRaw}`;
 const regionMatch = endpointRaw.match(/s3\.([a-z0-9-]+)\.backblazeb2\.com/i);
 const region = regionMatch ? regionMatch[1] : 'us-west-004';
+const bucketName = process.env.B2_BUCKET_NAME;
 
 const isB2Configured = Boolean(
+  process.env.USE_B2 === 'true' &&
   process.env.B2_KEY_ID &&
   process.env.B2_KEY_ID !== 'your-key-id' &&
   process.env.B2_APPLICATION_KEY &&
   process.env.B2_APPLICATION_KEY !== 'your-application-key' &&
-  process.env.B2_BUCKET_NAME &&
-  process.env.B2_BUCKET_NAME !== 'your-bucket-name'
+  bucketName &&
+  bucketName !== 'your-bucket-name'
 );
+
+// Construct the public base URL for the B2 bucket (friendly URL format)
+// Backblaze B2 public file URL: https://f<cluster>.backblazeb2.com/file/<bucket>/<key>
+// OR S3-compatible: https://<bucket>.s3.<region>.backblazeb2.com/<key>
+const b2PublicBaseUrl = isB2Configured
+  ? `${endpointUrl}/${bucketName}`
+  : '';
 
 let storage;
 
@@ -34,6 +43,7 @@ if (isB2Configured) {
   const s3 = new S3Client({
     endpoint: endpointUrl,
     region: region,
+    forcePathStyle: true, // Required for B2 S3-compatible API
     credentials: {
       accessKeyId: process.env.B2_KEY_ID,
       secretAccessKey: process.env.B2_APPLICATION_KEY,
@@ -42,7 +52,7 @@ if (isB2Configured) {
 
   storage = multerS3({
     s3,
-    bucket: process.env.B2_BUCKET_NAME,
+    bucket: bucketName,
     contentType: multerS3.AUTO_CONTENT_TYPE,
     metadata: (req, file, cb) => {
       cb(null, { fieldName: file.fieldname });
@@ -53,7 +63,7 @@ if (isB2Configured) {
       cb(null, `timeline/${unique}${ext}`);
     },
   });
-  console.log('☁️ Backblaze B2 S3 storage configured for uploads.');
+  console.log(`☁️ Backblaze B2 S3 storage configured. Public base: ${b2PublicBaseUrl}`);
 } else {
   storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, 'uploads/'),
@@ -76,8 +86,10 @@ const upload = multer({
   },
 });
 
+// Export b2PublicBaseUrl so the controller can build URLs from keys
+export { b2PublicBaseUrl };
+
 // ── Routes ─────────────────────────────────────────────────────────────────
-// Accepts single 'media' OR multiple 'mediaFiles' (up to 6)
 router.post('/upload', upload.any(), uploadMedia);
 router.post('/',                         createPacket);
 router.get('/:packetId',                 getPacket);

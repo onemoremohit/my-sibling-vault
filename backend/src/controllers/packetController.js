@@ -130,7 +130,27 @@ export const uploadMedia = async (req, res, next) => {
       return res.status(400).json({ error: 'No files uploaded.' });
     }
 
-    const mediaUrls = files.map(f => f.location || `/uploads/${f.filename}`);
+    // Import the B2 base URL dynamically (set in packetRoutes.js)
+    let b2Base = '';
+    try {
+      const { b2PublicBaseUrl } = await import('../routes/packetRoutes.js');
+      b2Base = b2PublicBaseUrl || '';
+    } catch { /* ignore */ }
+
+    const mediaUrls = files.map(f => {
+      // 1. If multer-s3 set location (full URL), use it
+      if (f.location) return f.location;
+      // 2. If we have a key (B2 S3), build the public URL
+      if (f.key && b2Base) return `${b2Base}/${f.key}`;
+      // 3. Fallback to local uploads path
+      return `/uploads/${f.filename}`;
+    });
+
+    // Debug log
+    files.forEach((f, i) => {
+      console.log(`📁 File[${i}]: location=${f.location}, key=${f.key}, built=${mediaUrls[i]}`);
+    });
+
     const isVideo = files.some(f => f.mimetype.startsWith('video'));
     const mediaType = isVideo ? 'video' : (mediaUrls.length > 1 ? 'images' : 'image');
 
