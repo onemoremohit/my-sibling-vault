@@ -53,7 +53,11 @@ const CreatorStudio = () => {
     setIsGenerating(true);
     try {
       const { data } = await createPacket(packet);
-      setShareData(data);
+      const liveShareUrl = `${window.location.origin}/vault/${data.packetId}`;
+      setShareData({
+        ...data,
+        shareUrl: liveShareUrl,
+      });
       showSuccess('🎉 Memory Vault created successfully!');
     } catch (err) {
       showError(err.response?.data?.error || 'Failed to save packet. Make sure backend is running.');

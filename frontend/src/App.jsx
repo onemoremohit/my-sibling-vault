@@ -6,10 +6,11 @@ import RecipientView  from './pages/RecipientView';
 
 const App = () => (
   <Routes>
-    <Route path="/"               element={<LandingPage />} />
-    <Route path="/studio"         element={<CreatorStudio />} />
+    <Route path="/"                element={<LandingPage />} />
+    <Route path="/studio"          element={<CreatorStudio />} />
     <Route path="/vault/:packetId" element={<RecipientView />} />
-    <Route path="*"               element={
+    <Route path="/v/:packetId"     element={<RecipientView />} />
+    <Route path="*"                element={
       <div className="min-h-screen flex items-center justify-center bg-surface font-body text-on-surface">
         <div className="text-center">
           <h1 className="text-display-mobile font-display text-primary mb-4">404</h1>
