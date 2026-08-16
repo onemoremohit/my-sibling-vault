@@ -23,33 +23,33 @@ mongoose.connection.on('disconnected', () => {
 
 // ── Connect DB Function ─────────────────────────────────────────────────────
 const connectDB = async () => {
-  if (!process.env.MONGO_URI) {
+  const uri = process.env.MONGO_URI;
+
+  if (!uri) {
     console.error('❌ MONGO_URI is missing in environment variables');
-    process.exit(1);
+    return;
   }
 
   const options = {
     maxPoolSize: 10,
-    serverSelectionTimeoutMS: 5000,
+    serverSelectionTimeoutMS: 8000,
     autoIndex: process.env.NODE_ENV !== 'production',
   };
 
   try {
-    await mongoose.connect(process.env.MONGO_URI, options);
+    await mongoose.connect(uri, options);
   } catch (err) {
     console.error(`❌ Initial MongoDB connection failed: ${err.message}`);
-    // If Atlas connection fails, attempt fallback connection to local MongoDB
+    // If Atlas connection fails, attempt fallback connection to local MongoDB if in local dev
     const localUri = 'mongodb://127.0.0.1:27017/sibling-vault';
-    if (process.env.MONGO_URI !== localUri) {
+    if (uri !== localUri && process.env.NODE_ENV !== 'production') {
       console.log(`🔄 Attempting fallback connection to local MongoDB (${localUri})...`);
       try {
         await mongoose.connect(localUri, options);
-        return;
       } catch (localErr) {
         console.error(`❌ Local MongoDB fallback also failed: ${localErr.message}`);
       }
     }
-    process.exit(1);
   }
 };
 

@@ -21,9 +21,6 @@ const __dirname  = path.dirname(__filename);
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
-// ── Connect to MongoDB ───────────────────────────────────────────────────────
-await connectDB();
-
 // ── Express App ─────────────────────────────────────────────────────────────
 const app = express();
 
@@ -126,12 +123,17 @@ app.use((req, res) => res.status(404).json({ error: `Route ${req.method} ${req.p
 // ── 10. Global error handler ─────────────────────────────────────────────────
 app.use(errorHandler);
 
-// ── 11. Start server (0.0.0.0 binding for Cloud Run compatibility) ───────────
+// ── 11. Start server immediately for instant Cloud Run TCP probe passing ────
 const PORT = process.env.PORT || 8080;
 const HOST = '0.0.0.0';
 
 const server = app.listen(PORT, HOST, () => {
   console.log(`🚀 Server running at http://${HOST}:${PORT} [${process.env.NODE_ENV || 'development'}]`);
+  
+  // Connect to database in the background after server socket is open
+  connectDB().catch((err) => {
+    console.error('❌ Background MongoDB connection failed:', err.message);
+  });
 });
 
 // ── 12. Process Lifecycle & Graceful Shutdown ────────────────────────────────
