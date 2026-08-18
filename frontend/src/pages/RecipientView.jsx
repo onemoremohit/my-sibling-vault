@@ -8,6 +8,7 @@ import SpinWheel from '../components/recipient/SpinWheel';
 import CouponCard from '../components/recipient/CouponCard';
 import CertificateCard from '../components/recipient/CertificateCard';
 import FunZoneDisplay from '../components/recipient/FunZoneDisplay';
+import SisterCompletionCard from '../components/recipient/SisterCompletionCard';
 import { getPacket } from '../services/api';
 import { showError } from '../components/common/Toast';
 import { t } from '../i18n/translations';
@@ -90,6 +91,8 @@ const RecipientView = () => {
   const navigate = useNavigate();
   const [packet, setPacket] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [redeemedCoupons, setRedeemedCoupons] = useState([]);
+  const [acceptedPunishment, setAcceptedPunishment] = useState('');
 
   useEffect(() => {
     const fetchVault = async () => {
@@ -104,6 +107,13 @@ const RecipientView = () => {
         const { data } = await getPacket(packetId);
         if (data && data.packetId) {
           setPacket(data);
+          // Preload any already redeemed coupons or interactions
+          if (data.interactions?.couponsRedeemed?.length > 0) {
+            setRedeemedCoupons(data.interactions.couponsRedeemed);
+          }
+          if (data.interactions?.punishmentAccepted) {
+            setAcceptedPunishment(data.interactions.punishmentAccepted);
+          }
         } else {
           setPacket(DEMO_PACKET);
         }
@@ -123,6 +133,14 @@ const RecipientView = () => {
 
   const lang = packet?.language || 'en';
   const modules = packet?.modules || ['timeline', 'wishlist', 'wheel', 'coupons', 'funZone'];
+
+  const handleCouponRedeemed = (title) => {
+    setRedeemedCoupons((prev) => (prev.includes(title) ? prev : [...prev, title]));
+  };
+
+  const handlePunishmentSelected = (punishment) => {
+    setAcceptedPunishment(punishment);
+  };
 
   return (
     <div className="min-h-screen bg-surface paper-texture flex flex-col">
@@ -162,11 +180,25 @@ const RecipientView = () => {
 
         {/* Module 2: Punishment Wheel */}
         {modules.includes('wheel') && (
-          <SpinWheel punishments={packet.punishments} lang={lang} />
+          <SpinWheel
+            punishments={packet.punishments}
+            onPunishmentAccepted={handlePunishmentSelected}
+            lang={lang}
+          />
         )}
 
-        {/* Module 3: Gift Wishlist — Always shown (mandatory) */}
-        <WishlistDisplay packetId={packetId} items={packet.wishlist} brotherMessage={packet.brotherMessage || ''} lang={lang} />
+        {/* Module 3: Gift Wishlist & Message — Always shown (mandatory) */}
+        <WishlistDisplay
+          packetId={packetId}
+          brotherMessage={packet.brotherMessage || ''}
+          giftOrdered={packet.giftOrdered}
+          orderedGiftName={packet.orderedGiftName || ''}
+          orderedGiftNote={packet.orderedGiftNote || ''}
+          orderedGiftImage={packet.orderedGiftImage || ''}
+          senderName={packet.senderName || 'Bhai'}
+          recipientName={packet.recipientName || 'Didi'}
+          lang={lang}
+        />
 
         {/* Module 4: Coupons & Certificates */}
         {modules.includes('coupons') && (
@@ -181,7 +213,13 @@ const RecipientView = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {packet.coupons.map((c) => (
-                    <CouponCard key={c.id || c._id} packetId={packetId} coupon={c} lang={lang} />
+                    <CouponCard
+                      key={c.id || c._id}
+                      packetId={packetId}
+                      coupon={c}
+                      onCouponRedeemed={handleCouponRedeemed}
+                      lang={lang}
+                    />
                   ))}
                 </div>
               </div>
@@ -222,6 +260,16 @@ const RecipientView = () => {
             lang={lang}
           />
         )}
+
+        {/* ── PHASE 2: Sister's Vault Completion & Reply Handoff ── */}
+        <SisterCompletionCard
+          packetId={packetId}
+          senderName={packet.senderName}
+          recipientName={packet.recipientName}
+          redeemedCoupons={redeemedCoupons}
+          acceptedPunishment={acceptedPunishment}
+          lang={lang}
+        />
       </main>
 
       {/* Footer */}

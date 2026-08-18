@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import Packet from '../models/Packet.js';
 import generateLink from '../utils/generateLink.js';
@@ -13,6 +14,10 @@ export const createPacket = async (req, res, next) => {
       modules,
       timeline,
       brotherMessage,
+      giftOrdered,
+      orderedGiftName,
+      orderedGiftNote,
+      orderedGiftImage,
       wishlist,
       punishments,
       coupons,
@@ -38,6 +43,10 @@ export const createPacket = async (req, res, next) => {
       modules: modules || ['timeline', 'wheel', 'coupons', 'wishlist', 'funZone'],
       timeline:        timeline        || [],
       brotherMessage:  brotherMessage  || '',
+      giftOrdered:     giftOrdered     ?? false,
+      orderedGiftName: orderedGiftName || '',
+      orderedGiftNote: orderedGiftNote || '',
+      orderedGiftImage:orderedGiftImage|| '',
       wishlist:        wishlist        || [],
       punishments:     punishments     || [],
       coupons:         coupons         || [],
@@ -117,6 +126,50 @@ export const pledgeWishlistItem = async (req, res, next) => {
     await packet.save();
 
     res.json({ success: true, item });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ─── PUT /api/packets/:id/complete ──────────────────────────────────────────
+export const completePacket = async (req, res, next) => {
+  try {
+    const { packetId, id } = req.params;
+    const targetId = packetId || id;
+    const { couponsRedeemed, punishmentAccepted, reactionMessage } = req.body;
+
+    const packet = await Packet.findOne({
+      $or: [
+        { packetId: targetId },
+        { _id: mongoose.isValidObjectId(targetId) ? targetId : null },
+      ],
+    });
+
+    if (!packet) {
+      return res.status(404).json({ error: `Packet "${targetId}" not found.` });
+    }
+
+    packet.interactions = {
+      status: 'completed',
+      couponsRedeemed: Array.isArray(couponsRedeemed)
+        ? couponsRedeemed
+        : (packet.interactions?.couponsRedeemed || []),
+      punishmentAccepted: punishmentAccepted !== undefined
+        ? punishmentAccepted
+        : (packet.interactions?.punishmentAccepted || ''),
+      reactionMessage: reactionMessage !== undefined
+        ? reactionMessage
+        : (packet.interactions?.reactionMessage || ''),
+      completedAt: new Date(),
+    };
+
+    await packet.save();
+
+    res.json({
+      success: true,
+      message: 'Vault interactions completed successfully!',
+      packet,
+    });
   } catch (err) {
     next(err);
   }

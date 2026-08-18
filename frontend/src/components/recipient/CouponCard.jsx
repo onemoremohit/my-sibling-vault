@@ -4,7 +4,7 @@ import { redeemCoupon } from '../../services/api';
 import { showSuccess, showError } from '../common/Toast';
 import { t } from '../../i18n/translations';
 
-const CouponCard = ({ packetId, coupon, lang = 'en' }) => {
+const CouponCard = ({ packetId, coupon, onCouponRedeemed, lang = 'en' }) => {
   const [isRedeemed, setIsRedeemed] = useState(coupon.redeemed);
 
   const handleRedeem = async () => {
@@ -15,6 +15,7 @@ const CouponCard = ({ packetId, coupon, lang = 'en' }) => {
         await redeemCoupon(packetId, coupon.id || coupon._id);
       }
       setIsRedeemed(true);
+      onCouponRedeemed?.(coupon.title);
       showSuccess(`🎟️ Redeemed: "${coupon.title}"!`);
     } catch {
       showError('Failed to redeem coupon.');

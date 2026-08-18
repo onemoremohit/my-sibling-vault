@@ -22,8 +22,8 @@ const PRESET_ROASTS_HINGLISH = [
 
 const PRESET_CRIMES_EN = [
   { crimeTitle: 'Stealing clothes without asking 👕', amount: 500 },
+  { crimeTitle: 'Eating my ice cream / treats from fridge 🍦', amount: 300 },
   { crimeTitle: 'Unanswered phone calls > 3 times 📱', amount: 200 },
-  { crimeTitle: 'Eating my ice cream from fridge 🍦', amount: 300 },
   { crimeTitle: 'Spoiling movie climax ending 🎬', amount: 1000 },
   { crimeTitle: 'Bathroom occupancy > 45 minutes 🛁', amount: 400 },
 ];

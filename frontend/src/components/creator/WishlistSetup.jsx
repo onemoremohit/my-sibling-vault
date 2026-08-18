@@ -1,211 +1,229 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import usePacket from '../../hooks/usePacket';
-import { showSuccess, showError } from '../common/Toast';
-
-const GIFT_CATEGORIES = [
-  { id: 'fashion',     emoji: '👗', label: 'Clothes & Fashion'      },
-  { id: 'tech',        emoji: '📱', label: 'Gadgets & Electronics'   },
-  { id: 'cosmetics',   emoji: '💄', label: 'Cosmetic & Beauty'       },
-  { id: 'chocolates',  emoji: '🍫', label: 'Chocolates & Sweets'     },
-  { id: 'food',        emoji: '🍕', label: 'Food & Treats'           },
-];
-
-const GIFT_CATEGORIES_HINGLISH = [
-  { id: 'fashion',     emoji: '👗', label: 'Kapde & Fashion'         },
-  { id: 'tech',        emoji: '📱', label: 'Gadgets & Electronics'   },
-  { id: 'cosmetics',   emoji: '💄', label: 'Beauty & Cosmetics'      },
-  { id: 'chocolates',  emoji: '🍫', label: 'Chocolates & Meetha'     },
-  { id: 'food',        emoji: '🍕', label: 'Khana & Treats'          },
-];
+import { AFFILIATE_STORES } from '../../data/affiliateStores';
+import { showSuccess } from '../common/Toast';
 
 const RAKHI_MESSAGES_EN = [
-  'Happy Raksha Bandhan, Didi! 🎀 Pick what your heart desires!',
-  'For my favourite sister — choose your best gift! 🌸',
-  'Rakhi gift time! Tell me what you want and I will get it! 💝',
-  'Didi, you deserve the world. Start here! 🎁',
+  'Happy Raksha Bandhan, Didi! 🎀 You mean the world to me!',
+  'For my favourite sister — the best gift is on the way! 🌸',
+  'Rakhi gift time! Sending you lots of love and a sweet surprise! 💝',
+  'Didi, you deserve all the happiness. Happy Raksha Bandhan! 🎁',
 ];
 
 const RAKHI_MESSAGES_HINGLISH = [
-  'Happy Raksha Bandhan Didi! 🎀 Jo dil chahe woh choose karo!',
-  'Meri favourite behen ke liye — apna best gift chunna! 🌸',
-  'Rakhi gift time! Batao kya chahiye, main dilaunga! 💝',
-  'Didi, tum sab kuch deserve karti ho. Yahan se shuru karo! 🎁',
+  'Happy Raksha Bandhan Didi! 🎀 Tum mere liye sabse special ho!',
+  'Meri favourite behen ke liye — ek bohot pyaara surprise gift! 🌸',
+  'Rakhi gift time! Dil se dher saara pyaar aur ek gift tere liye! 💝',
+  'Didi, tum sab kuch deserve karti ho. Happy Rakhi! 🎁',
 ];
 
 const WishlistSetup = () => {
-  const { packet, addWishlistItem, removeWishlistItem, updateBrotherMessage, t } = usePacket();
-  const [customItem, setCustomItem] = useState('');
-  const [customCategory, setCustomCategory] = useState('Custom');
+  const { packet, updateBrotherMessage, updateGiftOrdered } = usePacket();
 
   const isHinglish = packet?.language === 'hinglish';
-  const categories = isHinglish ? GIFT_CATEGORIES_HINGLISH : GIFT_CATEGORIES;
   const rakhiMessages = isHinglish ? RAKHI_MESSAGES_HINGLISH : RAKHI_MESSAGES_EN;
 
-  const handleAddPreset = (cat) => {
-    const existing = packet.wishlist?.find(w => w.category === cat.id);
-    if (existing) {
-      removeWishlistItem(existing.id);
-    } else {
-      addWishlistItem({ item: `${cat.emoji} ${cat.label}`, category: cat.id });
-      showSuccess(`${cat.label} added!`);
+  const handleToggleOrdered = () => {
+    const newState = !packet.giftOrdered;
+    updateGiftOrdered(newState);
+    if (newState) {
+      showSuccess(isHinglish ? '🎁 Gift purchase confirm ho gaya! Recipient ko surprise message dikhega.' : '🎁 Gift purchase confirmed! Recipient will see surprise delivery notice.');
     }
   };
 
-  const handleAddCustom = () => {
-    if (!customItem.trim()) { showError('Enter an item name.'); return; }
-    addWishlistItem({ item: customItem.trim(), category: customCategory });
-    setCustomItem('');
-    showSuccess('Item added to wishlist!');
-  };
-
   return (
-    <div className="space-y-5">
-      {/* ── Raksha Bandhan Message Card ── */}
-      <div className="bg-surface rounded-2xl p-5 shadow-card border-2 border-primary/30 space-y-4">
-        <div className="flex items-center gap-3">
-          <span className="text-3xl">🎀</span>
+    <div className="space-y-8">
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      {/* FEATURE 1: Raksha Bandhan Message for Sister */}
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      <div className="bg-surface rounded-3xl p-6 md:p-8 shadow-card border-2 border-primary/25 space-y-6">
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-2xl shrink-0">
+            🎀
+          </div>
           <div>
-            <h3 className="font-display text-headline-md text-primary">
+            <h3 className="font-display text-headline-md text-primary font-bold">
               {isHinglish ? 'Behen ke liye Raksha Bandhan Message' : 'Raksha Bandhan Message for Sister'}
               <span className="text-error ml-1" title="Required">*</span>
             </h3>
-            <p className="font-body text-caption text-on-surface-variant">
+            <p className="font-body text-body-sm text-on-surface-variant">
               {isHinglish
-                ? 'Apni behen ko ek dil se message likho ya preset chuno'
-                : 'Write a heartfelt message or pick a quick preset for your sister'}
+                ? 'Apni behen ko ek dil se message likho ya neeche se preset chuno'
+                : 'Write a heartfelt message or pick a preset wish for your sister'}
             </p>
           </div>
         </div>
 
         {/* Quick Presets */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 pt-1">
           {rakhiMessages.map((msg, i) => (
             <button
               key={i}
+              type="button"
               onClick={() => updateBrotherMessage(msg)}
-              className={`px-3 py-1.5 rounded-xl text-caption font-body font-bold border-2 transition-all ${
+              className={`px-3.5 py-2 rounded-xl text-caption font-body font-bold border-2 transition-all text-left ${
                 packet.brotherMessage === msg
-                  ? 'border-primary bg-primary text-on-primary'
-                  : 'border-outline-variant hover:border-primary text-on-surface'
+                  ? 'border-primary bg-primary text-on-primary shadow-sm scale-[1.02]'
+                  : 'border-outline-variant/60 hover:border-primary text-on-surface hover:bg-primary-fixed/10'
               }`}
             >
-              {msg.length > 45 ? msg.slice(0, 45) + '…' : msg}
+              {msg}
             </button>
           ))}
         </div>
 
         {/* Custom message textarea */}
-        <textarea
-          rows={2}
-          className="w-full border-2 border-primary-fixed-dim bg-surface-bright rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:border-secondary focus:outline-none transition-colors resize-none"
-          placeholder={isHinglish
-            ? 'e.g. Didi, Happy Rakhi! Jo chahiye batao, main dunga! 🎀'
-            : 'e.g. Happy Rakhi Didi! Tell me what you want and I will make it happen! 🎀'}
-          value={packet.brotherMessage}
-          onChange={e => updateBrotherMessage(e.target.value)}
-        />
-      </div>
-
-      {/* ── 5 Gift Categories Preview ── */}
-      <div className="bg-surface rounded-2xl p-5 shadow-card border border-outline-variant/20">
-        <h3 className="font-display text-headline-md text-on-surface mb-1">
-          {isHinglish ? '5 Gift Categories (Preview) 🎁' : '5 Gift Categories (Preview) 🎁'}
-          <span className="text-error ml-1" title="Required">*</span>
-        </h3>
-        <p className="font-body text-caption text-on-surface-variant mb-4">
-          {isHinglish
-            ? 'Aapki behen in 5 categories mein se gift choose kar sakti hai'
-            : 'Your sister will be able to browse these 5 categories to pick a gift'}
-        </p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {categories.map(cat => {
-            const isSelected = packet.wishlist?.some(w => w.category === cat.id);
-            return (
-              <button
-                key={cat.id}
-                onClick={() => handleAddPreset(cat)}
-                className={`relative flex items-center gap-2 p-3 border-2 rounded-xl transition-all font-body text-label-bold text-left ${
-                  isSelected
-                    ? 'border-primary bg-primary-fixed/20 text-primary font-bold'
-                    : 'border-outline-variant text-on-surface hover:border-primary hover:bg-primary-fixed/10'
-                }`}
-              >
-                <span className="text-xl">{cat.emoji}</span>
-                <span className="text-sm">{cat.label}</span>
-                {isSelected && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-primary text-on-primary w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold shadow-md border-2 border-surface">
-                    ✓
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-        <p className="font-body text-caption text-on-surface-variant mt-3 italic">
-          {isHinglish
-            ? '✨ Recipient ko ek pop-up window milegi jisme wo apni choice kar sakti hai'
-            : '✨ Recipient will see a pop-up modal on each category to choose a specific gift'}
-        </p>
-      </div>
-
-      {/* ── Custom Item Add (Optional) ── */}
-      <div className="bg-surface rounded-2xl p-5 shadow-card border border-outline-variant/20">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-display text-headline-md text-on-surface">
-            {isHinglish ? 'Custom Item Add Karo' : 'Add Custom Item'}
-          </h3>
-          <span className="flex-shrink-0 font-body text-[10px] font-bold bg-surface-container text-on-surface-variant border border-outline-variant/40 px-2 py-0.5 rounded-full uppercase tracking-wider">
-            Optional
-          </span>
-        </div>
-        <div className="space-y-3">
-          <input
-            className="w-full border-2 border-primary-fixed-dim bg-surface-bright rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:border-secondary focus:outline-none transition-colors"
+        <div>
+          <label className="block font-body text-caption font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">
+            {isHinglish ? 'Aapka Custom Message 💌' : 'Your Custom Message 💌'}
+          </label>
+          <textarea
+            rows={3}
+            className="w-full border-2 border-primary-fixed-dim bg-surface-bright rounded-2xl px-4 py-3 font-body text-body-md text-on-surface focus:border-primary focus:outline-none transition-colors resize-none placeholder:text-on-surface-variant/50"
             placeholder={isHinglish
-              ? 'e.g. AirPods Pro, Meesho dress, Spa day…'
-              : 'e.g. AirPods Pro, Spa day, Maggi instant noodles…'}
-            value={customItem}
-            onChange={e => setCustomItem(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleAddCustom()}
+              ? 'e.g. Didi, Happy Rakhi! Maine tumhare liye ek bohot pyaara gift order kiya hai! 🎁'
+              : 'e.g. Happy Raksha Bandhan, Didi! A special gift is on its way to make you smile! 🎁'}
+            value={packet.brotherMessage}
+            onChange={e => updateBrotherMessage(e.target.value)}
           />
-          <button
-            onClick={handleAddCustom}
-            className="w-full bg-primary text-on-primary py-3 rounded-xl font-body font-bold text-label-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-          >
-            <span className="material-symbols-outlined text-[18px]">add</span>
-            {isHinglish ? 'Wishlist Mein Add Karo' : 'Add to Wishlist'}
-          </button>
         </div>
       </div>
 
-      {/* Wishlist items */}
-      {packet.wishlist.length > 0 && (
-        <div className="space-y-2">
-          <p className="font-body text-caption text-on-surface-variant font-bold uppercase tracking-wider">
-            {packet.wishlist.length} {isHinglish ? 'Items Added' : 'Items on Wishlist'}
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      {/* FEATURE 2: Partner Shopping Platforms (Affiliate Store Links)     */}
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      <div className="space-y-6">
+        {/* Header Banner */}
+        <div className="bg-gradient-to-r from-secondary-fixed/40 via-surface to-primary-fixed/30 p-6 md:p-8 rounded-3xl border border-outline-variant/30 space-y-2">
+          <div className="inline-flex items-center gap-1.5 bg-primary text-on-primary px-3 py-1 rounded-full text-caption font-body font-bold uppercase tracking-wider shadow-sm">
+            <span>🛍️</span>
+            <span>{isHinglish ? 'Partner Gift Stores' : 'Partner Gift Stores'}</span>
+          </div>
+          <h3 className="font-display text-headline-lg text-primary font-bold">
+            {isHinglish ? 'Apni Behen Ke Liye Shopping Platform Chuno 🎁' : 'Choose Where to Buy Her Gift 🎁'}
+          </h3>
+          <p className="font-body text-body-sm text-on-surface-variant max-w-2xl">
+            {isHinglish
+              ? 'Neeche diye gaye kisi bhi platform se behen ke liye gift order karein. Order karne ke baad "Maine Gift Order Kiya" confirm karein!'
+              : 'Select your preferred shopping platform below to buy her favorite gift. After ordering, simply confirm below!'}
           </p>
-          <AnimatePresence>
-            {packet.wishlist.map(item => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                className="flex items-center gap-3 bg-surface-container-low rounded-xl p-3 border border-outline-variant/20"
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="font-body font-bold text-label-bold text-on-surface truncate">{item.item}</p>
-                  <p className="font-body text-caption text-on-surface-variant capitalize">{item.category}</p>
+        </div>
+
+        {/* 4 Major Brand Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {AFFILIATE_STORES.map((store) => (
+            <motion.div
+              key={store.id}
+              whileHover={{ y: -3 }}
+              className={`bg-surface rounded-3xl p-6 border-2 transition-all shadow-card hover:shadow-card-hover flex flex-col justify-between space-y-5 ${store.borderColor}`}
+            >
+              <div className="space-y-3">
+                {/* Store Header & Badge */}
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-tr ${store.brandColor} text-white flex items-center justify-center text-2xl shadow-md`}>
+                      {store.logo}
+                    </div>
+                    <div>
+                      <h4 className="font-display text-headline-sm text-on-surface font-extrabold">
+                        {store.name}
+                      </h4>
+                      <p className="font-body text-caption font-bold text-primary">
+                        {store.discount}
+                      </p>
+                    </div>
+                  </div>
+
+                  <span className="bg-surface-bright border border-outline-variant/40 text-on-surface font-body font-bold text-[11px] px-3 py-1 rounded-full shadow-sm">
+                    {isHinglish ? store.badgeHi : store.badge}
+                  </span>
                 </div>
-                <button onClick={() => removeWishlistItem(item.id)} className="p-1 rounded-lg hover:bg-error-container text-on-surface-variant hover:text-error transition-colors">
-                  <span className="material-symbols-outlined text-[18px]">delete</span>
-                </button>
+
+                {/* Description & Popular For */}
+                <div className="space-y-1 bg-surface-bright/70 p-3.5 rounded-2xl border border-outline-variant/30">
+                  <p className="font-body text-body-sm text-on-surface font-semibold">
+                    {isHinglish ? store.taglineHi : store.tagline}
+                  </p>
+                  <p className="font-body text-caption text-on-surface-variant leading-relaxed">
+                    ✨ <span className="font-bold">{isHinglish ? 'Khaas Items:' : 'Popular for:'}</span> {isHinglish ? store.popularForHi : store.popularFor}
+                  </p>
+                </div>
+              </div>
+
+              {/* Direct Store Buy Link */}
+              <a
+                href={store.affiliateUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r ${store.brandColor} hover:opacity-95 text-white font-body font-bold text-label-lg py-3.5 px-5 rounded-2xl shadow-md hover:shadow-lg transition-all hover:scale-[1.01] text-center`}
+              >
+                <span>{isHinglish ? `${store.name} Par Gift Dekhein ↗` : `Shop on ${store.name} ↗`}</span>
+              </a>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* ─────────────────────────────────────────────────────────────────── */}
+        {/* ONE-TAP PURCHASE CONFIRMATION CARD (Zero Extra Work For User)     */}
+        {/* ─────────────────────────────────────────────────────────────────── */}
+        <div className="bg-surface rounded-3xl p-6 md:p-8 shadow-card border-2 border-primary/30 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl shrink-0">
+                🎁
+              </div>
+              <div>
+                <h4 className="font-display text-headline-sm text-primary font-bold">
+                  {isHinglish ? 'Order Confirm Karein' : 'Confirm Your Gift Purchase'}
+                </h4>
+                <p className="font-body text-body-sm text-on-surface-variant">
+                  {isHinglish
+                    ? 'Kya aapne upar diye gaye kisi store se behen ke liye gift order kar diya?'
+                    : 'Did you purchase/order a gift for her from any of the stores above?'}
+                </p>
+              </div>
+            </div>
+
+            {/* Simple One-Tap Confirm Toggle / Button */}
+            <button
+              type="button"
+              onClick={handleToggleOrdered}
+              className={`shrink-0 inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl font-body font-extrabold text-label-lg transition-all shadow-md ${
+                packet.giftOrdered
+                  ? 'bg-primary text-on-primary ring-2 ring-primary/40 scale-105'
+                  : 'bg-surface-bright border-2 border-primary text-primary hover:bg-primary-fixed/20'
+              }`}
+            >
+              <span>{packet.giftOrdered ? '✓' : '🎁'}</span>
+              <span>
+                {packet.giftOrdered
+                  ? (isHinglish ? 'Gift Ordered (Confirmed) ✅' : 'Gift Ordered (Confirmed) ✅')
+                  : (isHinglish ? 'Maine Gift Order Kar Diya 🎁' : 'Yes, I Have Ordered a Gift! 🎁')}
+              </span>
+            </button>
+          </div>
+
+          {/* Celebration notification if confirmed */}
+          <AnimatePresence>
+            {packet.giftOrdered && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="bg-primary-fixed/30 border border-primary/30 p-4 rounded-2xl flex items-center gap-3 text-primary font-body text-caption font-bold"
+              >
+                <span className="text-xl">✨</span>
+                <span>
+                  {isHinglish
+                    ? 'Badhai! Recipient side par ek exciting surprise gift message show hoga ki aapka gift raste mein hai!'
+                    : 'Awesome! Recipient will see an exciting surprise delivery notice that a gift is on its way to her!'}
+                </span>
               </motion.div>
-            ))}
+            )}
           </AnimatePresence>
         </div>
-      )}
+      </div>
     </div>
   );
 };

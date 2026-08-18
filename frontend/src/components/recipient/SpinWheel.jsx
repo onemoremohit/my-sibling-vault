@@ -8,7 +8,7 @@ const WHEEL_COLORS = [
   '#c9bfff', '#4ae183', '#ff8264', '#7459f7', '#13bf66',
 ];
 
-const SpinWheel = ({ punishments = [], lang = 'en' }) => {
+const SpinWheel = ({ punishments = [], onPunishmentAccepted, lang = 'en' }) => {
   const canvasRef = useRef(null);
   const [isSpinning, setIsSpinning] = useState(false);
   const [winner, setWinner] = useState(null);
@@ -104,7 +104,9 @@ const SpinWheel = ({ punishments = [], lang = 'en' }) => {
 
     setTimeout(() => {
       setIsSpinning(false);
-      setWinner(items[targetIndex]);
+      const selected = items[targetIndex];
+      setWinner(selected);
+      onPunishmentAccepted?.(selected);
     }, 3200);
   };
 

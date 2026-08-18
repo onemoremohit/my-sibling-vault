@@ -12,13 +12,15 @@ const initialPacket = {
   timeline:      [],
   wishlist:      [],
   brotherMessage: '',
+  giftOrdered:    false,
+  orderedGiftName: '',
+  orderedGiftNote: '',
+  orderedGiftImage: '',
   punishments:   [],
   coupons:       [],
   certificates:  [],
   roasts:        [
     { id: 'r1', text: 'Takes 2 hours to get ready for a 5-minute errand ⏰', trueVotes: 0, fakeVotes: 0 },
-    { id: 'r2', text: 'Always steals my clothes and denies it even while wearing them 👕', trueVotes: 0, fakeVotes: 0 },
-    { id: 'r3', text: 'Starts crying the exact second Mom enters the room 😭', trueVotes: 0, fakeVotes: 0 },
   ],
   secretChallenge: {
     question: 'Guess what I broke in 2019 without telling Mom!',
@@ -34,9 +36,7 @@ const initialPacket = {
   },
   fines: [
     { id: 'f1', crimeTitle: 'Stealing clothes without asking 👕', amount: 500 },
-    { id: 'f2', crimeTitle: 'Unanswered phone calls > 3 times 📱', amount: 200 },
-    { id: 'f3', crimeTitle: 'Eating my ice cream from fridge 🍦', amount: 300 },
-    { id: 'f4', crimeTitle: 'Bathroom occupancy > 45 minutes 🛁', amount: 400 },
+    { id: 'f2', crimeTitle: 'Eating my ice cream / treats from fridge 🍦', amount: 300 },
   ],
 };
 
@@ -46,8 +46,42 @@ const packetReducer = (state, action) => {
     case 'UPDATE_META':
       return { ...state, ...action.payload };
 
-    case 'SET_LANGUAGE':
-      return { ...state, language: action.payload };
+    case 'SET_LANGUAGE': {
+      const newLang = action.payload;
+      const isSwitchingToHinglish = newLang === 'hinglish';
+
+      // Update default roast text if matching
+      const roasts = state.roasts.map(r => {
+        if (r.id === 'r1') {
+          return {
+            ...r,
+            text: isSwitchingToHinglish
+              ? '5 min ke kaam ke liye 2 ghante taiyar hone me lagati hai ⏰'
+              : 'Takes 2 hours to get ready for a 5-minute errand ⏰',
+          };
+        }
+        return r;
+      });
+
+      // Update default fines text if matching
+      const fines = state.fines.map(f => {
+        if (f.id === 'f1') {
+          return {
+            ...f,
+            crimeTitle: isSwitchingToHinglish ? 'Bina puche kapde churana 👕' : 'Stealing clothes without asking 👕',
+          };
+        }
+        if (f.id === 'f2') {
+          return {
+            ...f,
+            crimeTitle: isSwitchingToHinglish ? 'Fridge se meri Maggi/Ice cream khana 🍦' : 'Eating my ice cream / treats from fridge 🍦',
+          };
+        }
+        return f;
+      });
+
+      return { ...state, language: newLang, roasts, fines };
+    }
 
     case 'TOGGLE_MODULE': {
       const { module } = action.payload;
@@ -72,13 +106,23 @@ const packetReducer = (state, action) => {
         ),
       };
 
-    // Wishlist
+    // Wishlist & Gift Status
     case 'ADD_WISHLIST_ITEM':
       return { ...state, wishlist: [...state.wishlist, { id: uuidv4(), status: 'open', ...action.payload }] };
     case 'REMOVE_WISHLIST_ITEM':
       return { ...state, wishlist: state.wishlist.filter(w => w.id !== action.payload) };
     case 'UPDATE_BROTHER_MESSAGE':
       return { ...state, brotherMessage: action.payload };
+    case 'SET_GIFT_ORDERED':
+      return { ...state, giftOrdered: action.payload };
+    case 'UPDATE_ORDERED_GIFT':
+      return {
+        ...state,
+        giftOrdered: true,
+        orderedGiftName: action.payload.name || state.orderedGiftName,
+        orderedGiftNote: action.payload.note !== undefined ? action.payload.note : state.orderedGiftNote,
+        orderedGiftImage: action.payload.image || state.orderedGiftImage,
+      };
 
     // Punishments
     case 'ADD_PUNISHMENT':
@@ -143,6 +187,8 @@ export const PacketProvider = ({ children }) => {
   const addWishlistItem       = useCallback(item => dispatch({ type: 'ADD_WISHLIST_ITEM', payload: item }), []);
   const removeWishlistItem    = useCallback(id   => dispatch({ type: 'REMOVE_WISHLIST_ITEM', payload: id }), []);
   const updateBrotherMessage  = useCallback(msg  => dispatch({ type: 'UPDATE_BROTHER_MESSAGE', payload: msg }), []);
+  const updateGiftOrdered     = useCallback(bool => dispatch({ type: 'SET_GIFT_ORDERED', payload: bool }), []);
+  const updateOrderedGift     = useCallback(gift => dispatch({ type: 'UPDATE_ORDERED_GIFT', payload: gift }), []);
 
   const addPunishment       = useCallback(text    => dispatch({ type: 'ADD_PUNISHMENT', payload: text }), []);
   const removePunishment    = useCallback(index   => dispatch({ type: 'REMOVE_PUNISHMENT', payload: index }), []);
@@ -174,6 +220,7 @@ export const PacketProvider = ({ children }) => {
       toggleModule,
       addTimelineItem, removeTimelineItem, updateTimelineItem,
       addWishlistItem, removeWishlistItem, updateBrotherMessage,
+      updateGiftOrdered, updateOrderedGift,
       addPunishment, removePunishment,
       addCoupon, removeCoupon,
       addCertificate, removeCertificate,

@@ -8,6 +8,7 @@ import {
   getPacket,
   redeemCoupon,
   pledgeWishlistItem,
+  completePacket,
   uploadMedia,
 } from '../controllers/packetController.js';
 
@@ -93,6 +94,8 @@ export { b2PublicBaseUrl };
 router.post('/upload', upload.any(), uploadMedia);
 router.post('/',                         createPacket);
 router.get('/:packetId',                 getPacket);
+router.put('/:id/complete',              completePacket);
+router.put('/:packetId/complete',        completePacket);
 router.patch('/:packetId/redeem-coupon', redeemCoupon);
 router.patch('/:packetId/pledge-item',   pledgeWishlistItem);
 

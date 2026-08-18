@@ -47,10 +47,24 @@ const siblingFavorSchema = new mongoose.Schema({
   status:      { type: String, enum: ['pending', 'granted', 'countered'], default: 'pending' },
 });
 
-const fineItemSchema = new mongoose.Schema({
-  crimeTitle: { type: String, required: true },
-  amount:     { type: Number, required: true },
-});
+const fineItemSchema = new mongoose.Schema(
+  {
+    crimeTitle: { type: String, required: true },
+    amount:     { type: Number, default: 0 },
+  },
+  { _id: true }
+);
+
+const interactionsSchema = new mongoose.Schema(
+  {
+    status:             { type: String, enum: ['pending', 'completed'], default: 'pending' },
+    couponsRedeemed:    { type: [String], default: [] },
+    punishmentAccepted: { type: String, default: '' },
+    reactionMessage:    { type: String, default: '' },
+    completedAt:        { type: Date },
+  },
+  { _id: false }
+);
 
 const packetSchema = new mongoose.Schema(
   {
@@ -62,6 +76,10 @@ const packetSchema = new mongoose.Schema(
     modules:         { type: [String], default: ['timeline', 'wheel', 'coupons', 'wishlist', 'funZone'] },
     timeline:        [timelineItemSchema],
     brotherMessage:  { type: String, default: '' },
+    giftOrdered:     { type: Boolean, default: false },
+    orderedGiftName: { type: String, default: '' },
+    orderedGiftNote: { type: String, default: '' },
+    orderedGiftImage:{ type: String, default: '' },
     wishlist:        [wishlistItemSchema],
     punishments:     { type: [String], default: [] },
     coupons:         [couponSchema],
@@ -70,6 +88,10 @@ const packetSchema = new mongoose.Schema(
     secretChallenge: secretChallengeSchema,
     siblingFavor:    siblingFavorSchema,
     fines:           [fineItemSchema],
+    interactions:    {
+      type: interactionsSchema,
+      default: () => ({ status: 'pending', couponsRedeemed: [], punishmentAccepted: '', reactionMessage: '' }),
+    },
   },
   { timestamps: true }
 );

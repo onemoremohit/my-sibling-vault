@@ -1,8 +1,9 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import LandingPage    from './pages/LandingPage';
-import CreatorStudio  from './pages/CreatorStudio';
-import RecipientView  from './pages/RecipientView';
+import LandingPage      from './pages/LandingPage';
+import CreatorStudio    from './pages/CreatorStudio';
+import RecipientView    from './pages/RecipientView';
+import EmotionalReceipt from './pages/EmotionalReceipt';
 
 const App = () => (
   <Routes>
@@ -10,6 +11,8 @@ const App = () => (
     <Route path="/studio"          element={<CreatorStudio />} />
     <Route path="/vault/:packetId" element={<RecipientView />} />
     <Route path="/v/:packetId"     element={<RecipientView />} />
+    <Route path="/reply/:packetId" element={<EmotionalReceipt />} />
+    <Route path="/reply/:id"       element={<EmotionalReceipt />} />
     <Route path="*"                element={
       <div className="min-h-screen flex items-center justify-center bg-surface font-body text-on-surface">
         <div className="text-center">

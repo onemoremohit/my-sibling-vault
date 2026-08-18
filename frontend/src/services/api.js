@@ -17,9 +17,9 @@ export const getPacket = (packetId) => api.get(`/packets/${packetId}`);
 export const redeemCoupon = (packetId, couponId) =>
   api.patch(`/packets/${packetId}/redeem-coupon`, { couponId });
 
-/** Mark a wishlist item as pledged. */
-export const pledgeWishlistItem = (packetId, itemId) =>
-  api.patch(`/packets/${packetId}/pledge-item`, { itemId });
+/** Complete vault interactions & reactions from recipient (Sister). */
+export const completePacket = (packetId, interactionData) =>
+  api.put(`/packets/${packetId}/complete`, interactionData);
 
 /** Upload a photo or video file. Returns { mediaUrl }. */
 export const uploadMedia = (formData) =>

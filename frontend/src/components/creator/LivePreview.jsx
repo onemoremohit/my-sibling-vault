@@ -34,34 +34,38 @@ const LivePreview = ({ activeStep }) => {
             <p className="font-display font-bold text-sm text-primary">{t('giftPacketTitle')}</p>
           </div>
 
-          {/* Timeline preview */}
+          {/* Timeline / Memory Photo preview */}
           {packet.modules.includes('timeline') && (
             <div className={`p-3 rounded-2xl border transition-all ${activeStep === 1 ? 'ring-2 ring-primary bg-primary-fixed/20' : 'bg-surface-container-lowest'}`}>
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-display font-bold text-xs text-on-surface">{t('modTimelineTitle')}</span>
-                <span className="text-[10px] bg-secondary-fixed text-on-secondary-fixed px-2 py-0.5 rounded-full font-bold">
-                  {packet.timeline.length} {t('memoriesCount')}
-                </span>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="font-display font-bold text-xs text-on-surface">📸 Sibling Memory Photo</span>
+                {packet.timeline.length > 0 && (
+                  <span className="text-[9px] bg-primary text-on-primary px-1.5 py-0.5 rounded-full font-bold">
+                    Photo Added ✨
+                  </span>
+                )}
               </div>
               {packet.timeline.length === 0 ? (
                 <p className="font-body text-[11px] text-on-surface-variant italic text-center py-2">
-                  {t('noMemoriesYet')}
+                  No memory photo uploaded yet
                 </p>
               ) : (
-                <div className="space-y-2">
-                  {packet.timeline.slice(0, 2).map((item) => (
-                    <div key={item.id} className="bg-surface rounded-xl p-2 border border-outline-variant/30 text-left">
-                      <p className="font-body font-bold text-xs text-on-surface truncate">{item.title}</p>
-                      {item.secretNote && (
-                        <p className="font-body text-[10px] text-secondary flex items-center gap-1 mt-0.5">
-                          🔒 Secret note locked
-                        </p>
-                      )}
+                <div className="bg-surface rounded-xl p-2 border border-outline-variant/30 text-left space-y-1.5">
+                  {packet.timeline[0]?.mediaUrl && (
+                    <div className="w-full h-28 rounded-lg overflow-hidden bg-black/10">
+                      <img
+                        src={packet.timeline[0].mediaUrl.startsWith('http') ? packet.timeline[0].mediaUrl : `http://localhost:5000${packet.timeline[0].mediaUrl}`}
+                        alt="Memory"
+                        className="w-full h-full object-contain bg-black/40"
+                      />
                     </div>
-                  ))}
-                  {packet.timeline.length > 2 && (
-                    <p className="font-body text-[10px] text-on-surface-variant text-center">
-                      +{packet.timeline.length - 2} more memories
+                  )}
+                  <p className="font-body font-bold text-[11px] text-primary truncate">
+                    {packet.timeline[0]?.title || 'Cherished Memory'}
+                  </p>
+                  {packet.timeline[0]?.secretNote && (
+                    <p className="font-body text-[9px] text-secondary flex items-center gap-1">
+                      🔒 Wax-sealed secret note attached
                     </p>
                   )}
                 </div>
@@ -69,24 +73,25 @@ const LivePreview = ({ activeStep }) => {
             </div>
           )}
 
-          {/* Wishlist preview */}
+          {/* Wishlist & Gift Message preview */}
           {packet.modules.includes('wishlist') && (
             <div className={`p-3 rounded-2xl border transition-all ${activeStep === 2 ? 'ring-2 ring-primary bg-primary-fixed/20' : 'bg-surface-container-lowest'}`}>
               <div className="flex items-center justify-between mb-1">
-                <span className="font-display font-bold text-xs text-on-surface">{t('modWishlistTitle')}</span>
-                <span className="text-[10px] bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded-full font-bold">
-                  {packet.wishlist.length} {t('itemsCount')}
-                </span>
+                <span className="font-display font-bold text-xs text-on-surface">💌 Rakhi Message & Gift</span>
+                {packet.giftOrdered && (
+                  <span className="text-[9px] bg-primary text-on-primary px-1.5 py-0.5 rounded-full font-bold">
+                    Gift Ordered 🎁
+                  </span>
+                )}
               </div>
-              <div className="flex gap-1 overflow-x-auto py-1">
-                {packet.wishlist.length === 0 ? (
-                  <p className="font-body text-[11px] text-on-surface-variant italic">{t('noWishesAdded')}</p>
-                ) : (
-                  packet.wishlist.map(w => (
-                    <span key={w.id} className="text-[10px] bg-surface-container px-2 py-1 rounded-lg font-bold text-on-surface whitespace-nowrap">
-                      {w.item}
-                    </span>
-                  ))
+              <div className="bg-surface rounded-xl p-2.5 border border-primary/20 text-left space-y-1">
+                <p className="font-body text-[11px] text-primary italic line-clamp-2">
+                  "{packet.brotherMessage || (packet.language === 'hinglish' ? 'Happy Raksha Bandhan! 🎀' : 'Happy Rakhi! 🎀')}"
+                </p>
+                {packet.giftOrdered && (
+                  <p className="font-body text-[10px] font-bold text-on-surface-variant flex items-center gap-1 pt-1 border-t border-outline-variant/30">
+                    <span>🚚</span> {packet.orderedGiftName || 'Surprise gift on the way!'}
+                  </p>
                 )}
               </div>
             </div>
