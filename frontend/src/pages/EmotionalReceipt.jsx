@@ -23,8 +23,8 @@ const EmotionalReceipt = () => {
       if (!targetId || targetId === 'demo') {
         setPacket({
           packetId: 'demo-receipt',
-          senderName: 'Alex (Bhai)',
-          recipientName: 'Sarah (Didi)',
+          senderName: 'Alex',
+          recipientName: 'Sarah',
           language: 'en',
           createdAt: new Date().toISOString(),
           punishments: ['Treat me to a lavish meal 🍕', 'Do my laundry for a week 🧺'],
@@ -32,7 +32,7 @@ const EmotionalReceipt = () => {
             status: 'completed',
             couponsRedeemed: ['Free Hug Pass', 'Zero Arguments Pass'],
             punishmentAccepted: 'Treat me to a lavish meal 🍕',
-            reactionMessage: 'Thank you so much Bhai! This made my day! Get ready for your punishment! 😂💖',
+            reactionMessage: 'Thank you so much! This made my day! Get ready for your punishment! 😂💖',
             completedAt: new Date().toISOString(),
           },
         });
@@ -201,15 +201,15 @@ const EmotionalReceipt = () => {
             <span>TIME: {txnTime}</span>
           </div>
           <div className="flex justify-between">
-            <span>TERMINAL: SISTER-PORTAL</span>
+            <span>TERMINAL: VAULT-PORTAL</span>
             <span className="font-bold text-emerald-700 bg-emerald-100/70 px-1.5 py-0.2 rounded">STATUS: VERIFIED ✓</span>
           </div>
           <div className="flex justify-between pt-1">
-            <span>SENDER (BHAI):</span>
+            <span>SENDER:</span>
             <span className="font-extrabold text-stone-950">{senderName}</span>
           </div>
           <div className="flex justify-between">
-            <span>RECIPIENT (SISTER):</span>
+            <span>RECIPIENT:</span>
             <span className="font-extrabold text-stone-950">{recipientName}</span>
           </div>
         </div>
@@ -295,11 +295,11 @@ const EmotionalReceipt = () => {
           </div>
         </div>
 
-        {/* ── Sister's Custom Reaction Note ── */}
+        {/* ── Recipient's Custom Reaction Note ── */}
         {reactionMessage && (
           <div className="mt-5 bg-amber-50 border-2 border-dashed border-amber-300 rounded-2xl p-4 text-center space-y-1.5 shadow-sm">
             <p className="text-[10px] font-black text-amber-950 uppercase tracking-widest">
-              💌 SISTER'S PERSONAL REACTION MESSAGE
+              💌 PERSONAL REACTION MESSAGE
             </p>
             <p className="font-serif italic text-sm text-stone-900 font-bold leading-relaxed">
               "{reactionMessage}"

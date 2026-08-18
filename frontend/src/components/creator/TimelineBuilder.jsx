@@ -30,8 +30,8 @@ const SIBLING_STORY_PRESETS_HINGLISH = [
     story: 'TV remote ke liye jhagadna, bina bataye kapde churana aur har baat par mummy se complain karna... yeh sab yaadein hamare rishte ko aur mazboot banati hain. Tu hamesha meri sabse favourite hai! 🌟',
   },
   {
-    title: 'Bhai-Behen Ka Anmol Rishta 💖',
-    story: 'Yeh tasveer toh bas ek pal hai, par hamara pyaar aur ek doosre ka khayal rakhna hamesha ke liye hai. Shukriya hamesha mere saath khade rehne ke liye. Happy Rakhi! 🌸',
+    title: 'Hamara Anmol Rishta 💖',
+    story: 'Yeh tasveer toh bas ek pal hai, par hamara pyaar aur ek doosre ka khayal rakhna hamesha ke liye hai. Shukriya hamesha mere saath khade rehne ke liye. Happy Festival! 🌸',
   },
 ];
 
@@ -42,12 +42,17 @@ const TimelineBuilder = () => {
 
   const currentItem = packet.timeline?.[0] || null;
 
+  const matchedPresetIdx = presets.findIndex(
+    p => p.title === currentItem?.title || p.story === currentItem?.story
+  );
+
   const [uploading, setUploading] = useState(false);
-  const [selectedPresetIndex, setSelectedPresetIndex] = useState(0);
+  const [selectedPresetIndex, setSelectedPresetIndex] = useState(
+    matchedPresetIdx !== -1 ? matchedPresetIdx : null
+  );
   const [secretNote, setSecretNote] = useState(currentItem?.secretNote || '');
-  const [isEditingStory, setIsEditingStory] = useState(false);
-  const [customTitle, setCustomTitle] = useState(currentItem?.title || presets[0].title);
-  const [customStory, setCustomStory] = useState(currentItem?.story || presets[0].story);
+  const [customTitle, setCustomTitle] = useState(currentItem?.title || '');
+  const [customStory, setCustomStory] = useState(currentItem?.story || '');
 
   const fileRef = useRef(null);
 
@@ -64,9 +69,9 @@ const TimelineBuilder = () => {
       const photoUrl = data.mediaUrl || data.mediaUrls?.[0] || '';
 
       const baseItem = {
-        title: customTitle || presets[selectedPresetIndex].title,
+        title: customTitle || (selectedPresetIndex !== null ? presets[selectedPresetIndex]?.title : ''),
         date: isHinglish ? 'Khaas Yaad' : 'Cherished Memory',
-        story: customStory || presets[selectedPresetIndex].story,
+        story: customStory || (selectedPresetIndex !== null ? presets[selectedPresetIndex]?.story : ''),
         secretNote: secretNote.trim(),
         mediaUrl: photoUrl,
         mediaUrls: [photoUrl],
@@ -90,17 +95,33 @@ const TimelineBuilder = () => {
   };
 
   const handleSelectPreset = (index) => {
-    setSelectedPresetIndex(index);
-    const chosen = presets[index];
-    setCustomTitle(chosen.title);
-    setCustomStory(chosen.story);
+    if (selectedPresetIndex === index) {
+      // Toggle OFF (Deselect)
+      setSelectedPresetIndex(null);
+      setCustomTitle('');
+      setCustomStory('');
 
-    if (currentItem?.id) {
-      updateTimelineItem({
-        id: currentItem.id,
-        title: chosen.title,
-        story: chosen.story,
-      });
+      if (currentItem?.id) {
+        updateTimelineItem({
+          id: currentItem.id,
+          title: '',
+          story: '',
+        });
+      }
+    } else {
+      // Toggle ON (Select)
+      setSelectedPresetIndex(index);
+      const chosen = presets[index];
+      setCustomTitle(chosen.title);
+      setCustomStory(chosen.story);
+
+      if (currentItem?.id) {
+        updateTimelineItem({
+          id: currentItem.id,
+          title: chosen.title,
+          story: chosen.story,
+        });
+      }
     }
   };
 
@@ -240,7 +261,7 @@ const TimelineBuilder = () => {
         <div className="flex items-center justify-between gap-3">
           <div>
             <h3 className="font-display text-headline-sm text-primary font-bold">
-              {isHinglish ? 'Bhai-Behen Ka Prem Sandesh 💌' : 'Sibling Love Message & Tribute 💌'}
+              {isHinglish ? 'Sibling Prem Sandesh 💌' : 'Sibling Love Message & Tribute 💌'}
             </h3>
             <p className="font-body text-body-sm text-on-surface-variant">
               {isHinglish
@@ -276,30 +297,32 @@ const TimelineBuilder = () => {
           </div>
         </div>
 
-        {/* Display of Selected Message */}
-        <div className="bg-gradient-to-br from-primary-fixed/15 via-surface-container-low to-secondary-fixed/15 rounded-2xl p-5 border border-primary/20 space-y-2">
-          <h4 className="font-display text-label-lg text-primary font-bold">
-            {customTitle || presets[selectedPresetIndex].title}
-          </h4>
-          <p className="font-body text-body-md text-on-surface leading-relaxed italic">
-            "{customStory || presets[selectedPresetIndex].story}"
-          </p>
-        </div>
+        {/* Display of Selected Message (Shown only if a preset is selected) */}
+        {selectedPresetIndex !== null && (customTitle || customStory) && (
+          <div className="bg-gradient-to-br from-primary-fixed/15 via-surface-container-low to-secondary-fixed/15 rounded-2xl p-5 border border-primary/20 space-y-2">
+            <h4 className="font-display text-label-lg text-primary font-bold">
+              {customTitle || presets[selectedPresetIndex]?.title}
+            </h4>
+            <p className="font-body text-body-md text-on-surface leading-relaxed italic">
+              "{customStory || presets[selectedPresetIndex]?.story}"
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* ── Optional Secret Message to Sister ── */}
+      {/* ── Optional Secret Message ── */}
       <div className="bg-surface rounded-3xl p-6 sm:p-8 shadow-card border border-outline-variant/30 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="text-2xl">🤫</span>
             <div>
               <h3 className="font-display text-headline-sm text-on-surface font-bold">
-                {isHinglish ? 'Write a secret message you want to tell her (Optional)' : 'Write a secret message you want to tell her (Optional)'}
+                {isHinglish ? 'Write a secret message you want to tell them (Optional)' : 'Write a secret message you want to tell them (Optional)'}
               </h3>
               <p className="font-body text-caption text-on-surface-variant">
                 {isHinglish
-                  ? 'Yeh secret message recipient card par tab tak locked rahega jab tak wo tap karke na padhe!'
-                  : 'This secret message stays locked until she taps to unlock and read it!'}
+                  ? 'Yeh secret message recipient card par tab tak locked rahega jab tak wo tap karke na padhein!'
+                  : 'This secret message stays locked until they tap to unlock and read it!'}
               </p>
             </div>
           </div>

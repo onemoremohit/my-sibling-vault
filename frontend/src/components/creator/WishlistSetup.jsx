@@ -5,17 +5,17 @@ import { AFFILIATE_STORES } from '../../data/affiliateStores';
 import { showSuccess } from '../common/Toast';
 
 const RAKHI_MESSAGES_EN = [
-  'Happy Raksha Bandhan, Didi! 🎀 You mean the world to me!',
-  'For my favourite sister — the best gift is on the way! 🌸',
-  'Rakhi gift time! Sending you lots of love and a sweet surprise! 💝',
-  'Didi, you deserve all the happiness. Happy Raksha Bandhan! 🎁',
+  'Happy Festival! 🎀 You mean the world to me!',
+  'For my favourite sibling — the best surprise is on the way! 🌸',
+  'Festival gift time! Sending you lots of love and a sweet surprise! 💝',
+  'You deserve all the happiness in the world! 🎁',
 ];
 
 const RAKHI_MESSAGES_HINGLISH = [
-  'Happy Raksha Bandhan Didi! 🎀 Tum mere liye sabse special ho!',
-  'Meri favourite behen ke liye — ek bohot pyaara surprise gift! 🌸',
-  'Rakhi gift time! Dil se dher saara pyaar aur ek gift tere liye! 💝',
-  'Didi, tum sab kuch deserve karti ho. Happy Rakhi! 🎁',
+  'Happy Festival! 🎀 Tum mere liye sabse special ho!',
+  'Mere favourite sibling ke liye — ek bohot pyaara surprise gift! 🌸',
+  'Gift time! Dil se dher saara pyaar aur ek gift tere liye! 💝',
+  'Tum duniya ki saari khushiyan deserve karte ho! 🎁',
 ];
 
 const WishlistSetup = () => {
@@ -35,7 +35,7 @@ const WishlistSetup = () => {
   return (
     <div className="space-y-8">
       {/* ─────────────────────────────────────────────────────────────────── */}
-      {/* FEATURE 1: Raksha Bandhan Message for Sister */}
+      {/* FEATURE 1: Festival & Sibling Message */}
       {/* ─────────────────────────────────────────────────────────────────── */}
       <div className="bg-surface rounded-3xl p-6 md:p-8 shadow-card border-2 border-primary/25 space-y-6">
         <div className="flex items-start gap-4">
@@ -44,13 +44,13 @@ const WishlistSetup = () => {
           </div>
           <div>
             <h3 className="font-display text-headline-md text-primary font-bold">
-              {isHinglish ? 'Behen ke liye Raksha Bandhan Message' : 'Raksha Bandhan Message for Sister'}
+              {isHinglish ? 'Festival & Sibling Sandesh' : 'Festival & Sibling Wish'}
               <span className="text-error ml-1" title="Required">*</span>
             </h3>
             <p className="font-body text-body-sm text-on-surface-variant">
               {isHinglish
-                ? 'Apni behen ko ek dil se message likho ya neeche se preset chuno'
-                : 'Write a heartfelt message or pick a preset wish for your sister'}
+                ? 'Apne sibling ko ek dil se message likho ya neeche se preset chuno'
+                : 'Write a heartfelt message or pick a preset wish for your sibling'}
             </p>
           </div>
         </div>
@@ -101,11 +101,11 @@ const WishlistSetup = () => {
             <span>{isHinglish ? 'Partner Gift Stores' : 'Partner Gift Stores'}</span>
           </div>
           <h3 className="font-display text-headline-lg text-primary font-bold">
-            {isHinglish ? 'Apni Behen Ke Liye Shopping Platform Chuno 🎁' : 'Choose Where to Buy Her Gift 🎁'}
+            {isHinglish ? 'Apni Behen/Bhai Ke Liye Shopping Platform Chuno 🎁' : 'Choose Where to Buy Her Gift 🎁'}
           </h3>
           <p className="font-body text-body-sm text-on-surface-variant max-w-2xl">
             {isHinglish
-              ? 'Neeche diye gaye kisi bhi platform se behen ke liye gift order karein. Order karne ke baad "Maine Gift Order Kiya" confirm karein!'
+              ? 'Neeche diye gaye kisi bhi platform se behen/bhai ke liye gift order karein. Order karne ke baad "Maine Gift Order Kiya" confirm karein!'
               : 'Select your preferred shopping platform below to buy her favorite gift. After ordering, simply confirm below!'}
           </p>
         </div>

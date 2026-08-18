@@ -197,11 +197,11 @@ const FunZoneEditor = () => {
         )}
       </div>
 
-      {/* FEATURE 2: Catch My Secret Challenge 🕵️‍♂️ (Optional) */}
-      <div className="bg-surface rounded-2xl p-6 shadow-card border border-outline-variant/20 space-y-5">
+      {/* FEATURE 2: Catch My Challenge / Sibling Dare 🎯 (Optional) */}
+      <div className="bg-surface rounded-2xl p-6 shadow-card border border-outline-variant/20 space-y-4">
         <div className="flex items-center justify-between gap-2 border-b border-outline-variant/30 pb-3">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-secondary text-2xl">psychology</span>
+            <span className="material-symbols-outlined text-secondary text-2xl">flag</span>
             <h3 className="font-display text-title-lg text-on-surface">{t('secretQuizTitle')}</h3>
           </div>
           <span className="flex-shrink-0 font-body text-[10px] font-bold bg-surface-container text-on-surface-variant border border-outline-variant/40 px-2 py-0.5 rounded-full uppercase tracking-wider">
@@ -210,28 +210,15 @@ const FunZoneEditor = () => {
         </div>
         <p className="font-body text-caption text-on-surface-variant">{t('secretQuizDesc')}</p>
 
-        <div className="space-y-4">
-          <div className="space-y-1.5">
-            <label className="font-body text-label-bold text-on-surface">{t('secretQuestionLabel')}</label>
-            <input
-              type="text"
-              value={secretChallenge.question || secretChallenge.challengeText || ''}
-              onChange={(e) => updateSecretChallenge({ question: e.target.value, challengeText: e.target.value })}
-              placeholder={t('secretQuestionPlaceholder')}
-              className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="font-body text-label-bold text-on-surface">{t('secretRewardLabel')}</label>
-            <input
-              type="text"
-              value={secretChallenge.revealMsg || secretChallenge.rewardMsg || ''}
-              onChange={(e) => updateSecretChallenge({ revealMsg: e.target.value, rewardMsg: e.target.value })}
-              placeholder={t('secretRewardPlaceholder')}
-              className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-2.5 font-body text-body-md text-on-surface focus:outline-none focus:border-primary"
-            />
-          </div>
+        {/* Single Clean Input Field */}
+        <div className="space-y-1.5">
+          <input
+            type="text"
+            value={secretChallenge.question || secretChallenge.challengeText || ''}
+            onChange={(e) => updateSecretChallenge({ question: e.target.value, challengeText: e.target.value, revealMsg: '', rewardMsg: '' })}
+            placeholder={t('secretQuestionPlaceholder')}
+            className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 font-body text-body-md text-on-surface focus:outline-none focus:border-primary placeholder:text-on-surface-variant/50 shadow-inner"
+          />
         </div>
       </div>
 

@@ -26,13 +26,11 @@ const FunZoneDisplay = ({
   ];
 
   const DEFAULT_CHALLENGE_EN = {
-    challengeText: "Keep the secret about who broke the kitchen lamp for 3 days!",
-    rewardMsg: "1 free Boba tea or Ice cream treat 🧋🍦",
+    challengeText: "I dare you to let me draft your next WhatsApp status, and you can't delete it for 5 hours! 😂",
   };
 
   const DEFAULT_CHALLENGE_HINGLISH = {
-    challengeText: "Sunday tak Mummy se hidden diary ki baat mat batana!",
-    rewardMsg: "100 Rs Paytm reward ya Swiggy treat 🍕",
+    challengeText: "Mera dare hai ki tumhara agla WhatsApp status main likhunga/likhungi, aur tum 5 ghante tak delete nahi karoge! 😂",
   };
 
   const DEFAULT_FAVOR_EN = {
@@ -59,21 +57,17 @@ const FunZoneDisplay = ({
     { id: 'f4', crimeTitle: 'Bathroom me 45 min lagana 🛁', amount: 400 },
   ];
 
-  const activeRoasts = (roasts && roasts.length > 0)
-    ? roasts
-    : (lang === 'hinglish' ? DEFAULT_ROASTS_HINGLISH : DEFAULT_ROASTS_EN);
+  const activeRoasts = (roasts && roasts.length > 0) ? roasts : [];
 
-  const activeChallenge = (secretChallenge && (secretChallenge.question || secretChallenge.challengeText))
-    ? secretChallenge
-    : (lang === 'hinglish' ? DEFAULT_CHALLENGE_HINGLISH : DEFAULT_CHALLENGE_EN);
+  const challengeText = (secretChallenge?.question || secretChallenge?.challengeText || '').trim();
+  const activeChallenge = challengeText ? { ...secretChallenge, challengeText, question: challengeText } : null;
 
-  const activeFavor = (siblingFavor && siblingFavor.requestText)
-    ? siblingFavor
-    : (lang === 'hinglish' ? DEFAULT_FAVOR_HINGLISH : DEFAULT_FAVOR_EN);
+  const favorText = (siblingFavor?.requestText || '').trim();
+  const activeFavor = favorText ? siblingFavor : null;
 
-  const activeFines = (fines && fines.length > 0)
-    ? fines
-    : (lang === 'hinglish' ? DEFAULT_FINES_HINGLISH : DEFAULT_FINES_EN);
+  const activeFines = (fines && fines.length > 0) ? fines : [];
+
+  const hasAnyFunContent = activeRoasts.length > 0 || activeChallenge !== null || activeFavor !== null || activeFines.length > 0;
 
   // 1. Roast votes state
   const [roastVotes, setRoastVotes] = useState(
@@ -97,7 +91,7 @@ const FunZoneDisplay = ({
   const [quizStatus, setQuizStatus] = useState(null);
 
   // 3. Sibling Favor state
-  const [favorStatus, setFavorStatus] = useState(activeFavor.status || 'pending');
+  const [favorStatus, setFavorStatus] = useState(activeFavor?.status || 'pending');
   const [showFavorModal, setShowFavorModal] = useState(false);
 
   const handleGrantFavor = () => {
@@ -119,6 +113,10 @@ const FunZoneDisplay = ({
     .filter((f, i) => checkedFines.includes(f.id || i))
     .reduce((sum, f) => sum + (f.amount || 0), 0);
 
+  if (!hasAnyFunContent) {
+    return null;
+  }
+
   return (
     <section className="space-y-16 py-6">
       {/* Section Title */}
@@ -131,14 +129,15 @@ const FunZoneDisplay = ({
       </div>
 
       {/* FEATURE 1: Sibling Roast Wall 🌶️ */}
-      <div className="space-y-6">
-        <div className="flex items-center gap-3 border-b border-outline-variant/30 pb-3">
-          <span className="text-3xl">🔥</span>
-          <div>
-            <h3 className="font-display text-headline-md text-on-surface">{t('roastWallHeader', lang)}</h3>
-            <p className="font-body text-caption text-on-surface-variant">Vote to agree or call out fake news!</p>
+      {activeRoasts.length > 0 && (
+        <div className="space-y-6">
+          <div className="flex items-center gap-3 border-b border-outline-variant/30 pb-3">
+            <span className="text-3xl">🔥</span>
+            <div>
+              <h3 className="font-display text-headline-md text-on-surface">{t('roastWallHeader', lang)}</h3>
+              <p className="font-body text-caption text-on-surface-variant">Vote to agree or call out fake news!</p>
+            </div>
           </div>
-        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {activeRoasts.map((roast, idx) => {
@@ -187,49 +186,48 @@ const FunZoneDisplay = ({
           })}
         </div>
       </div>
+      )}
 
-      {/* FEATURE 2: Catch My Secret Challenge 🕵️‍♂️ (Compact Challenge Card) */}
-      {(activeChallenge.question || activeChallenge.challengeText) && (
+      {/* FEATURE 2: Catch My Dare / Sibling Dare Challenge 🎯 */}
+      {activeChallenge && (
         <div className="bg-surface rounded-3xl p-6 sm:p-8 shadow-card border-2 border-secondary/30 space-y-5">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <div className="inline-block bg-secondary-fixed text-on-secondary-fixed px-3 py-0.5 rounded-full font-body font-bold text-caption uppercase tracking-wider">
-                🕵️‍♂️ Sibling Challenge
+                🎯 Sibling Dare Challenge
               </div>
-              <h3 className="font-display text-headline-md text-on-surface">Catch My Secret Challenge</h3>
-              <p className="font-body text-body-md text-on-surface-variant">A special task set by {senderName} for you to work upon!</p>
+              <h3 className="font-display text-headline-md text-on-surface">
+                {lang === 'hinglish' ? 'Catch My Challenge / Sibling Dare' : 'Catch My Dare / Sibling Challenge'}
+              </h3>
+              <p className="font-body text-body-md text-on-surface-variant">
+                {lang === 'hinglish'
+                  ? `${senderName} ne aapko ek daring challenge diya hai!`
+                  : `A special dare set by ${senderName} for you to complete!`}
+              </p>
             </div>
             <div className="text-3xl">🎯</div>
           </div>
 
-          <div className="bg-surface-container-low p-5 rounded-2xl border border-outline-variant/40 space-y-4">
-            <p className="font-display text-title-lg text-primary">
-              🎯 "{activeChallenge.question || activeChallenge.challengeText}"
+          <div className="bg-surface-container-low p-6 rounded-2xl border-2 border-dashed border-secondary/40 space-y-4 text-center">
+            <p className="font-body text-caption font-bold uppercase tracking-widest text-secondary">
+              Dare from {senderName}:
             </p>
 
-            {(activeChallenge.revealMsg || activeChallenge.rewardMsg) && (
-              <div className="bg-secondary-fixed/30 border border-secondary/40 rounded-xl p-3.5 flex items-center gap-3">
-                <span className="text-2xl">🎁</span>
-                <div>
-                  <p className="font-body text-caption font-bold text-secondary uppercase tracking-wider">Challenge Reward / Goal</p>
-                  <p className="font-body text-body-md font-medium text-on-surface">
-                    {activeChallenge.revealMsg || activeChallenge.rewardMsg}
-                  </p>
-                </div>
-              </div>
-            )}
+            <blockquote className="font-display text-display-mobile sm:text-headline-md text-on-surface italic px-4 py-2">
+              "{activeChallenge.question || activeChallenge.challengeText}"
+            </blockquote>
 
             <div className="pt-2">
               <button
                 type="button"
                 onClick={() => setQuizStatus(quizStatus === 'accepted' ? null : 'accepted')}
-                className={`w-full py-3 px-4 rounded-xl font-body font-bold text-body-md flex items-center justify-center gap-2 transition-all ${
+                className={`w-full py-3 px-4 rounded-xl font-body font-bold text-body-md flex items-center justify-center gap-2 transition-all cursor-pointer ${
                   quizStatus === 'accepted'
                     ? 'bg-secondary text-on-secondary shadow-md'
                     : 'bg-primary text-on-primary hover:opacity-90 shadow-sm'
                 }`}
               >
-                <span>{quizStatus === 'accepted' ? 'Challenge Accepted! 🤝 In Progress' : 'Accept Challenge 🎯'}</span>
+                <span>{quizStatus === 'accepted' ? (lang === 'hinglish' ? 'Dare Accepted! 🔥 Chal Raha Hai' : 'Dare Accepted! 🔥 In Progress') : (lang === 'hinglish' ? 'Dare Accept Karo 🎯' : 'Accept Dare 🎯')}</span>
               </button>
             </div>
           </div>
@@ -237,7 +235,7 @@ const FunZoneDisplay = ({
       )}
 
       {/* FEATURE 3: One Request Contract 🙏 */}
-      {activeFavor.requestText && (
+      {activeFavor && (
         <div className="bg-surface rounded-3xl p-6 sm:p-8 shadow-card border border-outline-variant/40 space-y-6 relative overflow-hidden">
           <div className="flex items-center justify-between border-b border-outline-variant/30 pb-4">
             <div>

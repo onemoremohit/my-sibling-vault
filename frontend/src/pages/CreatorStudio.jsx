@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/common/Navbar';
 import Modal from '../components/common/Modal';
 import Button from '../components/common/Button';
-import ModuleToggle from '../components/creator/ModuleToggle';
 import TimelineBuilder from '../components/creator/TimelineBuilder';
 import WishlistSetup from '../components/creator/WishlistSetup';
 import WheelCustomizer from '../components/creator/WheelCustomizer';
@@ -168,8 +167,6 @@ const CreatorStudio = () => {
                     </div>
                   </div>
                 </div>
-
-                <ModuleToggle />
               </div>
             )}
 

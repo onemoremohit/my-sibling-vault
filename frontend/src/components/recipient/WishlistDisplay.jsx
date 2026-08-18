@@ -3,15 +3,16 @@ import { motion } from 'framer-motion';
 
 const WishlistDisplay = ({
   brotherMessage = '',
-  senderName = 'Bhai',
-  recipientName = 'Didi',
+  giftOrdered = false,
+  senderName = 'Sender',
+  recipientName = 'Recipient',
   lang = 'en',
 }) => {
   const isHinglish = lang === 'hinglish';
 
   const defaultMessage = isHinglish
-    ? `Happy Raksha Bandhan ${recipientName}! 🎀 Hamesha khush raho aur muskurati raho!`
-    : `Happy Raksha Bandhan, ${recipientName}! 🎀 Wishing you endless joy, love, and laughter!`;
+    ? `Happy Festival ${recipientName}! 🎀 Hamesha khush raho aur muskurate raho!`
+    : `Happy Festival, ${recipientName}! 🎀 Wishing you endless joy, love, and laughter!`;
 
   const finalMessage = brotherMessage && brotherMessage.trim() ? brotherMessage : defaultMessage;
 
@@ -21,10 +22,10 @@ const WishlistDisplay = ({
       <div className="text-center space-y-2">
         <div className="inline-flex items-center gap-2 bg-primary-fixed text-on-primary-fixed px-4 py-1.5 rounded-full font-body font-bold text-caption uppercase tracking-wider shadow-sm">
           <span>🎀</span>
-          <span>{isHinglish ? 'Raksha Bandhan Sandesh & Gift' : 'Rakhi Wish & Special Gift'}</span>
+          <span>{isHinglish ? 'Festival Sandesh & Gift' : 'Festival Wish & Special Gift'}</span>
         </div>
         <h2 className="font-display text-display-md text-primary font-bold">
-          {isHinglish ? 'Bhai Ka Dil Se Sandesh 💌' : 'Heartfelt Wish From Your Brother 💌'}
+          {isHinglish ? 'Dil Se Pyaara Sandesh 💌' : 'Heartfelt Sibling Wish 💌'}
         </h2>
       </div>
 
@@ -53,48 +54,50 @@ const WishlistDisplay = ({
             "{finalMessage}"
           </p>
           <p className="font-body font-bold text-label-lg text-on-surface-variant">
-            — {isHinglish ? `Aapka Bhai, ${senderName}` : `With lots of love, ${senderName}`} 💖
+            — {isHinglish ? `Bohot saare pyaar ke saath, ${senderName}` : `With lots of love, ${senderName}`} 💖
           </p>
         </div>
 
-        {/* ── Surprise Gift Delivery Box (Secret Protected) ── */}
-        <motion.div
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="mt-6 bg-surface-bright/95 backdrop-blur-md rounded-2xl p-6 border-2 border-primary/40 shadow-card max-w-xl mx-auto space-y-4 text-center"
-        >
-          <div className="inline-flex items-center justify-center gap-2 text-primary font-body font-extrabold text-label-lg uppercase tracking-wider bg-primary-fixed/30 px-4 py-1.5 rounded-full">
-            <span className="animate-bounce">🎁</span>
-            <span>{isHinglish ? 'Surprise Gift On The Way! ✨' : 'Surprise Gift On The Way! ✨'}</span>
-          </div>
-
-          {/* Glowing Secret Gift Box Graphic */}
-          <div className="py-2">
-            <div className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-primary-fixed via-secondary-fixed to-primary flex items-center justify-center text-4xl shadow-lg border-2 border-surface animate-pulse">
-              📦
+        {/* ── Surprise Gift Delivery Box (Only displayed if sender confirmed ordering) ── */}
+        {giftOrdered && (
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="mt-6 bg-surface-bright/95 backdrop-blur-md rounded-2xl p-6 border-2 border-primary/40 shadow-card max-w-xl mx-auto space-y-4 text-center"
+          >
+            <div className="inline-flex items-center justify-center gap-2 text-primary font-body font-extrabold text-label-lg uppercase tracking-wider bg-primary-fixed/30 px-4 py-1.5 rounded-full">
+              <span className="animate-bounce">🎁</span>
+              <span>{isHinglish ? 'Surprise Gift On The Way! ✨' : 'Surprise Gift On The Way! ✨'}</span>
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <h4 className="font-display text-headline-sm text-primary font-bold">
-              {isHinglish
-                ? 'Aapke liye ek bohot pyaara surprise gift planned hai! 🎉'
-                : 'A special surprise gift is coming your way! 🎉'}
-            </h4>
+            {/* Glowing Secret Gift Box Graphic */}
+            <div className="py-2">
+              <div className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-primary-fixed via-secondary-fixed to-primary flex items-center justify-center text-4xl shadow-lg border-2 border-surface animate-pulse">
+                📦
+              </div>
+            </div>
 
-            <p className="font-body text-body-md text-on-surface-variant leading-relaxed max-w-md mx-auto">
-              {isHinglish
-                ? 'Maine tumhare liye ek surprise gift select kiya hai jo jald hi deliver hoga. Doorbell aur courier par nazar rakhna! 🚚✨'
-                : 'A surprise gift has been arranged for you! It will be delivered in a few days. Keep an eye out for the courier! 🚚✨'}
-            </p>
-          </div>
+            <div className="space-y-2">
+              <h4 className="font-display text-headline-sm text-primary font-bold">
+                {isHinglish
+                  ? 'Aapke liye ek bohot pyaara surprise gift planned hai! 🎉'
+                  : 'A special surprise gift is coming your way! 🎉'}
+              </h4>
 
-          <div className="inline-flex items-center gap-1.5 bg-secondary-fixed text-on-secondary-fixed font-body font-bold text-caption px-4 py-1.5 rounded-full shadow-sm">
-            <span>🤫</span>
-            <span>{isHinglish ? 'Gift ka naam secret hai — surprise rahega!' : 'The gift is a secret surprise — coming soon!'}</span>
-          </div>
-        </motion.div>
+              <p className="font-body text-body-md text-on-surface-variant leading-relaxed max-w-md mx-auto">
+                {isHinglish
+                  ? 'Maine tumhare liye ek surprise gift select kiya hai jo jald hi deliver hoga. Doorbell aur courier par nazar rakhna! 🚚✨'
+                  : 'A surprise gift has been arranged for you! It will be delivered in a few days. Keep an eye out for the courier! 🚚✨'}
+              </p>
+            </div>
+
+            <div className="inline-flex items-center gap-1.5 bg-secondary-fixed text-on-secondary-fixed font-body font-bold text-caption px-4 py-1.5 rounded-full shadow-sm">
+              <span>🤫</span>
+              <span>{isHinglish ? 'Gift ka naam secret hai — surprise rahega!' : 'The gift is a secret surprise — coming soon!'}</span>
+            </div>
+          </motion.div>
+        )}
       </motion.div>
     </section>
   );

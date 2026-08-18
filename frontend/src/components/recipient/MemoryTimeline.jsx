@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import SecretNoteReveal from './SecretNoteReveal';
-import CollageGrid from './CollageGrid';
+import AdaptivePhotoFrame from '../common/AdaptivePhotoFrame';
 import Modal from '../common/Modal';
 import { t } from '../../i18n/translations';
 
@@ -29,11 +29,7 @@ const MemoryTimeline = ({ items = [], lang = 'en' }) => {
 
       <div className="relative pl-6 sm:pl-10 border-l-3 border-dashed border-primary-fixed-dim space-y-10 ml-2 sm:ml-6">
         {items.map((item, index) => {
-          const urls = item.mediaUrls?.length > 0
-            ? item.mediaUrls
-            : item.mediaUrl
-            ? [item.mediaUrl]
-            : [];
+          const photoUrl = item.mediaUrl || item.mediaUrls?.[0] || '';
 
           return (
             <motion.div
@@ -65,12 +61,6 @@ const MemoryTimeline = ({ items = [], lang = 'en' }) => {
                     <span>🗓️</span>
                     <span>{item.date || t('noDateText', lang)}</span>
                   </div>
-
-                  {urls.length > 1 && (
-                    <span className="font-body text-[11px] font-bold bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-full shadow-sm">
-                      🖼️ {urls.length} Photos Collage
-                    </span>
-                  )}
                 </div>
 
                 {/* Memory Title */}
@@ -78,8 +68,16 @@ const MemoryTimeline = ({ items = [], lang = 'en' }) => {
                   {item.title}
                 </h3>
 
-                {/* Smart Collage Grid for 1, 2, 3, 4, 5+ Photos or Video */}
-                <CollageGrid item={item} />
+                {/* Memory Photo with Ambient Scrapbook Mat */}
+                {photoUrl && (
+                  <div className="mb-4">
+                    <AdaptivePhotoFrame
+                      src={photoUrl}
+                      alt={item.title || 'Sibling Memory'}
+                      maxHeight="max-h-[500px]"
+                    />
+                  </div>
+                )}
 
                 {/* Story Description */}
                 {item.story && (
@@ -103,7 +101,13 @@ const MemoryTimeline = ({ items = [], lang = 'en' }) => {
         title={selectedItem?.title}
       >
         <div className="space-y-4">
-          {selectedItem && <CollageGrid item={selectedItem} />}
+          {selectedItem && (selectedItem.mediaUrl || selectedItem.mediaUrls?.[0]) && (
+            <AdaptivePhotoFrame
+              src={selectedItem.mediaUrl || selectedItem.mediaUrls?.[0]}
+              alt={selectedItem.title || 'Sibling Memory'}
+              maxHeight="max-h-[500px]"
+            />
+          )}
 
           {selectedItem?.date && (
             <div className="inline-flex items-center gap-1.5 bg-secondary-fixed text-on-secondary-fixed font-body font-bold text-caption px-3 py-1 rounded-full">

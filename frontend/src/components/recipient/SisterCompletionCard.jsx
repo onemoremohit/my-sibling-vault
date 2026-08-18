@@ -4,23 +4,23 @@ import { completePacket } from '../../services/api';
 import { showSuccess, showError } from '../common/Toast';
 
 const SISTER_REACTION_PRESETS_EN = [
-  'Thank you Bhai! Best Rakhi gift ever! 💖',
+  'Thank you so much! Best surprise gift ever! 💖',
   'I am redeeming all my coupons this weekend! 🍕🍦',
   'Your punishment is officially locked! No takebacks! 😈',
-  'Loved the memories so much! Happy Raksha Bandhan! 🎀',
+  'Loved the memories so much! Happy festival! 🎀',
 ];
 
 const SISTER_REACTION_PRESETS_HINGLISH = [
-  'Thank you Bhai! Sabse best Rakhi surprise tha yeh! 💖',
+  'Thank you so much! Sabse best surprise tha yeh! 💖',
   'Main saare coupons isi weekend redeem karne wali hoon! 🍕🍦',
   'Tera punishment lock ho chuka hai, ab koi bahana nahi chalega! 😈',
-  'Saari yaadein dekh kar bohot maza aaya! Happy Rakhi! 🎀',
+  'Saari yaadein dekh kar bohot maza aaya! 🎀',
 ];
 
 const SisterCompletionCard = ({
   packetId,
-  senderName = 'Bhai',
-  recipientName = 'Didi',
+  senderName = 'Sender',
+  recipientName = 'Recipient',
   redeemedCoupons = [],
   acceptedPunishment = '',
   defaultPunishment = 'Treat me to delicious food & snacks 🍕',
@@ -53,7 +53,7 @@ const SisterCompletionCard = ({
         });
       }
       setIsCompleted(true);
-      showSuccess(isHinglish ? '🎉 Vault lock ho gaya! Ab Bhai ko response bhejo!' : '🎉 Vault locked! Now send your response receipt back to Bhai!');
+      showSuccess(isHinglish ? '🎉 Vault lock ho gaya! Ab response bhejo!' : '🎉 Vault locked! Now send your response receipt back!');
     } catch (err) {
       console.error('Error completing vault:', err);
       showError('Could not submit reaction. Please try again.');
@@ -83,7 +83,7 @@ const SisterCompletionCard = ({
     try {
       await navigator.clipboard.writeText(shareText);
       setCopied(true);
-      showSuccess(isHinglish ? '📋 Reply link copy ho gaya! WhatsApp par Bhai ko bhej do!' : '📋 Reaction link copied! Send it to Bhai on WhatsApp!');
+      showSuccess(isHinglish ? '📋 Reply link copy ho gaya! WhatsApp par send karein!' : '📋 Reaction link copied! Send it on WhatsApp!');
       setTimeout(() => setCopied(false), 3000);
     } catch (err) {
       console.error('Clipboard copy error:', err);
@@ -108,7 +108,7 @@ const SisterCompletionCard = ({
           <div className="space-y-6">
             <div className="inline-flex items-center gap-2 bg-primary text-on-primary font-body font-bold text-caption uppercase tracking-wider px-4 py-1.5 rounded-full shadow-sm">
               <span>🚀</span>
-              <span>{isHinglish ? 'Bhai Ko Reaction Bhejo' : 'Send Your Reaction to Bhai'}</span>
+              <span>{isHinglish ? 'Sender Ko Reaction Bhejo' : 'Send Your Reaction'}</span>
             </div>
 
             <div className="space-y-2">
@@ -168,8 +168,8 @@ const SisterCompletionCard = ({
                 rows={3}
                 className="w-full border-2 border-primary-fixed-dim bg-surface-bright rounded-2xl px-4 py-3 font-body text-body-md text-on-surface focus:border-primary focus:outline-none transition-colors resize-none placeholder:text-on-surface-variant/50 shadow-inner"
                 placeholder={isHinglish
-                  ? 'e.g. Bhai, thank you so much! Maggi pass main kal hi use karungi! 😂💖'
-                  : 'e.g. Thank you so much Bhai! This made my day! Get ready for your punishment! 😂💖'}
+                  ? 'e.g. Thank you so much! Maggi pass main kal hi use karungi/karunga! 😂💖'
+                  : 'e.g. Thank you so much! This made my day! Get ready for your punishment! 😂💖'}
                 value={reactionMessage}
                 onChange={(e) => setReactionMessage(e.target.value)}
               />
@@ -187,8 +187,8 @@ const SisterCompletionCard = ({
                 <span className="text-xl">{isSubmitting ? '⏳' : '🔒'}</span>
                 <span className="tracking-wide">
                   {isSubmitting
-                    ? (isHinglish ? 'Lock Ho Raha Hai…' : 'Locking Vault…')
-                    : (isHinglish ? `Lock Vault & Generate Receipt for ${senderName} 🚀` : `Lock Vault & Generate Receipt for ${senderName} 🚀`)}
+                    ? (isHinglish ? 'Save Ho Raha Hai…' : 'Saving Response…')
+                    : (isHinglish ? `Save response & Generate funny Receipt for ${senderName} 🚀` : `Save response & Generate funny Receipt for ${senderName} 🚀`)}
                 </span>
               </motion.button>
             </div>
@@ -206,12 +206,12 @@ const SisterCompletionCard = ({
 
             <div className="space-y-1.5">
               <h3 className="font-display text-headline-md sm:text-headline-lg text-primary font-extrabold">
-                {isHinglish ? 'Vault Successfully Locked! 🎉' : 'Vault Successfully Locked! 🎉'}
+                {isHinglish ? 'Vault Successfully Saved! 🎉' : 'Vault Successfully Saved! 🎉'}
               </h3>
               <p className="font-body text-body-md text-on-surface-variant max-w-md mx-auto leading-relaxed">
                 {isHinglish
                   ? `Aapka response receipt ready hai! Ab ${senderName} ko send karein!`
-                  : `Your emotional reaction receipt is ready! Send it back to ${senderName} now!`}
+                  : `Your response receipt is ready! Send it back to ${senderName} now!`}
               </p>
             </div>
 

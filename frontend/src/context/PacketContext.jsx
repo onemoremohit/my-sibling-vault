@@ -10,7 +10,6 @@ const initialPacket = {
   theme:         'nostalgic',
   modules:       ['timeline', 'wishlist', 'wheel', 'coupons', 'funZone'],
   timeline:      [],
-  wishlist:      [],
   brotherMessage: '',
   giftOrdered:    false,
   orderedGiftName: '',
@@ -23,11 +22,8 @@ const initialPacket = {
     { id: 'r1', text: 'Takes 2 hours to get ready for a 5-minute errand ⏰', trueVotes: 0, fakeVotes: 0 },
   ],
   secretChallenge: {
-    question: 'Guess what I broke in 2019 without telling Mom!',
-    options: ['Mom\'s favourite vase', 'Your laptop charger', 'Dad\'s car key', 'The living room lamp'],
-    correctIndex: 1,
-    hint: 'It involved wires and your bedroom...',
-    revealMsg: 'Yes! I broke your laptop charger and blamed the dog! 🐶',
+    question: '',
+    challengeText: '',
   },
   siblingFavor: {
     requestText: 'Treat me to Momos & Boba Tea this weekend! 🥟🧋',
@@ -83,16 +79,6 @@ const packetReducer = (state, action) => {
       return { ...state, language: newLang, roasts, fines };
     }
 
-    case 'TOGGLE_MODULE': {
-      const { module } = action.payload;
-      const MANDATORY = ['wishlist'];
-      if (MANDATORY.includes(module)) return state; // Cannot toggle mandatory modules
-      const modules = state.modules.includes(module)
-        ? state.modules.filter(m => m !== module)
-        : [...state.modules, module];
-      return { ...state, modules };
-    }
-
     // Timeline
     case 'ADD_TIMELINE_ITEM':
       return { ...state, timeline: [...state.timeline, { id: uuidv4(), ...action.payload }] };
@@ -106,11 +92,7 @@ const packetReducer = (state, action) => {
         ),
       };
 
-    // Wishlist & Gift Status
-    case 'ADD_WISHLIST_ITEM':
-      return { ...state, wishlist: [...state.wishlist, { id: uuidv4(), status: 'open', ...action.payload }] };
-    case 'REMOVE_WISHLIST_ITEM':
-      return { ...state, wishlist: state.wishlist.filter(w => w.id !== action.payload) };
+    // Gift Message & Status
     case 'UPDATE_BROTHER_MESSAGE':
       return { ...state, brotherMessage: action.payload };
     case 'SET_GIFT_ORDERED':
@@ -178,14 +160,11 @@ export const PacketProvider = ({ children }) => {
 
   const updateMeta          = useCallback(payload => dispatch({ type: 'UPDATE_META', payload }), []);
   const setLanguage         = useCallback(lang    => dispatch({ type: 'SET_LANGUAGE', payload: lang }), []);
-  const toggleModule        = useCallback(module  => dispatch({ type: 'TOGGLE_MODULE', payload: { module } }), []);
 
   const addTimelineItem     = useCallback(item    => dispatch({ type: 'ADD_TIMELINE_ITEM', payload: item }), []);
   const removeTimelineItem  = useCallback(id      => dispatch({ type: 'REMOVE_TIMELINE_ITEM', payload: id }), []);
   const updateTimelineItem  = useCallback(item    => dispatch({ type: 'UPDATE_TIMELINE_ITEM', payload: item }), []);
 
-  const addWishlistItem       = useCallback(item => dispatch({ type: 'ADD_WISHLIST_ITEM', payload: item }), []);
-  const removeWishlistItem    = useCallback(id   => dispatch({ type: 'REMOVE_WISHLIST_ITEM', payload: id }), []);
   const updateBrotherMessage  = useCallback(msg  => dispatch({ type: 'UPDATE_BROTHER_MESSAGE', payload: msg }), []);
   const updateGiftOrdered     = useCallback(bool => dispatch({ type: 'SET_GIFT_ORDERED', payload: bool }), []);
   const updateOrderedGift     = useCallback(gift => dispatch({ type: 'UPDATE_ORDERED_GIFT', payload: gift }), []);
@@ -217,9 +196,8 @@ export const PacketProvider = ({ children }) => {
       packet,
       updateMeta,
       setLanguage,
-      toggleModule,
       addTimelineItem, removeTimelineItem, updateTimelineItem,
-      addWishlistItem, removeWishlistItem, updateBrotherMessage,
+      updateBrotherMessage,
       updateGiftOrdered, updateOrderedGift,
       addPunishment, removePunishment,
       addCoupon, removeCoupon,

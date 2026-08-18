@@ -9,23 +9,16 @@ const WHEEL_COLORS = [
 ];
 
 const SpinWheel = ({ punishments = [], onPunishmentAccepted, lang = 'en' }) => {
+  if (!punishments || punishments.length === 0) {
+    return null;
+  }
+
   const canvasRef = useRef(null);
   const [isSpinning, setIsSpinning] = useState(false);
   const [winner, setWinner] = useState(null);
   const [rotationAngle, setRotationAngle] = useState(0);
 
-  const defaultItems = lang === 'hinglish' ? [
-    '3 din tak khana order kar 🍕',
-    '1 hafte tak bartan dho 🧹',
-    'Ek free sorry bol 🤐',
-    'Movie choice meri hogi 🎬',
-    '24h no roasting 🕊️',
-    'Chai banake laa ☕',
-  ] : [
-    'Buy dinner 🍕', 'Walk the dog 🐕', 'Do dishes 🧹', 'Apologize 🤐', 'Movie choice 🎬', 'Free pass 🎟️',
-  ];
-
-  const items = punishments.length > 0 ? punishments : defaultItems;
+  const items = punishments;
 
   useEffect(() => {
     const canvas = canvasRef.current;

@@ -20,6 +20,7 @@ const DEMO_PACKET = {
   recipientName: 'Sarah',
   language: 'en',
   theme: 'nostalgic',
+  giftOrdered: false,
   modules: ['timeline', 'wishlist', 'wheel', 'coupons', 'funZone'],
   timeline: [
     {
@@ -67,11 +68,8 @@ const DEMO_PACKET = {
     { id: 'r3', text: 'Starts crying the exact second Mom enters the room 😭', trueVotes: 4, fakeVotes: 0 },
   ],
   secretChallenge: {
-    question: 'Guess what I broke in 2019 without telling Mom!',
-    options: ["Mom's favourite vase", 'Your laptop charger', "Dad's car key", 'The living room lamp'],
-    correctIndex: 1,
-    hint: 'It involved wires and your bedroom...',
-    revealMsg: 'Yes! I broke your laptop charger and blamed the dog! 🐶',
+    question: "I dare you to let me draft your next WhatsApp status, and you can't delete it for 5 hours! 😂",
+    challengeText: "I dare you to let me draft your next WhatsApp status, and you can't delete it for 5 hours! 😂",
   },
   siblingFavor: {
     requestText: 'Treat me to Momos & Boba Tea this weekend! 🥟🧋',
@@ -173,13 +171,13 @@ const RecipientView = () => {
 
       {/* Main Experience Body */}
       <main className="flex-1 max-w-container w-full mx-auto px-gutter pb-24 space-y-20">
-        {/* Module 1: Memory Timeline */}
-        {modules.includes('timeline') && (
+        {/* Module 1: Memory Timeline (Only shown if photo/memory was added) */}
+        {packet.timeline?.length > 0 && (
           <MemoryTimeline items={packet.timeline} lang={lang} />
         )}
 
-        {/* Module 2: Punishment Wheel */}
-        {modules.includes('wheel') && (
+        {/* Module 2: Punishment Wheel (Only shown if creator added punishments) */}
+        {packet.punishments?.length > 0 && (
           <SpinWheel
             punishments={packet.punishments}
             onPunishmentAccepted={handlePunishmentSelected}
@@ -187,7 +185,7 @@ const RecipientView = () => {
           />
         )}
 
-        {/* Module 3: Gift Wishlist & Message — Always shown (mandatory) */}
+        {/* Module 3: Gift Wishlist & Festive Message — Always shown */}
         <WishlistDisplay
           packetId={packetId}
           brotherMessage={packet.brotherMessage || ''}
@@ -195,13 +193,13 @@ const RecipientView = () => {
           orderedGiftName={packet.orderedGiftName || ''}
           orderedGiftNote={packet.orderedGiftNote || ''}
           orderedGiftImage={packet.orderedGiftImage || ''}
-          senderName={packet.senderName || 'Bhai'}
-          recipientName={packet.recipientName || 'Didi'}
+          senderName={packet.senderName || 'Sender'}
+          recipientName={packet.recipientName || 'Recipient'}
           lang={lang}
         />
 
-        {/* Module 4: Coupons & Certificates */}
-        {modules.includes('coupons') && (
+        {/* Module 4: Coupons & Certificates (Only shown if creator added coupons or awards) */}
+        {((packet.coupons?.length > 0) || (packet.certificates?.length > 0)) && (
           <section className="space-y-12">
             {/* Coupons Grid */}
             {packet.coupons?.length > 0 && (
@@ -248,18 +246,16 @@ const RecipientView = () => {
           </section>
         )}
 
-        {/* Module 5: Roast & Fun Zone */}
-        {modules.includes('funZone') && (
-          <FunZoneDisplay
-            roasts={packet.roasts}
-            secretChallenge={packet.secretChallenge}
-            siblingFavor={packet.siblingFavor}
-            fines={packet.fines}
-            senderName={packet.senderName}
-            recipientName={packet.recipientName}
-            lang={lang}
-          />
-        )}
+        {/* Module 5: Roast & Fun Zone (Automatically hides if no items were added) */}
+        <FunZoneDisplay
+          roasts={packet.roasts}
+          secretChallenge={packet.secretChallenge}
+          siblingFavor={packet.siblingFavor}
+          fines={packet.fines}
+          senderName={packet.senderName}
+          recipientName={packet.recipientName}
+          lang={lang}
+        />
 
         {/* ── PHASE 2: Sister's Vault Completion & Reply Handoff ── */}
         <SisterCompletionCard
