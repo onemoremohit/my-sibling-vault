@@ -32,10 +32,13 @@ export const createPacket = async (req, res, next) => {
       return res.status(400).json({ error: 'senderName and recipientName are required.' });
     }
 
-    const packetId = uuidv4();
+    const creator = req.user ? req.user.id : null;
+    const creatorEmail = req.user ? req.user.email : null;
 
     const packet = await Packet.create({
       packetId,
+      creator,
+      creatorEmail,
       senderName,
       recipientName,
       language: language || 'en',
@@ -60,6 +63,46 @@ export const createPacket = async (req, res, next) => {
     const shareUrl = generateLink(packetId);
 
     res.status(201).json({ packetId, shareUrl, packet });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ─── GET /api/packets/user/my-vaults ──────────────────────────────────────────
+export const getUserVaults = async (req, res, next) => {
+  try {
+    const userId = req.user?.id;
+    const userEmail = req.user?.email;
+
+    if (!userId && !userEmail) {
+      return res.status(401).json({ error: 'Authentication required.' });
+    }
+
+    const query = {
+      $or: [
+        ...(userId ? [{ creator: userId }] : []),
+        ...(userEmail ? [{ creatorEmail: userEmail.toLowerCase() }] : []),
+      ],
+    };
+
+    const vaults = await Packet.find(query)
+      .sort({ createdAt: -1 })
+      .select('packetId senderName recipientName theme language createdAt interactions timeline giftOrdered orderedGiftName brotherMessage');
+
+    res.json({
+      vaults: vaults.map((v) => ({
+        packetId: v.packetId,
+        senderName: v.senderName,
+        recipientName: v.recipientName,
+        theme: v.theme,
+        language: v.language,
+        createdAt: v.createdAt,
+        interactions: v.interactions,
+        hasPhoto: v.timeline?.length > 0,
+        giftOrdered: v.giftOrdered,
+        orderedGiftName: v.orderedGiftName,
+      })),
+    });
   } catch (err) {
     next(err);
   }

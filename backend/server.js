@@ -11,6 +11,7 @@ import mongoose from 'mongoose';
 
 import connectDB from './src/config/db.js';
 import packetRoutes from './src/routes/packetRoutes.js';
+import authRoutes from './src/routes/authRoutes.js';
 import errorHandler from './src/middlewares/errorHandler.js';
 
 // ── ESM dirname shim ────────────────────────────────────────────────────────
@@ -115,6 +116,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // ── 8. API Routes ───────────────────────────────────────────────────────────
+app.use('/api/auth', authRoutes);
 app.use('/api/packets', packetRoutes);
 
 // ── 9. 404 handler ──────────────────────────────────────────────────────────

@@ -6,11 +6,13 @@ import multerS3 from 'multer-s3';
 import {
   createPacket,
   getPacket,
+  getUserVaults,
   redeemCoupon,
   pledgeWishlistItem,
   completePacket,
   uploadMedia,
 } from '../controllers/packetController.js';
+import { optionalAuth, requireAuth } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -92,7 +94,8 @@ export { b2PublicBaseUrl };
 
 // ── Routes ─────────────────────────────────────────────────────────────────
 router.post('/upload', upload.any(), uploadMedia);
-router.post('/',                         createPacket);
+router.post('/',                         optionalAuth, createPacket);
+router.get('/user/my-vaults',            requireAuth, getUserVaults);
 router.get('/:packetId',                 getPacket);
 router.put('/:id/complete',              completePacket);
 router.put('/:packetId/complete',        completePacket);

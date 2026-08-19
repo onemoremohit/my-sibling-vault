@@ -88,6 +88,8 @@ const packetSchema = new mongoose.Schema(
     secretChallenge: secretChallengeSchema,
     siblingFavor:    siblingFavorSchema,
     fines:           [fineItemSchema],
+    creator:         { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null, index: true },
+    creatorEmail:    { type: String, default: null, index: true },
     interactions:    {
       type: interactionsSchema,
       default: () => ({ status: 'pending', couponsRedeemed: [], punishmentAccepted: '', reactionMessage: '' }),

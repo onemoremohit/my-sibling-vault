@@ -1,13 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { GoogleLogin } from '@react-oauth/google';
 import usePacket from '../hooks/usePacket';
+import { useAuth } from '../context/AuthContext';
+import MyVaultsModal from '../components/common/MyVaultsModal';
 
 const floatingEmojis = ['🎉', '💌', '🎊', '✨', '🌟', '🎈', '💝', '🥳'];
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const { packet, setLanguage } = usePacket();
+  const { user, isAuthenticated, loginWithGoogle } = useAuth();
+  const [showMyVaults, setShowMyVaults] = useState(false);
   const isHinglish = packet?.language === 'hinglish';
 
   const content = {
@@ -121,17 +126,53 @@ const LandingPage = () => {
             </button>
           </div>
 
+          {/* User Auth or Studio trigger */}
+          {isAuthenticated ? (
+            <button
+              type="button"
+              onClick={() => setShowMyVaults(true)}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/50 text-on-surface font-body font-bold text-caption transition-all shadow-sm cursor-pointer"
+            >
+              {user?.picture ? (
+                <img
+                  src={user.picture}
+                  alt={user.name}
+                  referrerPolicy="no-referrer"
+                  className="w-5 h-5 rounded-full border border-primary object-cover"
+                />
+              ) : (
+                <span>👤</span>
+              )}
+              <span>My Vaults</span>
+            </button>
+          ) : (
+            <div className="hidden sm:block">
+              <GoogleLogin
+                onSuccess={(credentialResponse) => loginWithGoogle(credentialResponse)}
+                onError={() => console.error('Google Sign In Failed')}
+                type="standard"
+                theme="outline"
+                size="medium"
+                text="signin_with"
+                shape="pill"
+              />
+            </div>
+          )}
+
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate('/studio')}
-            className="bg-primary text-on-primary px-5 py-2 rounded-full font-body font-bold text-caption shadow-card hidden sm:inline-flex items-center gap-1.5"
+            className="bg-primary text-on-primary px-5 py-2 rounded-full font-body font-bold text-caption shadow-card inline-flex items-center gap-1.5 cursor-pointer"
           >
             <span>{isHinglish ? 'Studio Kholein' : 'Get Started'}</span>
             <span>→</span>
           </motion.button>
         </div>
       </nav>
+
+      {/* User's Vaults Modal */}
+      <MyVaultsModal isOpen={showMyVaults} onClose={() => setShowMyVaults(false)} />
 
       {/* ── Hero Section ── */}
       <section className="relative z-10 text-center px-gutter pt-12 pb-20 max-w-4xl mx-auto">
