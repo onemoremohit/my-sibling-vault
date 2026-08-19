@@ -91,12 +91,12 @@ const EmotionalReceipt = () => {
   const {
     couponsRedeemed = [],
     punishmentAccepted = '',
+    challengeAccepted = '',
+    favorAccepted = '',
+    finesSettled = false,
     reactionMessage = '',
     completedAt,
   } = interactions;
-
-  // Fallback punishment if not explicitly set
-  const finalPunishment = punishmentAccepted || punishments[0] || (isHinglish ? 'Khana aur snacks khilao 🍕' : 'Treat me to a lavish meal 🍕');
 
   const txnDate = completedAt
     ? new Date(completedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()
@@ -113,6 +113,8 @@ const EmotionalReceipt = () => {
     const shareText = isHinglish
       ? `Dekho ${recipientName} ka official reaction receipt Sibling Vault par! 🧾❤️ ${shareUrl}`
       : `Check out ${recipientName}'s official reaction receipt on Sibling Vault! 🧾❤️ ${shareUrl}`;
+
+    trackEvent('share_whatsapp', 'share', 'WhatsApp');
 
     if (navigator.share) {
       try {
@@ -145,6 +147,7 @@ const EmotionalReceipt = () => {
       return;
     }
     setSubscribed(true);
+    trackEvent('subscribe_newsletter', 'engagement', email);
     showSuccess('🎉 You are on the VIP list for the Diwali Vault!');
   };
 
@@ -222,7 +225,7 @@ const EmotionalReceipt = () => {
 
         {/* ── Line Items (Transactions) ── */}
         <div className="py-3.5 space-y-3 text-xs text-stone-800">
-          {/* 1. Sibling Memory */}
+          {/* 1. Sibling Memory Vault */}
           <div className="flex justify-between items-start gap-2">
             <span className="font-bold text-stone-900">1x Sibling Memory Vault</span>
             <span className="font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded text-[10px] shadow-sm">
@@ -230,20 +233,29 @@ const EmotionalReceipt = () => {
             </span>
           </div>
 
-          {/* 2. Punishment Accepted (Always Prominent) */}
-          <div className="flex justify-between items-start gap-2 bg-amber-100/80 p-2 rounded-xl border border-amber-300 shadow-sm">
-            <div>
-              <span className="font-black text-amber-950">1x Punishment Wheel Dare</span>
-              <p className="text-[11px] text-amber-900 font-medium italic mt-0.5 leading-snug">
-                "{finalPunishment}"
-              </p>
+          {/* 2. Punishment Wheel Dare (Only if accepted or creator added wheel) */}
+          {punishmentAccepted ? (
+            <div className="flex justify-between items-start gap-2 bg-amber-100/80 p-2 rounded-xl border border-amber-300 shadow-sm">
+              <div>
+                <span className="font-black text-amber-950">1x Punishment Wheel Dare</span>
+                <p className="text-[11px] text-amber-900 font-medium italic mt-0.5 leading-snug">
+                  "{punishmentAccepted}"
+                </p>
+              </div>
+              <span className="font-black text-amber-900 bg-amber-200 px-2 py-0.5 rounded text-[10px] whitespace-nowrap shadow-sm">
+                ACCEPTED 🎰
+              </span>
             </div>
-            <span className="font-black text-amber-900 bg-amber-200 px-2 py-0.5 rounded text-[10px] whitespace-nowrap shadow-sm">
-              ACCEPTED 🎰
-            </span>
-          </div>
+          ) : punishments && punishments.length > 0 ? (
+            <div className="flex justify-between items-start gap-2 bg-stone-100 p-1.5 rounded">
+              <span className="font-semibold text-stone-700">1x Punishment Wheel</span>
+              <span className="font-bold text-stone-600 bg-stone-200 px-1.5 py-0.5 rounded text-[10px]">
+                UNSPUN 🎰
+              </span>
+            </div>
+          ) : null}
 
-          {/* 3. Redeemed Coupons */}
+          {/* 3. Sibling Coupons */}
           {couponsRedeemed.length > 0 ? (
             couponsRedeemed.map((couponTitle, idx) => (
               <div key={idx} className="flex justify-between items-start gap-2 bg-rose-50/80 p-1.5 rounded-lg border border-rose-200">
@@ -255,22 +267,73 @@ const EmotionalReceipt = () => {
                 </span>
               </div>
             ))
-          ) : (
+          ) : packet.coupons && packet.coupons.length > 0 ? (
             <div className="flex justify-between items-start gap-2 bg-stone-100 p-1.5 rounded">
-              <span className="font-semibold text-stone-700">1x Sibling Coupon Pass</span>
+              <span className="font-semibold text-stone-700">{packet.coupons.length}x Sibling Coupons</span>
               <span className="font-bold text-stone-600 bg-stone-200 px-1.5 py-0.5 rounded text-[10px]">
-                ALL RESERVED 🎟️
+                RESERVED FOR LATER 🎟️
+              </span>
+            </div>
+          ) : null}
+
+          {/* 4. Surprise Gift (Only if Creator actually ordered a gift) */}
+          {packet.giftOrdered && (
+            <div className="flex justify-between items-start gap-2 bg-indigo-50/80 p-2 rounded-xl border border-indigo-200 shadow-sm">
+              <div>
+                <span className="font-bold text-stone-900">
+                  1x {packet.orderedGiftName || (isHinglish ? 'Surprise Gift' : 'Surprise Sibling Gift')}
+                </span>
+                {packet.orderedGiftNote && (
+                  <p className="text-[11px] text-stone-600 italic leading-snug">{packet.orderedGiftNote}</p>
+                )}
+              </div>
+              <span className="font-black text-indigo-800 bg-indigo-100 px-2 py-0.5 rounded text-[10px] shadow-sm whitespace-nowrap">
+                ORDERED 🚚🎁
               </span>
             </div>
           )}
 
-          {/* 4. Rakhi Surprise Gift Status */}
-          <div className="flex justify-between items-start gap-2">
-            <span className="font-bold text-stone-900">1x Rakhi Special Gift</span>
-            <span className="font-black text-indigo-800 bg-indigo-100 px-2 py-0.5 rounded text-[10px] shadow-sm">
-              SURPRISE ORDERED 🎁
-            </span>
-          </div>
+          {/* 5. Sibling Dare Challenge (Only if Recipient actually accepted the dare) */}
+          {challengeAccepted && (
+            <div className="flex justify-between items-start gap-2 bg-purple-50/80 p-2 rounded-xl border border-purple-200 shadow-sm">
+              <div>
+                <span className="font-black text-purple-950">1x Sibling Dare</span>
+                <p className="text-[11px] text-purple-900 font-medium italic mt-0.5 leading-snug">
+                  "{challengeAccepted}"
+                </p>
+              </div>
+              <span className="font-black text-purple-800 bg-purple-100 px-2 py-0.5 rounded text-[10px] whitespace-nowrap shadow-sm">
+                ACCEPTED 🎯
+              </span>
+            </div>
+          )}
+
+          {/* 6. Sibling Crime Charges (Only if Recipient settled/paid them) */}
+          {finesSettled && packet.fines && packet.fines.length > 0 && (
+            <div className="flex justify-between items-start gap-2 bg-amber-50 p-1.5 rounded border border-amber-200">
+              <span className="font-bold text-amber-950">
+                {packet.fines.length}x Sibling Crime Charges
+              </span>
+              <span className="font-black text-amber-900 bg-amber-200 px-1.5 py-0.5 rounded text-[10px] shadow-sm">
+                ₹{packet.fines.reduce((sum, f) => sum + (Number(f.amount) || 0), 0)} WAIVED 💖
+              </span>
+            </div>
+          )}
+
+          {/* 7. Sibling Favor (Only if Recipient actually agreed/granted the favor) */}
+          {favorAccepted && (
+            <div className="flex justify-between items-start gap-2 bg-teal-50 p-2 rounded-xl border border-teal-200 shadow-sm">
+              <div>
+                <span className="font-black text-teal-950">1x Sibling Favor</span>
+                <p className="text-[11px] text-teal-900 font-medium italic mt-0.5 leading-snug">
+                  "{favorAccepted}"
+                </p>
+              </div>
+              <span className="font-black text-teal-800 bg-teal-100 px-2 py-0.5 rounded text-[10px] whitespace-nowrap shadow-sm">
+                AGREED 🤝
+              </span>
+            </div>
+          )}
         </div>
 
         {/* ── Subtotal & Total Due ── */}

@@ -92,18 +92,19 @@ const LandingPage = () => {
       </div>
 
       {/* ── Navbar with Dynamic Language Switcher ── */}
-      <nav className="relative z-10 flex items-center justify-between px-gutter py-4 max-w-container mx-auto">
-        <span className="font-display text-headline-sm sm:text-display-mobile text-primary font-bold">
-          Kinship &amp; Keepsake
+      <nav className="relative z-10 w-full max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2 overflow-x-hidden">
+        <span className="shrink-0 flex items-center gap-1.5 sm:gap-2 font-display text-sm font-bold sm:text-base md:text-xl text-primary tracking-tight whitespace-nowrap">
+          <span className="text-base sm:text-xl">🎁</span>
+          <span>Kinship &amp; Keepsake</span>
         </span>
 
-        <div className="flex items-center gap-3">
-          {/* Main Language Switcher */}
-          <div className="flex items-center bg-surface-container rounded-full p-1 border border-outline-variant/60 shadow-sm">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          {/* Desktop Dual Switcher */}
+          <div className="hidden sm:flex items-center bg-surface-container rounded-full p-1 border border-outline-variant/60 shadow-sm shrink-0">
             <button
               type="button"
               onClick={() => setLanguage('en')}
-              className={`px-3 py-1.5 rounded-full text-caption font-body font-bold transition-all flex items-center gap-1 ${
+              className={`px-3 py-1.5 rounded-full text-caption font-body font-bold transition-all flex items-center gap-1 cursor-pointer ${
                 !isHinglish
                   ? 'bg-primary text-on-primary shadow-sm scale-105'
                   : 'text-on-surface hover:text-primary'
@@ -115,7 +116,7 @@ const LandingPage = () => {
             <button
               type="button"
               onClick={() => setLanguage('hinglish')}
-              className={`px-3 py-1.5 rounded-full text-caption font-body font-bold transition-all flex items-center gap-1 ${
+              className={`px-3 py-1.5 rounded-full text-caption font-body font-bold transition-all flex items-center gap-1 cursor-pointer ${
                 isHinglish
                   ? 'bg-primary text-on-primary shadow-sm scale-105'
                   : 'text-on-surface hover:text-primary'
@@ -126,34 +127,45 @@ const LandingPage = () => {
             </button>
           </div>
 
+          {/* Mobile Compact Language Switcher */}
+          <button
+            type="button"
+            onClick={() => setLanguage(isHinglish ? 'en' : 'hinglish')}
+            className="sm:hidden px-2.5 py-1 rounded-full text-xs font-body font-bold bg-surface-container border border-outline-variant/60 text-on-surface shadow-sm flex items-center gap-1 shrink-0 cursor-pointer"
+            title="Switch Language"
+          >
+            <span>{isHinglish ? '🇮🇳 HI' : '🇬🇧 EN'}</span>
+          </button>
+
           {/* User Auth or Studio trigger */}
           {isAuthenticated ? (
             <button
               type="button"
               onClick={() => setShowMyVaults(true)}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/50 text-on-surface font-body font-bold text-caption transition-all shadow-sm cursor-pointer"
+              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/50 text-on-surface font-body font-bold text-xs sm:text-caption transition-all shadow-sm cursor-pointer shrink-0"
             >
               {user?.picture ? (
                 <img
                   src={user.picture}
                   alt={user.name}
                   referrerPolicy="no-referrer"
-                  className="w-5 h-5 rounded-full border border-primary object-cover"
+                  className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border border-primary object-cover"
                 />
               ) : (
                 <span>👤</span>
               )}
-              <span>My Vaults</span>
+              <span className="hidden sm:inline">My Vaults</span>
+              <span className="sm:hidden">Vaults</span>
             </button>
           ) : (
-            <div className="hidden sm:block">
+            <div className="flex items-center shrink-0">
               <GoogleLogin
                 onSuccess={(credentialResponse) => loginWithGoogle(credentialResponse)}
                 onError={() => console.error('Google Sign In Failed')}
                 type="standard"
                 theme="outline"
-                size="medium"
-                text="signin_with"
+                size="small"
+                text="signin"
                 shape="pill"
               />
             </div>
@@ -163,9 +175,9 @@ const LandingPage = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate('/studio')}
-            className="bg-primary text-on-primary px-5 py-2 rounded-full font-body font-bold text-caption shadow-card inline-flex items-center gap-1.5 cursor-pointer"
+            className="bg-primary text-on-primary px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-body font-bold text-xs sm:text-sm shadow-card inline-flex items-center gap-1 sm:gap-1.5 shrink-0 whitespace-nowrap cursor-pointer"
           >
-            <span>{isHinglish ? 'Studio Kholein' : 'Get Started'}</span>
+            <span>{isHinglish ? 'Studio' : 'Get Started'}</span>
             <span>→</span>
           </motion.button>
         </div>

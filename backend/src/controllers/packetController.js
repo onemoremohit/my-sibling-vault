@@ -32,6 +32,7 @@ export const createPacket = async (req, res, next) => {
       return res.status(400).json({ error: 'senderName and recipientName are required.' });
     }
 
+    const packetId = uuidv4();
     const creator = req.user ? req.user.id : null;
     const creatorEmail = req.user ? req.user.email : null;
 
@@ -179,7 +180,14 @@ export const completePacket = async (req, res, next) => {
   try {
     const { packetId, id } = req.params;
     const targetId = packetId || id;
-    const { couponsRedeemed, punishmentAccepted, reactionMessage } = req.body;
+    const {
+      couponsRedeemed,
+      punishmentAccepted,
+      challengeAccepted,
+      favorAccepted,
+      finesSettled,
+      reactionMessage,
+    } = req.body;
 
     const packet = await Packet.findOne({
       $or: [
@@ -200,6 +208,15 @@ export const completePacket = async (req, res, next) => {
       punishmentAccepted: punishmentAccepted !== undefined
         ? punishmentAccepted
         : (packet.interactions?.punishmentAccepted || ''),
+      challengeAccepted: challengeAccepted !== undefined
+        ? challengeAccepted
+        : (packet.interactions?.challengeAccepted || ''),
+      favorAccepted: favorAccepted !== undefined
+        ? favorAccepted
+        : (packet.interactions?.favorAccepted || ''),
+      finesSettled: finesSettled !== undefined
+        ? Boolean(finesSettled)
+        : (packet.interactions?.finesSettled || false),
       reactionMessage: reactionMessage !== undefined
         ? reactionMessage
         : (packet.interactions?.reactionMessage || ''),

@@ -303,8 +303,24 @@ The application will be live at:
 - **Backend API**: `http://localhost:5000`
 
 ### Production Deployment:
-- **Frontend (Vercel)**: Configured via root [`vercel.json`](file:///d:/All-Projects/family_bond_vault/family_bond_vault/my-sibling-vault/vercel.json) with SPA client-side rewrites. Set environment variable `VITE_API_URL` to your production backend URL.
-- **Backend (Google Cloud Run / Railway / Render)**: Containerized with Dockerfile, exposing port 5000. Set `MONGO_URI`, `CLIENT_URL`, and `NODE_ENV=production`.
+- **Frontend (Vercel)**: Configured via root [`vercel.json`](file:///d:/All-Projects/family_bond_vault/family_bond_vault/my-sibling-vault/vercel.json) with SPA client-side rewrites. Set environment variables:
+  - `VITE_API_URL` to your production backend URL.
+  - `VITE_GOOGLE_CLIENT_ID` for Google OAuth 2.0.
+  - `VITE_GA_MEASUREMENT_ID` (`G-YSTY4ZG6E9`) for Google Analytics 4.
+- **Backend (Google Cloud Run / Railway / Render)**: Containerized with Dockerfile, exposing port 5000. Set `MONGO_URI`, `CLIENT_URL`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`, and `NODE_ENV=production`.
+
+---
+
+## 📈 9. Google Analytics 4 (GA4) Integration
+
+- **Measurement ID**: `G-YSTY4ZG6E9`
+- **SPA Route Tracking**: Automatic route and page path tracking handled dynamically via `usePageTracking` hook and React Router `useLocation()`.
+- **Custom Event Tracking**:
+  - `generate_vault` (Creator successfully creates a vault)
+  - `open_vault` (Recipient opens the interactive memory vault)
+  - `redeem_coupon` (Recipient redeems a sibling coupon)
+  - `share_whatsapp` (User copies or shares link via WhatsApp)
+  - `subscribe_newsletter` (User subscribes to future festival drops)
 
 ---
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { completePacket } from '../../services/api';
 import { showSuccess, showError } from '../common/Toast';
+import { trackEvent } from '../../utils/analytics';
 
 const SISTER_REACTION_PRESETS_EN = [
   'Thank you so much! Best surprise gift ever! 💖',
@@ -23,13 +24,13 @@ const SisterCompletionCard = ({
   recipientName = 'Recipient',
   redeemedCoupons = [],
   acceptedPunishment = '',
-  defaultPunishment = 'Treat me to delicious food & snacks 🍕',
+  acceptedChallenge = '',
+  acceptedFavor = '',
+  finesSettled = false,
   lang = 'en',
 }) => {
   const isHinglish = lang === 'hinglish';
   const presets = isHinglish ? SISTER_REACTION_PRESETS_HINGLISH : SISTER_REACTION_PRESETS_EN;
-
-  const finalPunishment = acceptedPunishment || defaultPunishment;
 
   const [reactionMessage, setReactionMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,7 +41,7 @@ const SisterCompletionCard = ({
     ? `${window.location.origin}/reply/${packetId}`
     : `https://sibling-vault.vercel.app/reply/${packetId}`;
 
-  const shareText = `I unlocked my Sibling Vault! 🎁 Click here to see which coupons I stole and what punishment I accepted: ${replyUrl}`;
+  const shareText = `I unlocked my Sibling Vault! 🎁 Click here to see my official reaction receipt: ${replyUrl}`;
 
   const handleSubmitReaction = async () => {
     setIsSubmitting(true);
@@ -48,7 +49,10 @@ const SisterCompletionCard = ({
       if (packetId && packetId !== 'demo') {
         await completePacket(packetId, {
           couponsRedeemed: redeemedCoupons,
-          punishmentAccepted: finalPunishment,
+          punishmentAccepted: acceptedPunishment || '',
+          challengeAccepted: acceptedChallenge || '',
+          favorAccepted: acceptedFavor || '',
+          finesSettled: Boolean(finesSettled),
           reactionMessage: reactionMessage.trim(),
         });
       }
@@ -63,6 +67,7 @@ const SisterCompletionCard = ({
   };
 
   const handleShareToBrother = async () => {
+    trackEvent('share_whatsapp', 'share', 'WhatsApp');
     if (navigator.share) {
       try {
         await navigator.share({
@@ -123,18 +128,22 @@ const SisterCompletionCard = ({
             </div>
 
             {/* Live Highlights Chips */}
-            <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
-              <span className="bg-secondary-fixed text-on-secondary-fixed font-body font-bold text-caption px-3.5 py-1.5 rounded-xl shadow-sm border border-secondary/20 flex items-center gap-1.5">
-                <span>🎰</span>
-                <span>Punishment: {finalPunishment}</span>
-              </span>
-              {redeemedCoupons.length > 0 && (
-                <span className="bg-tertiary-fixed text-on-tertiary-fixed font-body font-bold text-caption px-3.5 py-1.5 rounded-xl shadow-sm border border-tertiary/20 flex items-center gap-1.5">
-                  <span>🎟️</span>
-                  <span>Coupons Stolen: {redeemedCoupons.length}</span>
-                </span>
-              )}
-            </div>
+            {(acceptedPunishment || redeemedCoupons.length > 0) && (
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+                {acceptedPunishment && (
+                  <span className="bg-secondary-fixed text-on-secondary-fixed font-body font-bold text-caption px-3.5 py-1.5 rounded-xl shadow-sm border border-secondary/20 flex items-center gap-1.5">
+                    <span>🎰</span>
+                    <span>Punishment: {acceptedPunishment}</span>
+                  </span>
+                )}
+                {redeemedCoupons.length > 0 && (
+                  <span className="bg-tertiary-fixed text-on-tertiary-fixed font-body font-bold text-caption px-3.5 py-1.5 rounded-xl shadow-sm border border-tertiary/20 flex items-center gap-1.5">
+                    <span>🎟️</span>
+                    <span>Coupons Redeemed: {redeemedCoupons.length}</span>
+                  </span>
+                )}
+              </div>
+            )}
 
             {/* Quick Preset Replies */}
             <div className="space-y-2">

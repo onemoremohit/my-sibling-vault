@@ -30,8 +30,8 @@ const PRESET_CRIMES_EN = [
 
 const PRESET_CRIMES_HINGLISH = [
   { crimeTitle: 'Bina puche kapde churana 👕', amount: 500 },
-  { crimeTitle: 'Call pick na karna (3+ baar) 📱', amount: 200 },
   { crimeTitle: 'Fridge se meri Maggi/Ice cream khana 🍦', amount: 300 },
+  { crimeTitle: 'Call pick na karna (3+ baar) 📱', amount: 200 },
   { crimeTitle: 'Movie ka climax pehle bata dena 🎬', amount: 1000 },
   { crimeTitle: 'Bathroom me 45 min lagana 🛁', amount: 400 },
 ];
@@ -56,8 +56,13 @@ const FunZoneEditor = () => {
   const [crimeTitle, setCrimeTitle] = useState('');
   const [fineAmount, setFineAmount] = useState('');
 
-  const handleToggleRoast = (preset) => {
-    const existing = packet.roasts?.find((r) => r.text === preset);
+  const handleToggleRoast = (preset, idx) => {
+    const existing = packet.roasts?.find(
+      (r) =>
+        r.text?.trim() === preset?.trim() ||
+        r.text?.trim() === PRESET_ROASTS_EN[idx]?.trim() ||
+        r.text?.trim() === PRESET_ROASTS_HINGLISH[idx]?.trim()
+    );
     if (existing) {
       removeRoast(existing.id);
     } else {
@@ -65,8 +70,13 @@ const FunZoneEditor = () => {
     }
   };
 
-  const handleToggleFine = (item) => {
-    const existing = packet.fines?.find((f) => f.crimeTitle === item.crimeTitle);
+  const handleToggleFine = (item, idx) => {
+    const existing = packet.fines?.find(
+      (f) =>
+        f.crimeTitle?.trim() === item.crimeTitle?.trim() ||
+        f.crimeTitle?.trim() === PRESET_CRIMES_EN[idx]?.crimeTitle?.trim() ||
+        f.crimeTitle?.trim() === PRESET_CRIMES_HINGLISH[idx]?.crimeTitle?.trim()
+    );
     if (existing) {
       removeFine(existing.id);
     } else {
@@ -125,24 +135,27 @@ const FunZoneEditor = () => {
           <p className="font-body text-label font-bold text-primary">{t('quickRoastPresets')}</p>
           <div className="flex flex-wrap gap-2">
             {presetRoasts.map((preset, idx) => {
-              const isSelected = packet.roasts?.some((r) => r.text === preset);
+              const isSelected = packet.roasts?.some(
+                (r) =>
+                  r.text?.trim() === preset?.trim() ||
+                  r.text?.trim() === PRESET_ROASTS_EN[idx]?.trim() ||
+                  r.text?.trim() === PRESET_ROASTS_HINGLISH[idx]?.trim()
+              );
               return (
                 <button
                   key={idx}
                   type="button"
-                  onClick={() => handleToggleRoast(preset)}
-                  className={`relative font-body text-caption px-3.5 py-1.5 rounded-full transition-all text-left border ${
+                  onClick={() => handleToggleRoast(preset, idx)}
+                  className={`font-body text-caption px-3.5 py-1.5 rounded-full transition-all text-left border inline-flex items-center gap-1.5 cursor-pointer ${
                     isSelected
-                      ? 'bg-secondary-fixed border-secondary text-secondary font-bold shadow-sm'
-                      : 'bg-secondary-fixed/50 border-secondary/20 text-on-surface hover:bg-secondary-fixed'
+                      ? 'bg-secondary text-on-secondary border-secondary font-bold shadow-sm ring-2 ring-secondary/30 scale-[1.01]'
+                      : 'bg-secondary-fixed/40 border-secondary/20 text-on-surface hover:bg-secondary-fixed'
                   }`}
                 >
-                  + {preset}
-                  {isSelected && (
-                    <span className="absolute -top-1 -right-1 bg-secondary text-on-secondary w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm border border-surface">
-                      ✓
-                    </span>
-                  )}
+                  <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-black ${isSelected ? 'bg-white text-secondary shadow-xs' : 'text-on-surface-variant'}`}>
+                    {isSelected ? '✓' : '+'}
+                  </span>
+                  <span>{preset}</span>
                 </button>
               );
             })}
@@ -291,24 +304,27 @@ const FunZoneEditor = () => {
           <p className="font-body text-label font-bold text-primary">{t('quickCrimePresets')}</p>
           <div className="flex flex-wrap gap-2">
             {presetCrimes.map((item, idx) => {
-              const isSelected = packet.fines?.some((f) => f.crimeTitle === item.crimeTitle);
+              const isSelected = packet.fines?.some(
+                (f) =>
+                  f.crimeTitle?.trim() === item.crimeTitle?.trim() ||
+                  f.crimeTitle?.trim() === PRESET_CRIMES_EN[idx]?.crimeTitle?.trim() ||
+                  f.crimeTitle?.trim() === PRESET_CRIMES_HINGLISH[idx]?.crimeTitle?.trim()
+              );
               return (
                 <button
                   key={idx}
                   type="button"
-                  onClick={() => handleToggleFine(item)}
-                  className={`relative font-body text-caption px-3.5 py-1.5 rounded-full transition-all text-left border ${
+                  onClick={() => handleToggleFine(item, idx)}
+                  className={`font-body text-caption px-3.5 py-1.5 rounded-full transition-all text-left border inline-flex items-center gap-1.5 cursor-pointer ${
                     isSelected
-                      ? 'bg-secondary-fixed border-secondary text-secondary font-bold shadow-sm'
-                      : 'bg-secondary-fixed/50 border-secondary/20 text-on-surface hover:bg-secondary-fixed'
+                      ? 'bg-secondary text-on-secondary border-secondary font-bold shadow-sm ring-2 ring-secondary/30 scale-[1.01]'
+                      : 'bg-secondary-fixed/40 border-secondary/20 text-on-surface hover:bg-secondary-fixed'
                   }`}
                 >
-                  + {item.crimeTitle} (₹{item.amount})
-                  {isSelected && (
-                    <span className="absolute -top-1 -right-1 bg-secondary text-on-secondary w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm border border-surface">
-                      ✓
-                    </span>
-                  )}
+                  <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-black ${isSelected ? 'bg-white text-secondary shadow-xs' : 'text-on-surface-variant'}`}>
+                    {isSelected ? '✓' : '+'}
+                  </span>
+                  <span>{item.crimeTitle} (₹{item.amount})</span>
                 </button>
               );
             })}

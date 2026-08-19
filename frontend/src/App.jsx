@@ -4,9 +4,13 @@ import LandingPage      from './pages/LandingPage';
 import CreatorStudio    from './pages/CreatorStudio';
 import RecipientView    from './pages/RecipientView';
 import EmotionalReceipt from './pages/EmotionalReceipt';
+import usePageTracking  from './hooks/usePageTracking';
 
-const App = () => (
-  <Routes>
+const App = () => {
+  usePageTracking();
+
+  return (
+    <Routes>
     <Route path="/"                element={<LandingPage />} />
     <Route path="/studio"          element={<CreatorStudio />} />
     <Route path="/vault/:packetId" element={<RecipientView />} />
@@ -25,6 +29,7 @@ const App = () => (
       </div>
     } />
   </Routes>
-);
+  );
+};
 
 export default App;

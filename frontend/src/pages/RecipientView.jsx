@@ -12,6 +12,7 @@ import SisterCompletionCard from '../components/recipient/SisterCompletionCard';
 import { getPacket } from '../services/api';
 import { showError } from '../components/common/Toast';
 import { t } from '../i18n/translations';
+import { trackEvent } from '../utils/analytics';
 
 // Fallback demo data if user visits /vault/demo
 const DEMO_PACKET = {
@@ -91,6 +92,9 @@ const RecipientView = () => {
   const [loading, setLoading] = useState(true);
   const [redeemedCoupons, setRedeemedCoupons] = useState([]);
   const [acceptedPunishment, setAcceptedPunishment] = useState('');
+  const [acceptedChallenge, setAcceptedChallenge] = useState('');
+  const [acceptedFavor, setAcceptedFavor] = useState('');
+  const [finesSettled, setFinesSettled] = useState(false);
 
   useEffect(() => {
     const fetchVault = async () => {
@@ -105,6 +109,7 @@ const RecipientView = () => {
         const { data } = await getPacket(packetId);
         if (data && data.packetId) {
           setPacket(data);
+          trackEvent('open_vault', 'recipient', packetId);
           // Preload any already redeemed coupons or interactions
           if (data.interactions?.couponsRedeemed?.length > 0) {
             setRedeemedCoupons(data.interactions.couponsRedeemed);
@@ -112,13 +117,21 @@ const RecipientView = () => {
           if (data.interactions?.punishmentAccepted) {
             setAcceptedPunishment(data.interactions.punishmentAccepted);
           }
+          if (data.interactions?.challengeAccepted) {
+            setAcceptedChallenge(data.interactions.challengeAccepted);
+          }
+          if (data.interactions?.favorAccepted) {
+            setAcceptedFavor(data.interactions.favorAccepted);
+          }
+          if (data.interactions?.finesSettled) {
+            setFinesSettled(data.interactions.finesSettled);
+          }
         } else {
-          setPacket(DEMO_PACKET);
+          showError(t('vaultNotFound', 'en'));
         }
       } catch (err) {
-        console.error('Fetch vault error:', err);
-        showError('Could not load memory vault.');
-        setPacket(DEMO_PACKET); // Fallback to demo
+        console.error('Fetch packet error:', err);
+        showError(t('vaultLoadError', 'en'));
       } finally {
         setLoading(false);
       }
@@ -255,6 +268,9 @@ const RecipientView = () => {
           senderName={packet.senderName}
           recipientName={packet.recipientName}
           lang={lang}
+          onAcceptChallenge={setAcceptedChallenge}
+          onGrantFavor={setAcceptedFavor}
+          onSettleFines={setFinesSettled}
         />
 
         {/* ── PHASE 2: Sister's Vault Completion & Reply Handoff ── */}
@@ -264,6 +280,9 @@ const RecipientView = () => {
           recipientName={packet.recipientName}
           redeemedCoupons={redeemedCoupons}
           acceptedPunishment={acceptedPunishment}
+          acceptedChallenge={acceptedChallenge}
+          acceptedFavor={acceptedFavor}
+          finesSettled={finesSettled}
           lang={lang}
         />
       </main>

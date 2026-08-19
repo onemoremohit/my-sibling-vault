@@ -39,16 +39,21 @@ const initialPacket = {
 // ── Reducer ──────────────────────────────────────────────────────────────────
 const packetReducer = (state, action) => {
   switch (action.type) {
-    case 'UPDATE_META':
+    case 'UPDATE_META': {
+      if (action.payload.language && action.payload.language !== state.language) {
+        const intermediate = { ...state, ...action.payload };
+        return packetReducer(intermediate, { type: 'SET_LANGUAGE', payload: action.payload.language });
+      }
       return { ...state, ...action.payload };
+    }
 
     case 'SET_LANGUAGE': {
       const newLang = action.payload;
       const isSwitchingToHinglish = newLang === 'hinglish';
 
       // Update default roast text if matching
-      const roasts = state.roasts.map(r => {
-        if (r.id === 'r1') {
+      const roasts = state.roasts.map((r) => {
+        if (r.id === 'r1' || r.text?.includes('Takes 2 hours') || r.text?.includes('5 min ke kaam')) {
           return {
             ...r,
             text: isSwitchingToHinglish
@@ -60,14 +65,14 @@ const packetReducer = (state, action) => {
       });
 
       // Update default fines text if matching
-      const fines = state.fines.map(f => {
-        if (f.id === 'f1') {
+      const fines = state.fines.map((f) => {
+        if (f.id === 'f1' || f.crimeTitle?.includes('Stealing clothes') || f.crimeTitle?.includes('Bina puche kapde')) {
           return {
             ...f,
             crimeTitle: isSwitchingToHinglish ? 'Bina puche kapde churana 👕' : 'Stealing clothes without asking 👕',
           };
         }
-        if (f.id === 'f2') {
+        if (f.id === 'f2' || f.crimeTitle?.includes('ice cream') || f.crimeTitle?.includes('Fridge se meri')) {
           return {
             ...f,
             crimeTitle: isSwitchingToHinglish ? 'Fridge se meri Maggi/Ice cream khana 🍦' : 'Eating my ice cream / treats from fridge 🍦',

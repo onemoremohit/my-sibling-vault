@@ -15,14 +15,14 @@ import useMediaQuery from '../hooks/useMediaQuery';
 import { createPacket } from '../services/api';
 import { showSuccess, showError } from '../components/common/Toast';
 import { t as translate } from '../i18n/translations';
+import { trackEvent } from '../utils/analytics';
 
 const CreatorStudio = () => {
   const navigate = useNavigate();
-  const { packet, updateMeta, t: contextT } = usePacket();
+  const { packet, updateMeta, setLanguage, t: contextT } = usePacket();
   const [activeStep, setActiveStep] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [shareData, setShareData] = useState(null); // { packetId, shareUrl }
-  const [showPreviewModal, setShowPreviewModal] = useState(false);
 
   // Scroll to top whenever step changes
   useEffect(() => {
@@ -57,6 +57,7 @@ const CreatorStudio = () => {
         ...data,
         shareUrl: liveShareUrl,
       });
+      trackEvent('generate_vault', 'creator', packet.senderName);
       showSuccess('🎉 Memory Vault created successfully!');
     } catch (err) {
       showError(err.response?.data?.error || 'Failed to save packet. Make sure backend is running.');
@@ -68,6 +69,7 @@ const CreatorStudio = () => {
   const copyToClipboard = () => {
     if (shareData?.shareUrl) {
       navigator.clipboard.writeText(shareData.shareUrl);
+      trackEvent('share_whatsapp', 'share', 'WhatsApp');
       showSuccess('Link copied to clipboard!');
     }
   };
@@ -77,7 +79,6 @@ const CreatorStudio = () => {
       <Navbar
         mode="creator"
         onShare={handleGenerate}
-        onPreview={() => setShowPreviewModal(true)}
         lang={packet.language}
       />
 
@@ -261,18 +262,6 @@ const CreatorStudio = () => {
           </div>
         </div>
       </Modal>
-
-      {/* Mobile Live Preview Modal */}
-      {!isDesktop && (
-        <Modal
-          isOpen={showPreviewModal}
-          onClose={() => setShowPreviewModal(false)}
-          title={t('mobilePreviewTitle')}
-          size="sm"
-        >
-          <LivePreview activeStep={activeStep} />
-        </Modal>
-      )}
     </div>
   );
 };

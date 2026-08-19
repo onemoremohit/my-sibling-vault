@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { redeemCoupon } from '../../services/api';
 import { showSuccess, showError } from '../common/Toast';
 import { t } from '../../i18n/translations';
+import { trackEvent } from '../../utils/analytics';
 
 const CouponCard = ({ packetId, coupon, onCouponRedeemed, lang = 'en' }) => {
   const [isRedeemed, setIsRedeemed] = useState(coupon.redeemed);
@@ -15,6 +16,7 @@ const CouponCard = ({ packetId, coupon, onCouponRedeemed, lang = 'en' }) => {
         await redeemCoupon(packetId, coupon.id || coupon._id);
       }
       setIsRedeemed(true);
+      trackEvent('redeem_coupon', 'engagement', coupon.title);
       onCouponRedeemed?.(coupon.title);
       showSuccess(`🎟️ Redeemed: "${coupon.title}"!`);
     } catch {

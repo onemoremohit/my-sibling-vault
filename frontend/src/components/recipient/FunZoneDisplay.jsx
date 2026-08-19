@@ -12,6 +12,9 @@ const FunZoneDisplay = ({
   senderName = 'Your Sibling',
   recipientName = 'You',
   lang = 'en',
+  onAcceptChallenge,
+  onGrantFavor,
+  onSettleFines,
 }) => {
   const DEFAULT_ROASTS_EN = [
     { id: 'r1', text: 'Takes 2 hours to get ready for a 5-minute errand ⏰', trueVotes: 3, fakeVotes: 0 },
@@ -90,18 +93,36 @@ const FunZoneDisplay = ({
   // 2. Secret Challenge state
   const [quizStatus, setQuizStatus] = useState(null);
 
+  const handleToggleChallenge = () => {
+    if (quizStatus === 'accepted') {
+      setQuizStatus(null);
+      if (onAcceptChallenge) onAcceptChallenge('');
+    } else {
+      setQuizStatus('accepted');
+      if (onAcceptChallenge) {
+        onAcceptChallenge(activeChallenge?.question || activeChallenge?.challengeText || '');
+      }
+    }
+  };
+
   // 3. Sibling Favor state
   const [favorStatus, setFavorStatus] = useState(activeFavor?.status || 'pending');
   const [showFavorModal, setShowFavorModal] = useState(false);
 
   const handleGrantFavor = () => {
     setFavorStatus('granted');
+    if (onGrantFavor) onGrantFavor(activeFavor?.requestText || '');
     setShowFavorModal(true);
   };
 
   // 4. Fine Calculator state
   const [checkedFines, setCheckedFines] = useState(activeFines.map((f, i) => f.id || i));
   const [showPaidModal, setShowPaidModal] = useState(false);
+
+  const handleSettleFines = () => {
+    setShowPaidModal(true);
+    if (onSettleFines) onSettleFines(true);
+  };
 
   const toggleFineCheck = (id) => {
     setCheckedFines((prev) =>
@@ -220,7 +241,7 @@ const FunZoneDisplay = ({
             <div className="pt-2">
               <button
                 type="button"
-                onClick={() => setQuizStatus(quizStatus === 'accepted' ? null : 'accepted')}
+                onClick={handleToggleChallenge}
                 className={`w-full py-3 px-4 rounded-xl font-body font-bold text-body-md flex items-center justify-center gap-2 transition-all cursor-pointer ${
                   quizStatus === 'accepted'
                     ? 'bg-secondary text-on-secondary shadow-md'
@@ -263,14 +284,9 @@ const FunZoneDisplay = ({
                   <span>{t('grantedFavorBadge', lang)}</span>
                 </div>
               ) : (
-                <>
-                  <Button variant="primary" size="lg" onClick={handleGrantFavor} icon="check_circle">
-                    {t('grantFavorBtn', lang)}
-                  </Button>
-                  <Button variant="ghost" size="lg" onClick={() => setFavorStatus('countered')}>
-                    {t('counterOfferBtn', lang)}
-                  </Button>
-                </>
+                <Button variant="primary" size="lg" onClick={handleGrantFavor} icon="check_circle">
+                  {t('grantFavorBtn', lang)}
+                </Button>
               )}
             </div>
           </div>
@@ -336,13 +352,13 @@ const FunZoneDisplay = ({
 
             {/* Settlement Action Buttons */}
             <div className="pt-4 flex flex-wrap gap-2 justify-center font-body">
-              <Button variant="primary" size="md" onClick={() => setShowPaidModal(true)} icon="payment">
+              <Button variant="primary" size="md" onClick={handleSettleFines} icon="payment">
                 {t('payViaUpiBtn', lang)}
               </Button>
-              <Button variant="secondary" size="md" onClick={() => setShowPaidModal(true)} icon="local_pizza">
+              <Button variant="secondary" size="md" onClick={handleSettleFines} icon="local_pizza">
                 {t('payViaPizzaBtn', lang)}
               </Button>
-              <Button variant="ghost" size="md" onClick={() => setShowPaidModal(true)} icon="shield">
+              <Button variant="ghost" size="md" onClick={handleSettleFines} icon="shield">
                 {t('claimImmunityBtn', lang)}
               </Button>
             </div>
