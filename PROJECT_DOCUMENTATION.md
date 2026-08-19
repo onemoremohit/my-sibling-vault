@@ -228,18 +228,33 @@ sequenceDiagram
 }
 ```
 
+### MongoDB `users` Collection (Google OAuth Authenticated Creators):
+
+```javascript
+{
+  googleId: { type: String, required: true, unique: true, index: true },
+  email: { type: String, required: true, lowercase: true },
+  name: { type: String, required: true },
+  picture: String,
+  createdAt: { type: Date, default: Date.now }
+}
+```
+
 ---
 
 ## 🌐 6. REST API Endpoints Specification
 
-| Method | Endpoint | Description | Request Body / Params |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/packets` | Creates a new memory vault packet | JSON `packet` payload |
-| `GET` | `/api/packets/:packetId` | Retrieves a vault packet for recipient view | `packetId` (URL parameter) |
-| `POST` | `/api/packets/upload` | Uploads memory photos | `multipart/form-data` (`mediaFiles`) |
-| `PATCH` | `/api/packets/:packetId/coupon/:couponId` | Redeems a specific coupon voucher | `{ redeemed: true }` |
-| `POST` | `/api/packets/:packetId/interaction` | Submits recipient's emotional reaction | `{ reaction, rating, replyMessage }` |
-| `GET` | `/api/health` | Service health check | None |
+| Method | Endpoint | Auth Level | Description | Request Body / Params |
+| :--- | :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/google` | Public | Verifies Google ID token & issues 30-day JWT | `{ credential: "<Google_JWT>" }` |
+| `GET` | `/api/auth/me` | Required (`Bearer <JWT>`) | Fetches authenticated creator profile | None |
+| `GET` | `/api/packets/user/my-vaults` | Required (`Bearer <JWT>`) | Fetches all vaults created by the user | None |
+| `POST` | `/api/packets` | Optional (`Bearer <JWT>` or Guest) | Creates a new memory vault packet | JSON `packet` payload |
+| `GET` | `/api/packets/:packetId` | Public | Retrieves a vault packet for recipient view | `packetId` (URL parameter) |
+| `POST` | `/api/packets/upload` | Public | Uploads memory photos | `multipart/form-data` (`mediaFiles`) |
+| `PATCH` | `/api/packets/:packetId/redeem-coupon` | Public | Redeems a specific coupon voucher | `{ couponId: "<UUID>" }` |
+| `PUT` | `/api/packets/:packetId/complete` | Public | Submits recipient's emotional reaction & rating | `{ reaction, rating, replyMessage }` |
+| `GET` | `/api/health` | Public | Service health & MongoDB status check | None |
 
 ---
 
