@@ -1,7 +1,7 @@
 export const translations = {
   en: {
     // Navbar
-    brandName: 'Kinship & Keepsake',
+    brandName: 'LoveParcel',
     creatorStudioBadge: 'Creator Studio',
     previewModeBadge: 'Preview Mode',
     generateShareBtn: 'Generate Vault Link',
@@ -219,7 +219,7 @@ export const translations = {
     paidModalTitle: 'Fine Payment Settled! 🎉',
     paidModalDesc: 'Payment accepted with Pizza & Hugs. Immunity granted for 24h! 🍕🤗',
 
-    footerBrand: 'Kinship & Keepsake',
+    footerBrand: 'LoveParcel',
     footerBuiltBy: 'Built for',
     footerWithLove: 'with ❤️',
 
@@ -235,7 +235,7 @@ export const translations = {
 
   hinglish: {
     // Navbar
-    brandName: 'Kinship & Keepsake',
+    brandName: 'LoveParcel',
     creatorStudioBadge: 'Creator Studio',
     previewModeBadge: 'Preview Mode',
     generateShareBtn: 'Vault Share Karo',
@@ -445,7 +445,7 @@ export const translations = {
     paidModalTitle: 'Fine Payment Settled! 🎉',
     paidModalDesc: 'Pizza aur Hugs ke saath fine settle ho gaya! 24h immunity active! 🍕🤗',
 
-    footerBrand: 'Kinship & Keepsake',
+    footerBrand: 'LoveParcel',
     footerBuiltBy: 'Banaya gaya',
     footerWithLove: 'ke liye ❤️',
 
